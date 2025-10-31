@@ -1,6 +1,6 @@
 ---
-title: script automatizado de commit
-description: Desenvolvimento de um script para automatizar e padronizar os commits do projeto.
+title: script automatizado de commit (script bash)
+description: Script bash para facilitar a execução do script automatizado de commit em sistemas Unix.
 tags: feature
 ---
   
