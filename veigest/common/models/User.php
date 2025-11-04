@@ -64,7 +64,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['id' => $id, 'estado' => 'ativo']);
     }
 
     /**
@@ -83,12 +83,17 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Finds user by username
      *
-     * @param string $username
+     * @param string $nome
      * @return static|null
      */
     public static function findByUsername($nome)
     {
-        return static::findOne(['nome' => $nome, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['nome' => $nome, 'estado' => 'ativo']);
+    }
+
+    public static function findByEmail($email)
+    {
+        return static::findOne(['email' => $email, 'estado' => 'ativo']);
     }
 
     /**
@@ -115,7 +120,8 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $token verify email token
      * @return static|null
      */
-    public static function findByVerificationToken($token) {
+    public static function findByVerificationToken($token)
+    {
         return static::findOne([
             'verification_token' => $token,
             'status' => self::STATUS_INACTIVE
@@ -144,7 +150,12 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getId()
     {
-        return $this->getPrimaryKey();
+        return $this->id;
+    }
+
+    public function getUsername()
+    {
+        return $this->nome;
     }
 
     /**
