@@ -13,8 +13,10 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css'
     ];
     public $js = [
+        'https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js'
     ];
     public $depends = [
         'yii\web\YiiAsset',
