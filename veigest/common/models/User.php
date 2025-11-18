@@ -13,21 +13,20 @@ use yii\web\IdentityInterface;
  *
  * @property integer $id
  * @property string $nome
+ * @property string $company_id
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $verification_token
  * @property string $email
  * @property string $auth_key
- * @property integer $status
+ * @property integer $estado
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    const STATUS_DELETED = 0;
-    const STATUS_INACTIVE = 9;
-    const STATUS_ACTIVE = 10;
+
 
 
     /**
@@ -54,8 +53,9 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+            ['estado', 'default', 'value' => 'ativo'],
+            ['estado', 'in', 'range' => ['ativo', 'inativo']],
+
         ];
     }
 
@@ -64,7 +64,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['id' => $id, 'estado' => 'ativo']);
     }
 
     /**
@@ -77,18 +77,24 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // assume token is stored in auth_key (simple bearer token)
-        return static::findOne(['auth_key' => $token, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['auth_key' => $token, 'estado' => 'ativo']);
+
     }
 
     /**
      * Finds user by username
      *
-     * @param string $username
+     * @param string $nome
      * @return static|null
      */
     public static function findByUsername($nome)
     {
-        return static::findOne(['nome' => $nome, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['nome' => $nome, 'estado' => 'ativo']);
+    }
+
+    public static function findByEmail($email)
+    {
+        return static::findOne(['email' => $email, 'estado' => 'ativo']);
     }
 
     /**
@@ -105,7 +111,8 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
+            'estado' => 'ativo',
+
         ]);
     }
 
@@ -115,10 +122,12 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $token verify email token
      * @return static|null
      */
-    public static function findByVerificationToken($token) {
+    public static function findByVerificationToken($token)
+    {
         return static::findOne([
             'verification_token' => $token,
-            'status' => self::STATUS_INACTIVE
+            'estado' => 'inativo',
+
         ]);
     }
 
@@ -144,7 +153,12 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function getId()
     {
-        return $this->getPrimaryKey();
+        return $this->id;
+    }
+
+    public function getUsername()
+    {
+        return $this->nome;
     }
 
     /**

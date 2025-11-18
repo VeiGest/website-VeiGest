@@ -1,31 +1,27 @@
 <?php
-
-/** @var yii\web\View $this */
-/** @var yii\bootstrap5\ActiveForm $form */
-/** @var \frontend\models\PasswordResetRequestForm $model */
-
-use yii\bootstrap5\Html;
 use yii\bootstrap5\ActiveForm;
+use yii\bootstrap5\Html;
 
-$this->title = 'Request password reset';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Recuperar Palavra-passe';
 ?>
-<div class="site-request-password-reset">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out your email. A link to reset password will be sent there.</p>
+<section class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
+  <div class="w-full max-w-md bg-white rounded-lg shadow dark:border dark:bg-gray-800 dark:border-gray-700">
+      <div class="p-6 space-y-6">
+          <h1 class="text-2xl font-bold text-center text-gray-900 dark:text-white"><?= Html::encode($this->title) ?></h1>
+          <p class="text-center text-gray-600 dark:text-gray-400 text-sm mb-4">Insira o seu email para receber o link de redefinição.</p>
 
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'request-password-reset-form']); ?>
+          <?php $form = ActiveForm::begin(['id' => 'request-password-reset-form']); ?>
 
-                <?= $form->field($model, 'email')->textInput(['autofocus' => true]) ?>
+              <?= $form->field($model, 'email')->textInput([
+                  'class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white',
+              ])->label('Email', ['class' => 'text-sm font-medium text-gray-900 dark:text-white']) ?>
 
-                <div class="form-group">
-                    <?= Html::submitButton('Send', ['class' => 'btn btn-primary']) ?>
-                </div>
+              <div class="form-group text-center">
+                  <?= Html::submitButton('Enviar', ['class' => 'w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5']) ?>
+              </div>
 
-            <?php ActiveForm::end(); ?>
-        </div>
-    </div>
-</div>
+          <?php ActiveForm::end(); ?>
+      </div>
+  </div>
+</section>
