@@ -14,15 +14,41 @@ class m251118_000003_create_users_table extends Migration
     public function safeUp()
     {
         // Adicionar campos VeiGest à tabela user existente do Yii2
-        $this->addColumn('{{%user}}', 'company_id', $this->integer()->notNull()->defaultValue(1));
-        $this->addColumn('{{%user}}', 'nome', $this->string(150)->notNull()->defaultValue(''));
-        $this->addColumn('{{%user}}', 'telefone', $this->string(20));
-        $this->addColumn('{{%user}}', 'estado', "ENUM('ativo','inativo') NOT NULL DEFAULT 'ativo'");
+        // Verificar se as colunas já existem antes de adicionar
+        
+        $schema = $this->db->schema->getTableSchema('{{%user}}');
+        if ($schema === null) {
+            throw new \yii\db\Exception('Table {{%user}} does not exist. Please run the init migration first.');
+        }
+        
+        if (!isset($schema->columns['company_id'])) {
+            $this->addColumn('{{%user}}', 'company_id', $this->integer()->notNull()->defaultValue(1));
+        }
+        
+        if (!isset($schema->columns['nome'])) {
+            $this->addColumn('{{%user}}', 'nome', $this->string(150)->notNull()->defaultValue(''));
+        }
+        
+        if (!isset($schema->columns['telefone'])) {
+            $this->addColumn('{{%user}}', 'telefone', $this->string(20));
+        }
+        
+        if (!isset($schema->columns['estado'])) {
+            $this->addColumn('{{%user}}', 'estado', "ENUM('ativo','inativo') NOT NULL DEFAULT 'ativo'");
+        }
         
         // Campos de condutor (apenas preenchidos se for condutor)
-        $this->addColumn('{{%user}}', 'numero_carta', $this->string(50));
-        $this->addColumn('{{%user}}', 'validade_carta', $this->date());
-        $this->addColumn('{{%user}}', 'foto', $this->string(255));
+        if (!isset($schema->columns['numero_carta'])) {
+            $this->addColumn('{{%user}}', 'numero_carta', $this->string(50));
+        }
+        
+        if (!isset($schema->columns['validade_carta'])) {
+            $this->addColumn('{{%user}}', 'validade_carta', $this->date());
+        }
+        
+        if (!isset($schema->columns['foto'])) {
+            $this->addColumn('{{%user}}', 'foto', $this->string(255));
+        }
 
         // Criar índices e chaves únicas
         $this->createIndex('uk_email_company', '{{%user}}', ['email', 'company_id'], true);

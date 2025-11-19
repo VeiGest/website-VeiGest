@@ -4,6 +4,7 @@ use yii\db\Migration;
 
 /**
  * Handles the creation of initial tables for VeiGest system.
+ * REMOVED: This migration is now empty to avoid conflicts with m130524_201442_init.php
  */
 class m241201_000001_create_initial_tables extends Migration
 {
@@ -12,26 +13,9 @@ class m241201_000001_create_initial_tables extends Migration
      */
     public function safeUp()
     {
-        // Tabela de usuários
-        try {
-            if ($this->db->schema->getTableSchema('{{%user}}') === null) {
-                $this->createTable('{{%user}}', [
-                    'id' => $this->primaryKey(),
-                    'username' => $this->string()->notNull()->unique(),
-                    'email' => $this->string()->notNull()->unique(),
-                    'password_hash' => $this->string()->notNull(),
-                    'auth_key' => $this->string(32)->notNull(),
-                    'password_reset_token' => $this->string()->unique(),
-                    'status' => $this->smallInteger()->notNull()->defaultValue(10),
-                    'created_at' => $this->integer()->notNull(),
-                    'updated_at' => $this->integer()->notNull(),
-                ]);
-            } else {
-                echo "Table {{%user}} already exists. Skipping.\n";
-            }
-        } catch (\Throwable $e) {
-            echo "Skipping create table {{%user}}: " . $e->getMessage() . "\n";
-        }
+        // This migration is intentionally empty to avoid table conflicts
+        echo "This migration has been disabled to prevent conflicts with existing user table.\n";
+        return true;
 
         // Tabela de veículos
         try {
@@ -115,45 +99,8 @@ class m241201_000001_create_initial_tables extends Migration
      */
     public function safeDown()
     {
-        // Remover maintenance se existir
-        if ($this->db->schema->getTableSchema('{{%maintenance}}') !== null) {
-            try {
-                $this->dropForeignKey('fk-maintenance-vehicle_id', '{{%maintenance}}');
-            } catch (\Throwable $e) {
-                echo "Ignoring missing fk-maintenance-vehicle_id: " . $e->getMessage() . "\n";
-            }
-            try {
-                $this->dropIndex('idx-maintenance-vehicle_id', '{{%maintenance}}');
-            } catch (\Throwable $e) {
-                echo "Ignoring missing idx-maintenance-vehicle_id: " . $e->getMessage() . "\n";
-            }
-            $this->dropTable('{{%maintenance}}');
-        } else {
-            echo "Table {{%maintenance}} does not exist. Skipping drop.\n";
-        }
-
-        // Remover vehicle se existir
-        if ($this->db->schema->getTableSchema('{{%vehicle}}') !== null) {
-            try {
-                $this->dropForeignKey('fk-vehicle-user_id', '{{%vehicle}}');
-            } catch (\Throwable $e) {
-                echo "Ignoring missing fk-vehicle-user_id: " . $e->getMessage() . "\n";
-            }
-            try {
-                $this->dropIndex('idx-vehicle-user_id', '{{%vehicle}}');
-            } catch (\Throwable $e) {
-                echo "Ignoring missing idx-vehicle-user_id: " . $e->getMessage() . "\n";
-            }
-            $this->dropTable('{{%vehicle}}');
-        } else {
-            echo "Table {{%vehicle}} does not exist. Skipping drop.\n";
-        }
-
-        // Remover user se existir
-        if ($this->db->schema->getTableSchema('{{%user}}') !== null) {
-            $this->dropTable('{{%user}}');
-        } else {
-            echo "Table {{%user}} does not exist. Skipping drop.\n";
-        }
+        // This migration is intentionally empty - nothing to rollback
+        echo "This migration has been disabled - nothing to rollback.\\n";
+        return true;
     }
 }

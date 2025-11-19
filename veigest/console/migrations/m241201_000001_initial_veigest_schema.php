@@ -4,7 +4,7 @@ use yii\db\Migration;
 
 /**
  * Migração inicial do VeiGest - Schema completo
- * Baseado na estrutura da base de dados já em produção
+ * DISABLED: This migration conflicts with the standard Yii2 user table approach
  */
 class m241201_000001_initial_veigest_schema extends Migration
 {
@@ -13,6 +13,9 @@ class m241201_000001_initial_veigest_schema extends Migration
      */
     public function safeUp()
     {
+        // This migration is intentionally disabled to avoid conflicts
+        echo "This migration has been disabled to prevent table conflicts.\\n";
+        return true;
         // Desabilitar verificação de chaves estrangeiras temporariamente
         $this->execute('SET FOREIGN_KEY_CHECKS = 0');
 
@@ -302,30 +305,8 @@ class m241201_000001_initial_veigest_schema extends Migration
      */
     public function safeDown()
     {
-        $this->execute('SET FOREIGN_KEY_CHECKS = 0');
-        
-        $tables = [
-            'activity_logs',
-            'alerts',
-            'fuel_logs',
-            'documents',
-            'maintenances',
-            'vehicles',
-            'files',
-            'users',
-            'auth_assignment',
-            'auth_item_child',
-            'auth_item',
-            'auth_rule',
-            'companies'
-        ];
-        
-        foreach ($tables as $table) {
-            $this->dropTable($table);
-        }
-        
-        $this->execute('SET FOREIGN_KEY_CHECKS = 1');
-        
-        echo "Schema do VeiGest removido!\n";
+        // This migration is intentionally disabled - nothing to rollback
+        echo "This migration has been disabled - nothing to rollback.\\n";
+        return true;
     }
 }
