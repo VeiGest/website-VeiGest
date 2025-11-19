@@ -25,7 +25,7 @@ class PasswordResetRequestForm extends Model
             ['email', 'email'],
             ['email', 'exist',
                 'targetClass' => '\common\models\User',
-                'filter' => ['status' => User::STATUS_ACTIVE],
+                'filter' => ['estado' => 'ativo'],
                 'message' => 'There is no user with this email address.'
             ],
         ];
@@ -40,7 +40,7 @@ class PasswordResetRequestForm extends Model
     {
         /* @var $user User */
         $user = User::findOne([
-            'status' => User::STATUS_ACTIVE,
+            'estado' => 'ativo',
             'email' => $this->email,
         ]);
 
