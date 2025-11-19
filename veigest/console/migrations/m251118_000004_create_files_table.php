@@ -40,9 +40,9 @@ class m251118_000004_create_files_table extends Migration
             'fk_files_uploaded_by',
             '{{%files}}',
             'uploaded_by',
-            '{{%user}}',
+            '{{%users}}',
             'id',
-            'RESTRICT'
+            'CASCADE'
         );
     }
 

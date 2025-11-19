@@ -55,7 +55,7 @@ class m251118_000008_create_fuel_logs_table extends Migration
             'fk_fuel_logs_driver',
             '{{%fuel_logs}}',
             'driver_id',
-            '{{%user}}',
+            '{{%users}}',
             'id',
             'SET NULL'
         );

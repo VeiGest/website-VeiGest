@@ -71,7 +71,7 @@ class m241201_000001_create_initial_tables extends Migration
                 'fk-vehicle-user_id',
                 '{{%vehicle}}',
                 'user_id',
-                '{{%user}}',
+                '{{%users}}',
                 'id',
                 'CASCADE'
             );

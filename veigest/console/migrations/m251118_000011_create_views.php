@@ -27,7 +27,7 @@ class m251118_000011_create_views extends Migration
             FROM {{%documents}} d
             INNER JOIN {{%files}} f ON d.file_id = f.id
             LEFT JOIN {{%vehicles}} v ON d.vehicle_id = v.id
-            LEFT JOIN {{%user}} u ON d.driver_id = u.id
+            LEFT JOIN {{%users}} u ON d.driver_id = u.id
             WHERE d.data_validade IS NOT NULL
               AND d.status = 'valido'
               AND DATEDIFF(d.data_validade, CURDATE()) <= 30
@@ -47,7 +47,7 @@ class m251118_000011_create_views extends Migration
                 COUNT(DISTINCT CASE WHEN u.numero_carta IS NOT NULL THEN u.id END) AS total_drivers,
                 COALESCE(SUM(f.tamanho), 0) AS total_storage_bytes
             FROM {{%companies}} c
-            LEFT JOIN {{%user}} u ON c.id = u.company_id AND u.estado = 'ativo'
+            LEFT JOIN {{%users}} u ON c.id = u.company_id AND u.estado = 'ativo'
             LEFT JOIN {{%vehicles}} v ON c.id = v.company_id AND v.estado != 'inativo'
             LEFT JOIN {{%files}} f ON c.id = f.company_id
             GROUP BY c.id
