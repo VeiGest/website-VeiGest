@@ -54,10 +54,50 @@ return [
                 'showScriptName' => false,
                 'enableStrictParsing' => false,
                 'rules' => [
-                    ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/user'], 'pluralize' => false],
+                    // API v1 routes
+                    ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/company'], 'pluralize' => false,
+                        'extraPatterns' => [
+                            'GET {id}/vehicles' => 'vehicles',
+                            'GET {id}/users' => 'users', 
+                            'GET {id}/stats' => 'stats',
+                        ]
+                    ],
+                    ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/vehicle'], 'pluralize' => false,
+                        'extraPatterns' => [
+                            'GET {id}/maintenances' => 'maintenances',
+                            'GET {id}/fuel-logs' => 'fuel-logs',
+                            'GET {id}/stats' => 'stats',
+                            'GET company/{company_id}' => 'by-company',
+                            'GET status/{status}' => 'by-status',
+                        ]
+                    ],
+                    ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/maintenance'], 'pluralize' => false,
+                        'extraPatterns' => [
+                            'GET vehicle/{vehicle_id}' => 'by-vehicle',
+                            'GET status/{status}' => 'by-status',
+                            'GET stats' => 'stats',
+                        ]
+                    ],
+                    ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/user'], 'pluralize' => false,
+                        'extraPatterns' => [
+                            'GET company/{company_id}' => 'by-company',
+                            'GET drivers' => 'drivers',
+                            'GET profile' => 'profile',
+                        ]
+                    ],
                     ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/auth'], 'pluralize' => false,
                         'extraPatterns' => [
                             'POST login' => 'login',
+                            'POST refresh' => 'refresh',
+                            'POST logout' => 'logout',
+                        ]
+                    ],
+                    ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/messaging'], 'pluralize' => false,
+                        'extraPatterns' => [
+                            'GET events' => 'events',
+                            'GET subscribe' => 'subscribe',
+                            'POST publish' => 'publish',
+                            'GET stats' => 'stats',
                         ]
                     ],
                 ],
