@@ -58,7 +58,7 @@ class m251118_000003_create_users_table extends Migration
                 'nome' => 'VeiGest Admin',
                 'username' => 'admin', // Campo obrigatório do Yii2
                 'email' => 'admin@veigest.com',
-                'password_hash' => '$2a$12$/piK/Am/.6Wau7PpIzvO5ergX4AG17Xzk5RicS1Yom6YSsE5sSlgG', // 'admin'
+                'password_hash' => '$2a$12$EGpeLy0wPpG4vBGeMlpiGODWhmRgYpZLhtLw.H4x9xGTig8fTfH2a', // 'admin'
                 'estado' => 'ativo',
                 'auth_key' => 'veigest_admin_key',
                 'status' => 10,
