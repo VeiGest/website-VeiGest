@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+
+  frontend:
+    build:
+      context: ./veigest/frontend
+      dockerfile: Dockerfile
+    container_name: veigest_frontend
+    ports:
+      - "20080:80"
+    volumes:
+      - ./veigest:/app:delegated
+    networks:
+      - veigest-network
+
+  backend:
+    build:
+      context: ./veigest/backend
+      dockerfile: Dockerfile
+    container_name: veigest_backend
+    ports:
+      - "21080:80"
+    volumes:
+      - ./veigest:/app:delegated
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=${MYSQL_DATABASE}
+      - DB_USER=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - veigest-network
+
+  db:
+    image: mysql:5.7
+    container_name: veigest_db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - veigest-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: veigest_phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    networks:
+      - veigest-network
+
+volumes:
+  db_data:
+
+networks:
+  veigest-network:
+    driver: bridge
