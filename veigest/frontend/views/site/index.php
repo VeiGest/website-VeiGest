@@ -37,7 +37,7 @@ $this->title = 'Bem-vindo à VeiGest';
                 </div>
             </div>
 
-            <?php if (!Yii::$app->user->isGuest && in_array(Yii::$app->user->identity->role, ['admin'])): ?>
+            <?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->hasRole('admin')): ?>
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm border-0">
                     <div class="card-body text-center">

@@ -51,6 +51,14 @@ class m251118_000003_create_users_table extends Migration
         }
 
         // Criar índices e chaves únicas
+        // Verificar se o índice de email existe antes de removê-lo
+        try {
+            $this->execute('ALTER TABLE {{%users}} DROP INDEX email');
+        } catch (\Exception $e) {
+            echo "Index 'email' does not exist or already dropped. Continuing...\n";
+        }
+        
+        // Criar índice único composto para email+company_id
         $this->createIndex('uk_email_company', '{{%users}}', ['email', 'company_id'], true);
         $this->createIndex('idx_company_id', '{{%users}}', 'company_id');
         $this->createIndex('idx_estado', '{{%users}}', 'estado');
@@ -66,12 +74,12 @@ class m251118_000003_create_users_table extends Migration
             'CASCADE'
         );
 
-        // Atualizar utilizador admin existente
-        $this->update('{{%users}}', [
-            'company_id' => 1,
-            'nome' => 'Administrator',
-            'estado' => 'ativo',
-        ], ['email' => 'admin@example.com']);
+        // Atualizar utilizador admin existente se já existir com username
+        $this->execute("UPDATE {{%users}} SET 
+            company_id = 1,
+            nome = 'Administrator',
+            estado = 'ativo'
+            WHERE username = 'admin' OR email = 'admin@example.com'");
         
         // Inserir utilizador VeiGest se não existir
         $adminExists = $this->db->createCommand('SELECT COUNT(*) FROM {{%users}} WHERE email = :email')
@@ -82,9 +90,9 @@ class m251118_000003_create_users_table extends Migration
             $this->insert('{{%users}}', [
                 'company_id' => 1,
                 'nome' => 'VeiGest Admin',
-                'username' => 'admin', // Campo obrigatório do Yii2
+                'username' => 'veigest_admin',
                 'email' => 'admin@veigest.com',
-                'password_hash' => '$2a$12$EGpeLy0wPpG4vBGeMlpiGODWhmRgYpZLhtLw.H4x9xGTig8fTfH2a', // 'admin'
+                'password_hash' => '$2y$13$EGpeLy0wPpG4vBGeMlpiGODWhmRgYpZLhtLw.H4x9xGTig8fTfH2a', // 'admin'
                 'estado' => 'ativo',
                 'auth_key' => 'veigest_admin_key',
                 'status' => 10,

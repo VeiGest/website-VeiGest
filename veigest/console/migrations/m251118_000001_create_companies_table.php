@@ -15,17 +15,17 @@ class m251118_000001_create_companies_table extends Migration
     {
         $this->createTable('{{%companies}}', [
             'id' => $this->primaryKey(),
-            'nome' => $this->string(255)->notNull()->comment('Nome da empresa'),
-            'email' => $this->string(255)->unique()->comment('Email principal da empresa'),
+            'nome' => $this->string(200)->notNull()->comment('Nome da empresa'),
+            'email' => $this->string(150)->comment('Email principal da empresa'),
             'telefone' => $this->string(20)->comment('Telefone principal'),
-            'nif' => $this->string(20)->unique()->comment('NIF/NIPC da empresa'),
+            'nif' => $this->string(20)->comment('NIF/NIPC da empresa'),
             'morada' => $this->text()->comment('Morada completa'),
             'codigo_postal' => $this->string(20)->comment('Código postal'),
             'localidade' => $this->string(100)->comment('Localidade'),
             'distrito' => $this->string(100)->comment('Distrito'),
             'pais' => $this->string(100)->defaultValue('Portugal')->comment('País'),
-            'website' => $this->string(255)->comment('Website da empresa'),
-            'logo' => $this->string(500)->comment('Caminho para o logo da empresa'),
+            'website' => $this->string(200)->comment('Website da empresa'),
+            'logo' => $this->string(300)->comment('Caminho para o logo da empresa'),
             
             // Configurações do sistema
             'plano' => $this->string(50)->defaultValue('basic')->comment('Plano contratado: basic, premium, enterprise'),
@@ -40,11 +40,11 @@ class m251118_000001_create_companies_table extends Migration
             // Auditoria
             'criado_por' => $this->integer()->comment('ID do utilizador que criou'),
             'atualizado_por' => $this->integer()->comment('ID do utilizador que atualizou'),
-        ]);
+        ], 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
-        // Índices para performance
-        $this->createIndex('idx_companies_email', '{{%companies}}', 'email');
-        $this->createIndex('idx_companies_nif', '{{%companies}}', 'nif');
+        // Índices para performance (sem unique inline para evitar problemas de tamanho)
+        $this->createIndex('idx_companies_email', '{{%companies}}', 'email', true);
+        $this->createIndex('idx_companies_nif', '{{%companies}}', 'nif', true);
         $this->createIndex('idx_companies_estado', '{{%companies}}', 'estado');
         $this->createIndex('idx_companies_plano', '{{%companies}}', 'plano');
 

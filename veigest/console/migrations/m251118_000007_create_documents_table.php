@@ -78,7 +78,8 @@ class m251118_000007_create_documents_table extends Migration
      */
     public function safeDown()
     {
-        $this->execute('ALTER TABLE {{%documents}} DROP CONSTRAINT chk_documents_entity');
+        // MySQL usa DROP CHECK em vez de DROP CONSTRAINT
+        $this->execute('ALTER TABLE {{%documents}} DROP CHECK chk_documents_entity');
         $this->dropForeignKey('fk_documents_driver', '{{%documents}}');
         $this->dropForeignKey('fk_documents_vehicle', '{{%documents}}');
         $this->dropForeignKey('fk_documents_file', '{{%documents}}');

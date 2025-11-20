@@ -57,12 +57,11 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['nome', 'email', 'company_id', 'role'], 'required'],
+            [['nome', 'email', 'company_id'], 'required'],
             ['password', 'required', 'on' => 'create'],
             ['password', 'safe'],
             ['email', 'email'],
             ['estado', 'in', 'range' => ['ativo', 'inativo']],
-            ['role', 'in', 'range' => ['gestor', 'condutor']],
         ];
     }
 
@@ -265,5 +264,43 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * Get user role from RBAC system
+     * @return string|null
+     */
+    public function getRole()
+    {
+        $roles = Yii::$app->authManager->getRolesByUser($this->id);
+        if (empty($roles)) {
+            return null;
+        }
+        
+        // Retorna a primeira role encontrada (ou a mais importante)
+        $roleNames = array_keys($roles);
+        
+        // Prioridade: admin > gestor > condutor
+        if (in_array('admin', $roleNames)) {
+            return 'admin';
+        }
+        if (in_array('gestor', $roleNames)) {
+            return 'gestor';
+        }
+        if (in_array('condutor', $roleNames)) {
+            return 'condutor';
+        }
+        
+        return $roleNames[0] ?? null;
+    }
+
+    /**
+     * Check if user has a specific role
+     * @param string $roleName
+     * @return bool
+     */
+    public function hasRole($roleName)
+    {
+        return Yii::$app->authManager->getAssignment($roleName, $this->id) !== null;
     }
 }
