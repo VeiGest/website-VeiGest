@@ -10,23 +10,11 @@ return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
-    'bootstrap' => ['log', 'api'],
-    'modules' => [
-        'api' => [
-            'class' => 'backend\\modules\\api\\Module',
-            'modules' => [
-                'v1' => [
-                    'class' => 'backend\\modules\\api\\v1\\Module',
-                ],
-            ],
-        ],
-    ],
+    'bootstrap' => ['log'],
+    'modules' => [],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
-            'parsers' => [
-                'application/json' => 'yii\\web\\JsonParser',
-            ],
         ],
         'user' => [
             'identityClass' => 'common\models\User',
