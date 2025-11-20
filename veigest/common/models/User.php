@@ -19,14 +19,18 @@ use yii\web\IdentityInterface;
  * @property string $verification_token
  * @property string $email
  * @property string $auth_key
+ * 
  * @property integer $estado
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
  */
+
+
+
 class User extends ActiveRecord implements IdentityInterface
 {
-
+    public $password;
 
 
     /**
@@ -53,11 +57,17 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['estado', 'default', 'value' => 'ativo'],
+            [['nome', 'email', 'company_id', 'role'], 'required'],
+            ['password', 'required', 'on' => 'create'],
+            ['password', 'safe'],
+            ['email', 'email'],
             ['estado', 'in', 'range' => ['ativo', 'inativo']],
-
+            ['role', 'in', 'range' => ['gestor', 'condutor']],
         ];
     }
+
+
+
 
     /**
      * {@inheritdoc}
@@ -78,7 +88,6 @@ class User extends ActiveRecord implements IdentityInterface
 
         // assume token is stored in auth_key (simple bearer token)
         return static::findOne(['auth_key' => $token, 'estado' => 'ativo']);
-
     }
 
     /**
@@ -176,6 +185,28 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->getAuthKey() === $authKey;
     }
+
+   public function beforeSave($insert)
+{
+    if (!parent::beforeSave($insert)) {
+        return false;
+    }
+
+    // Gerar auth_key apenas na criação
+    if ($insert) {
+        $this->generateAuthKey();
+    }
+
+    // Criar hash da password se for preenchida
+    if (!empty($this->password)) {
+        $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
+    }
+
+    return true;
+}
+
+
+
 
     /**
      * Validates password

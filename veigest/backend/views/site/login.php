@@ -17,7 +17,7 @@ $this->title = 'Login';
 
         <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
 
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+            <?= $form->field($model, 'nome')->textInput(['autofocus' => true]) ?>
 
             <?= $form->field($model, 'password')->passwordInput() ?>
 
@@ -29,4 +29,5 @@ $this->title = 'Login';
 
         <?php ActiveForm::end(); ?>
     </div>
+    
 </div>
