@@ -73,11 +73,12 @@ class m251118_000013_assign_rbac_permissions extends Migration
         $this->assignPermissionsToRole('condutor', $condutorPermissions);
 
         // Atribuir role 'super-admin' ao utilizador admin (user_id = 1)
-        $this->insert('{{%auth_assignment}}', [
-            'item_name' => 'super-admin',
-            'user_id' => '1',
-            'created_at' => time()
-        ]);
+            // Atribuir role 'admin' ao utilizador admin (user_id = 1)
+            $this->insert('{{%auth_assignment}}', [
+                'item_name' => 'admin',
+                'user_id' => 1,
+                'created_at' => time()
+            ]);
     }
 
     /**

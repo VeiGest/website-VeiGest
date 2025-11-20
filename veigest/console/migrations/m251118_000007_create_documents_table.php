@@ -78,8 +78,23 @@ class m251118_000007_create_documents_table extends Migration
      */
     public function safeDown()
     {
-        // MySQL usa DROP CHECK em vez de DROP CONSTRAINT
-        $this->execute('ALTER TABLE {{%documents}} DROP CHECK chk_documents_entity');
+        // Só tenta remover o CHECK se for MySQL >= 8.0.16
+        $version = $this->db->createCommand('SELECT VERSION()')->queryScalar();
+        $isMySQL8 = false;
+        if (preg_match('/^(\\d+)\\.(\\d+)\\.(\\d+)/', $version, $matches)) {
+            $major = (int)$matches[1];
+            $minor = (int)$matches[2];
+            $patch = (int)$matches[3];
+            if ($major > 8 || ($major === 8 && $minor === 0 && $patch >= 16)) {
+                $isMySQL8 = true;
+            }
+        }
+        if ($isMySQL8) {
+            $this->execute('ALTER TABLE {{%documents}} DROP CHECK chk_documents_entity');
+        } else {
+            // Em MySQL < 8.0.16, o comando não existe e o CHECK é ignorado
+            echo "[info] Ignorando DROP CHECK em MySQL < 8.0.16\n";
+        }
         $this->dropForeignKey('fk_documents_driver', '{{%documents}}');
         $this->dropForeignKey('fk_documents_vehicle', '{{%documents}}');
         $this->dropForeignKey('fk_documents_file', '{{%documents}}');

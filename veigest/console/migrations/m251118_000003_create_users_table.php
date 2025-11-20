@@ -58,48 +58,87 @@ class m251118_000003_create_users_table extends Migration
             echo "Index 'email' does not exist or already dropped. Continuing...\n";
         }
         
-        // Criar índice único composto para email+company_id
-        $this->createIndex('uk_email_company', '{{%users}}', ['email', 'company_id'], true);
-        $this->createIndex('idx_company_id', '{{%users}}', 'company_id');
-        $this->createIndex('idx_estado', '{{%users}}', 'estado');
-        $this->createIndex('idx_validade_carta', '{{%users}}', 'validade_carta');
+        // Criar índices apenas se não existirem
+        $allIndexes = $this->db->createCommand("SHOW INDEX FROM {{%users}}")->queryAll();
+        $indexNames = array_column($allIndexes, 'Key_name');
+
+        if (!in_array('uk_email_company', $indexNames)) {
+            $this->createIndex('uk_email_company', '{{%users}}', ['email', 'company_id'], true);
+        } else {
+            echo "Index 'uk_email_company' já existe. Pulando criação...\n";
+        }
+        if (!in_array('idx_company_id', $indexNames)) {
+            $this->createIndex('idx_company_id', '{{%users}}', 'company_id');
+        } else {
+            echo "Index 'idx_company_id' já existe. Pulando criação...\n";
+        }
+        if (!in_array('idx_estado', $indexNames)) {
+            $this->createIndex('idx_estado', '{{%users}}', 'estado');
+        } else {
+            echo "Index 'idx_estado' já existe. Pulando criação...\n";
+        }
+        if (!in_array('idx_validade_carta', $indexNames)) {
+            $this->createIndex('idx_validade_carta', '{{%users}}', 'validade_carta');
+        } else {
+            echo "Index 'idx_validade_carta' já existe. Pulando criação...\n";
+        }
 
         // Adicionar chave estrangeira
-        $this->addForeignKey(
-            'fk_users_company',
-            '{{%users}}',
-            'company_id',
-            '{{%companies}}',
-            'id',
-            'CASCADE'
-        );
-
-        // Atualizar utilizador admin existente se já existir com username
-        $this->execute("UPDATE {{%users}} SET 
-            company_id = 1,
-            nome = 'Administrator',
-            estado = 'ativo'
-            WHERE username = 'admin' OR email = 'admin@example.com'");
-        
-        // Inserir utilizador VeiGest se não existir
-        $adminExists = $this->db->createCommand('SELECT COUNT(*) FROM {{%users}} WHERE email = :email')
-            ->bindValue(':email', 'admin@veigest.com')
-            ->queryScalar();
-            
-        if (!$adminExists) {
-            $this->insert('{{%users}}', [
-                'company_id' => 1,
-                'nome' => 'VeiGest Admin',
-                'username' => 'veigest_admin',
-                'email' => 'admin@veigest.com',
-                'password_hash' => '$2y$13$EGpeLy0wPpG4vBGeMlpiGODWhmRgYpZLhtLw.H4x9xGTig8fTfH2a', // 'admin'
-                'estado' => 'ativo',
-                'auth_key' => 'veigest_admin_key',
-                'status' => 10,
-                'created_at' => time(),
-                'updated_at' => time()
-            ]);
+        // Criar foreign key apenas se não existir
+        $fkExists = false;
+        $tableName = $this->db->getTableSchema('{{%users}}')->fullName;
+        $fks = $this->db->createCommand("SHOW CREATE TABLE {{%users}}")
+            ->queryOne();
+        if ($fks && isset($fks['Create Table']) && strpos($fks['Create Table'], 'CONSTRAINT `fk_users_company`') !== false) {
+            $fkExists = true;
         }
+        if (!$fkExists) {
+            $this->addForeignKey(
+                'fk_users_company',
+                '{{%users}}',
+                'company_id',
+                '{{%companies}}',
+                'id',
+                'CASCADE'
+            );
+        } else {
+            echo "Foreign key 'fk_users_company' já existe. Pulando criação...\n";
+        }
+
+        // Garante que o usuário admin sempre existe e tem senha conhecida (apenas campos padrão do Yii2)
+        $adminUsername = 'veigest_admin';
+        $adminEmail = 'veigest_admin@veigest.com';
+        $adminPasswordHash = '$2a$12$hrDfGF6ZCfeGFaahX1SVDudw918BcGdvv1BHTDkVWnFHQhI44yCQK'; // senha: 12345
+        $now = time();
+        $authKey = Yii::$app->security->generateRandomString();
+
+        $user = (new \yii\db\Query())
+            ->from('{{%users}}')
+            ->where(['username' => $adminUsername])
+            ->one();
+
+        if ($user) {
+            $this->update('{{%users}}', [
+                'email' => $adminEmail,
+                'password_hash' => $adminPasswordHash,
+                'auth_key' => $authKey,
+                'status' => 10,
+                'updated_at' => $now,
+            ], ['id' => $user['id']]);
+            $adminId = $user['id'];
+        } else {
+            $this->insert('{{%users}}', [
+                'username' => $adminUsername,
+                'email' => $adminEmail,
+                'password_hash' => $adminPasswordHash,
+                'auth_key' => $authKey,
+                'status' => 10,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+            $adminId = $this->db->getLastInsertID();
+        }
+
     }
 
     /**
