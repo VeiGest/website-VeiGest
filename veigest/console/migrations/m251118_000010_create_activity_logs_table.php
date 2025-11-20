@@ -43,7 +43,7 @@ class m251118_000010_create_activity_logs_table extends Migration
             'fk_activity_logs_user',
             '{{%activity_logs}}',
             'user_id',
-            '{{%user}}',
+            '{{%users}}',
             'id',
             'SET NULL'
         );

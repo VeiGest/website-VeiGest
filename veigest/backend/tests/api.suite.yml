@@ -1,0 +1,36 @@
+# API Test Suite Configuration for VeiGest
+# TDD-focused test suite for RESTful API endpoints
+
+actor: ApiTester
+path: api
+modules:
+    enabled:
+        - REST:
+            url: http://localhost:8080/api/v1
+            depends: PhpBrowser
+            part: Json
+        - \backend\tests\_support\Helper\Api
+        - Yii2:
+            part: [orm, email, fixtures]
+            transaction: false
+            cleanup: false
+        - Db:
+            dsn: 'mysql:host=localhost;dbname=veigest'
+            user: 'root'
+            password: ''
+            populate: false
+            cleanup: false
+            reconnect: true
+        - Asserts
+
+step_decorators: ~
+
+coverage:
+    enabled: true
+    include:
+        - backend/modules/api/v1/controllers/*
+        - backend/modules/api/v1/models/*
+    exclude:
+        - backend/tests/*
+        - backend/runtime/*
+        - vendor/*

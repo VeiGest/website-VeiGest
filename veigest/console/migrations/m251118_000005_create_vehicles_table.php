@@ -48,7 +48,7 @@ class m251118_000005_create_vehicles_table extends Migration
             'fk_vehicles_condutor',
             '{{%vehicles}}',
             'condutor_id',
-            '{{%user}}',
+            '{{%users}}',
             'id',
             'SET NULL'
         );

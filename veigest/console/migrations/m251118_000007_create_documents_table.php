@@ -64,7 +64,7 @@ class m251118_000007_create_documents_table extends Migration
             'fk_documents_driver',
             '{{%documents}}',
             'driver_id',
-            '{{%user}}',
+            '{{%users}}',
             'id',
             'CASCADE'
         );
