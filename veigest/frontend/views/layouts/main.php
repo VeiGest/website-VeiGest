@@ -87,7 +87,7 @@ AppAsset::register($this);
                 </div>
                 <div class="hidden md:flex justify-center">
                     <div class="relative w-64 h-64">
-                        <img src="/images/veigest-logo.png" alt="VeiGest" class="w-full h-full object-contain filter drop-shadow-lg">
+                        <img src="./images/veigest-logo.png" alt="VeiGest" class="w-full h-full object-contain filter drop-shadow-lg">
                     </div>
                 </div>
             </div>
