@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - VeiGest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #09BC8A;
+            --dark-color: #3C3C3C;
+            --light-turquoise: #75DDDD;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <img src="/images/veigest-logo.png" alt="VeiGest Logo" class="h-10 w-10">
+                    <span class="text-xl font-bold text-green-600">VeiGest Demo</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-green-600 transition">Voltar</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="login.html" class="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700">Aceder</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Demo Section -->
+    <section class="py-20 px-4 bg-gradient-to-r from-green-600 to-teal-500 text-white">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-5xl font-bold mb-6">Demonstração do VeiGest</h1>
+            <p class="text-xl mb-8 opacity-90">Explore as funcionalidades completas da plataforma</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="dashboard.html" class="bg-white text-green-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition">
+                    Ver Dashboard
+                </a>
+                <a href="vehicles.html" class="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:bg-opacity-10 transition">
+                    Gestão de Frota
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Demo -->
+    <section class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-16 text-gray-900">Explore as Funcionalidades</h2>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition">
+                    <div class="text-4xl mb-4 text-green-600">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Dashboard Inteligente</h3>
+                    <p class="text-gray-600 mb-6">Visualize em tempo real o estado de sua frota com KPIs e alertas automáticos.</p>
+                    <a href="dashboard.html" class="text-green-600 font-bold hover:text-green-700">Explorar →</a>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition">
+                    <div class="text-4xl mb-4 text-green-600">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Gestão de Veículos</h3>
+                    <p class="text-gray-600 mb-6">Controle completo da sua frota com rastreamento e histórico de manutenção.</p>
+                    <a href="vehicles.html" class="text-green-600 font-bold hover:text-green-700">Explorar →</a>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition">
+                    <div class="text-4xl mb-4 text-green-600">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Gestão de Condutores</h3>
+                    <p class="text-gray-600 mb-6">Perfis de condutores com documentação e validação de cartas de condução.</p>
+                    <a href="drivers.html" class="text-green-600 font-bold hover:text-green-700">Explorar →</a>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition">
+                    <div class="text-4xl mb-4 text-green-600">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Documentação</h3>
+                    <p class="text-gray-600 mb-6">Centralize documentos com controle automático de validade e alertas.</p>
+                    <a href="documents.html" class="text-green-600 font-bold hover:text-green-700">Explorar →</a>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition">
+                    <div class="text-4xl mb-4 text-green-600">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Sistema de Alertas</h3>
+                    <p class="text-gray-600 mb-6">Notificações inteligentes para documentos vencidos e manutenções pendentes.</p>
+                    <a href="alerts.html" class="text-green-600 font-bold hover:text-green-700">Explorar →</a>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition">
+                    <div class="text-4xl mb-4 text-green-600">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-gray-900">Relatórios Avançados</h3>
+                    <p class="text-gray-600 mb-6">Analytics detalhados sobre custos, consumo e performance operacional.</p>
+                    <a href="reports.html" class="text-green-600 font-bold hover:text-green-700">Explorar →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 px-4 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6">Pronto para Otimizar sua Frota?</h2>
+            <p class="text-lg mb-8 opacity-90">
+                Junte-se a centenas de empresas que utilizam VeiGest
+            </p>
+            <a href="login.html" class="inline-block bg-green-600 text-white px-10 py-4 rounded-lg font-bold hover:bg-green-700 transition text-lg">
+                Aceder Agora
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2025 VeiGest. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>
