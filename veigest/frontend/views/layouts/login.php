@@ -22,7 +22,7 @@ $this->beginPage();
     <?php $this->head() ?>
 </head>
 
-<body class="bg-gray-50 dark:bg-gray-900">
+<body class="">
     <?php $this->beginBody() ?>
 
     <!-- A área de conteúdo onde a view 'site/login' vai ser renderizada -->
