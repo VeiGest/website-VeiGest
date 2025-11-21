@@ -7,13 +7,16 @@ $this->title = 'My Yii Application';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - VeiGest</title>
+    <title>Documentos - VeiGest</title>
     
+    <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     
     <style>
         :root {
@@ -70,19 +73,18 @@ $this->title = 'My Yii Application';
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .small-box {
-            border-radius: 8px;
+        .rbac-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
         
-        .small-box.bg-teal {
-            background-color: var(--primary-color) !important;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
+        .rbac-admin { background-color: #dc3545; color: white; }
+        .rbac-gestor { background-color: #ffc107; color: #333; }
+        .rbac-condutor { background-color: #17a2b8; color: white; }
+        .rbac-convidado { background-color: #6c757d; color: white; }
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -100,6 +102,7 @@ $this->title = 'My Yii Application';
             </li>
         </ul>
         
+        <!-- Right navbar -->
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
@@ -112,6 +115,9 @@ $this->title = 'My Yii Application';
                     <a href="#" class="dropdown-item">
                         <i class="fas fa-warning text-warning mr-2"></i> Manutenção programada
                     </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-exclamation-triangle text-danger mr-2"></i> Alerta crítico
+                    </a>
                 </div>
             </li>
             
@@ -120,9 +126,9 @@ $this->title = 'My Yii Application';
                     <i class="fas fa-user-circle"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a href="login.html" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Sair
-                    </a>
+                    <a href="profile.html" class="dropdown-item"><i class="fas fa-user mr-2"></i> Perfil</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="login.html" class="dropdown-item"><i class="fas fa-sign-out-alt mr-2"></i> Sair</a>
                 </div>
             </li>
         </ul>
@@ -131,25 +137,28 @@ $this->title = 'My Yii Application';
     <!-- Main Sidebar -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #f8f9fa;">
         <a href="dashboard.html" class="brand-link d-flex align-items-center">
-            <img src="/images/veigest-logo.png" alt="VeiGest" style="width: 35px; height: 35px; margin-right: 10px;">
+            <img src="/images/veigest-logo.png" 
+                 alt="VeiGest" style="width: 35px; height: 35px; margin-right: 10px;">
             <span style="color: white; font-weight: 700;">VeiGest</span>
         </a>
         
         <div class="sidebar">
+            <!-- User Panel -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="image">
-                    <img src="https://via.placeholder.com/160x160?text=User" class="img-circle elevation-2" alt="User Image">
+                    <img src="https://via.placeholder.com/160x160?text=Admin" class="img-circle elevation-2" alt="Admin">
                 </div>
                 <div class="info">
-                    <a href="#" class="d-block" style="color: var(--dark-color); font-weight: 600;">João Silva</a>
-                    <span style="display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background-color: #dc3545; color: white;">Admin</span>
+                    <a href="#" class="d-block" style="color: var(--dark-color); font-weight: 600;">Admin</a>
+                    <span class="rbac-badge rbac-admin">Admin</span>
                 </div>
             </div>
             
+            <!-- Sidebar Menu -->
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
                     <li class="nav-item">
-                        <a href="dashboard.html" class="nav-link active">
+                        <a href="dashboard.html" class="nav-link">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>Dashboard</p>
                         </a>
@@ -184,7 +193,7 @@ $this->title = 'My Yii Application';
                     </li>
                     
                     <li class="nav-item">
-                        <a href="documents.html" class="nav-link">
+                        <a href="documents.html" class="nav-link active">
                             <i class="nav-icon fas fa-file-alt"></i>
                             <p>Documentos</p>
                         </a>
@@ -204,6 +213,7 @@ $this->title = 'My Yii Application';
                         </a>
                     </li>
                     
+                    <!-- Admin Section -->
                     <li class="nav-header" style="color: #999;">ADMINISTRAÇÃO</li>
                     
                     <li class="nav-item">
@@ -219,6 +229,13 @@ $this->title = 'My Yii Application';
                             <p>Configurações do Sistema</p>
                         </a>
                     </li>
+                    
+                    <li class="nav-item">
+                        <a href="logs.html" class="nav-link">
+                            <i class="nav-icon fas fa-history"></i>
+                            <p>Registos de Auditoria</p>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -226,152 +243,164 @@ $this->title = 'My Yii Application';
     
     <!-- Content -->
     <div class="content-wrapper">
+        <!-- Content Header -->
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0" style="color: var(--dark-color); font-weight: 700;">Dashboard</h1>
+                        <h1 class="m-0" style="color: var(--dark-color); font-weight: 700;">Gestão Documental</h1>
                     </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item active">Home</li>
-                        </ol>
+                    <div class="col-sm-6 text-right">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-upload mr-2"></i>Upload Documento
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Replaced Tailwind layout with AdminLTE grid structure -->
+        <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
-                <!-- KPI Cards -->
+                <!-- Summary Stats -->
                 <div class="row mb-4">
                     <div class="col-md-3">
-                        <div class="small-box bg-info">
+                        <div class="small-box" style="background-color: var(--primary-color); color: white;">
                             <div class="inner">
-                                <h3>245</h3>
-                                <p>Total Veículos</p>
+                                <h3>523</h3>
+                                <p>Total de Documentos</p>
                             </div>
                             <div class="icon">
-                                <i class="fas fa-truck"></i>
+                                <i class="fas fa-file"></i>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="col-md-3">
                         <div class="small-box bg-success">
                             <div class="inner">
-                                <h3>182</h3>
-                                <p>Condutores Ativos</p>
+                                <h3>487</h3>
+                                <p>Válidos</p>
                             </div>
                             <div class="icon">
-                                <i class="fas fa-user-tie"></i>
+                                <i class="fas fa-check-circle"></i>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="col-md-3">
                         <div class="small-box bg-warning">
                             <div class="inner">
-                                <h3 style="color: white;">12</h3>
-                                <p style="color: white;">Alertas Pendentes</p>
+                                <h3>28</h3>
+                                <p>Próximos do Vencimento</p>
                             </div>
                             <div class="icon">
-                                <i class="fas fa-bell"></i>
+                                <i class="fas fa-exclamation-triangle"></i>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="col-md-3">
                         <div class="small-box bg-danger">
                             <div class="inner">
-                                <h3 style="color: white;">€45K</h3>
-                                <p style="color: white;">Custo Mensal</p>
+                                <h3>8</h3>
+                                <p>Expirados</p>
                             </div>
                             <div class="icon">
-                                <i class="fas fa-euro-sign"></i>
+                                <i class="fas fa-times-circle"></i>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Charts Row - Using fixed height containers to prevent infinite growth -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Consumo de Combustível (últimos 12 meses)</h3>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" placeholder="Procurar documentos...">
                             </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="consumptionChart"></canvas>
-                                </div>
+                            <div class="col-md-3">
+                                <select class="form-control">
+                                    <option>Todos os Tipos</option>
+                                    <option>Seguro</option>
+                                    <option>Inspeção</option>
+                                    <option>DUA</option>
+                                </select>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Estado da Frota</h3>
+                            <div class="col-md-3">
+                                <select class="form-control">
+                                    <option>Todos os Estados</option>
+                                    <option>Válido</option>
+                                    <option>Próximo Vencimento</option>
+                                    <option>Expirado</option>
+                                </select>
                             </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="stateChart"></canvas>
-                                </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-secondary btn-block"><i class="fas fa-filter mr-2"></i>Filtrar</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Recent Alerts -->
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Alertas Recentes</h3>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="list-group list-group-flush">
-                                    <div class="list-group-item">
-                                        <i class="fas fa-calendar-times text-danger mr-2"></i>
-                                        <strong>Documento Vencido</strong>
-                                        <p class="text-muted mb-0">Seguro do veículo ABC-1234</p>
-                                    </div>
-                                    <div class="list-group-item">
-                                        <i class="fas fa-wrench text-warning mr-2"></i>
-                                        <strong>Manutenção Programada</strong>
-                                        <p class="text-muted mb-0">Revisão vence em 5 dias</p>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Documentos do Sistema</h3>
+                        <div class="card-tools">
+                            <span class="badge badge-primary">523 Documentos</span>
                         </div>
                     </div>
-                    
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Atividades Recentes</h3>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="list-group list-group-flush">
-                                    <div class="list-group-item">
-                                        <strong>João Silva</strong> criou novo veículo
-                                        <p class="text-muted mb-0 text-sm">Há 1 hora</p>
-                                    </div>
-                                    <div class="list-group-item">
-                                        <strong>Maria Oliveira</strong> atualizou documento
-                                        <p class="text-muted mb-0 text-sm">Há 3 horas</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Tipo</th>
+                                    <th>Veículo/Pessoa</th>
+                                    <th>Válido até</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Seguro ABC-1234</td>
+                                    <td>Seguro Automóvel</td>
+                                    <td>ABC-1234</td>
+                                    <td>15/10/2026</td>
+                                    <td><span class="badge badge-success">Válido</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" title="Descarregar"><i class="fas fa-download"></i></button>
+                                        <button class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Inspeção DEF-5678</td>
+                                    <td>Inspeção Técnica</td>
+                                    <td>DEF-5678</td>
+                                    <td>20/11/2025</td>
+                                    <td><span class="badge badge-warning">Próximo Vencimento</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" title="Descarregar"><i class="fas fa-download"></i></button>
+                                        <button class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>DUA GHI-9012</td>
+                                    <td>Declaração de Uso</td>
+                                    <td>GHI-9012</td>
+                                    <td>05/09/2025</td>
+                                    <td><span class="badge badge-danger">Expirado</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" title="Descarregar"><i class="fas fa-download"></i></button>
+                                        <button class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </section>
     </div>
     
+    <!-- Footer -->
     <footer class="main-footer">
         <strong>VeiGest &copy; 2025</strong>
         <div class="float-right d-none d-sm-inline-block">
@@ -380,51 +409,9 @@ $this->title = 'My Yii Application';
     </footer>
 </div>
 
-<!-- Using same chart structure as reports.html -->
+<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
-
-<script>
-    const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: { position: 'top' }
-        }
-    };
-    
-    // Consumption Chart
-    const ctxConsumo = document.getElementById('consumptionChart').getContext('2d');
-    new Chart(ctxConsumo, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-            datasets: [{
-                label: 'Consumo (L)',
-                data: [12500, 13200, 12800, 13500, 14200, 13800, 14500, 15000, 14300, 13900, 14600, 15200],
-                borderColor: '#09BC8A',
-                backgroundColor: 'rgba(9, 188, 138, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: chartOptions
-    });
-    
-    // State Distribution Chart
-    const ctxState = document.getElementById('stateChart').getContext('2d');
-    new Chart(ctxState, {
-        type: 'doughnut',
-        data: {
-            labels: ['Ativo', 'Manutenção', 'Inativo'],
-            datasets: [{
-                data: [200, 35, 10],
-                backgroundColor: ['#09BC8A', '#F59E0B', '#EF4444']
-            }]
-        },
-        options: chartOptions
-    });
-</script>
 </body>
 </html>
