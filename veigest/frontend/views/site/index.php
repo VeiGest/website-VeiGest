@@ -4,52 +4,223 @@ use yii\helpers\Html;
 
 $this->title = 'Bem-vindo à VeiGest';
 ?>
-<div class="site-index">
-    <div class="jumbotron text-center bg-white mt-4">
-        <h1 class="display-4" style="color: #02bda0;">Bem-vindo à VeiGest</h1>
-        <p class="lead text-muted">Gestão de Frotas Empresariais</p>
-    </div>
-
-    <div class="body-content">
-        <div class="row">
-
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <div class="fs-1 mb-3">🚗</div>
-                        <h4 class="fw-bold">Veículos</h4>
-                        <p class="text-muted">Ver lista, adicionar veículos e gerir a frota.</p>
-                        <?= Html::a('Ver Veículos', ['veiculos/index'], ['class' => 'btn btn-outline-primary mt-2']) ?>
-                        <?= Html::a('Adicionar Veículo', ['veiculos/create'], ['class' => 'btn btn-primary mt-2 ms-2']) ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeiGest - Plataforma de Gestão de Frotas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #09BC8A;
+            --color-onyx: #3C3C3C;
+            --color-turquoise: #75DDDD;
+            --color-lavender-gray: #C8BFC7;
+            --color-lavender-blush: #FFEAEE;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .text-primary { color: var(--color-primary); }
+        .bg-primary { background-color: var(--color-primary); }
+        .border-primary { border-color: var(--color-primary); }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-turquoise) 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0a9a71;
+        }
+        
+        .service-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(9, 188, 138, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-20 md:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                        Gestão Inteligente de Frotas Empresariais
+                    </h1>
+                    <p class="text-lg mb-8 text-opacity-90">
+                        Plataforma completa para monitorizar veículos, condutores e otimizar operações da sua frota em tempo real.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="login.html" class="bg-white text-primary px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition text-center">
+                            Começar Agora
+                        </a>
+                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:bg-opacity-10 transition">
+                            Ver Demo
+                        </button>
+                    </div>
+                </div>
+                <div class="hidden md:flex justify-center">
+                    <div class="relative w-64 h-64">
+                        <img src="./images/veigest-logo.png" alt="VeiGest" class="w-full h-full object-contain filter drop-shadow-lg">
                     </div>
                 </div>
             </div>
-
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <div class="fs-1 mb-3">👥</div>
-                        <h4 class="fw-bold">Condutores</h4>
-                        <p class="text-muted">Gerir condutores, adicionar novos e monitorizar.</p>
-                        <?= Html::a('Ver Condutores', ['condutores/index'], ['class' => 'btn btn-outline-primary mt-2']) ?>
-                        <?= Html::a('Adicionar Condutor', ['condutores/create'], ['class' => 'btn btn-primary mt-2 ms-2']) ?>
-                    </div>
-                </div>
-            </div>
-
-            <?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->hasRole('admin')): ?>
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body text-center">
-                        <div class="fs-1 mb-3">🔧</div>
-                        <h4 class="fw-bold">Gestão de Utilizadores</h4>
-                        <p class="text-muted">Painel administrativo para gerir utilizadores.</p>
-                        <?= Html::a('Ir para Backoffice', 'http://localhost/website-VeiGest/veigest/backend/web/index.php?r=user/index', ['class' => 'btn btn-dark mt-2', 'target' => '_blank']) ?>
-                    </div>
-                </div>
-            </div>
-            <?php endif; ?>
-
         </div>
-    </div>
-</div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Nossos Serviços</h2>
+                <p class="text-xl text-gray-600">Soluções completas para gestão eficiente da sua frota</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary">
+                    <div class="mb-4">
+                        <i class="fas fa-truck text-4xl text-primary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Gestão de Veículos</h3>
+                    <p class="text-gray-600">Cadastro completo, rastreamento de estado e histórico de manutenção de toda a frota.</p>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary">
+                    <div class="mb-4">
+                        <i class="fas fa-user-tie text-4xl text-primary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Gestão de Condutores</h3>
+                    <p class="text-gray-600">Perfis de condutores com documentação, validade de cartas e histórico de viagens.</p>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary">
+                    <div class="mb-4">
+                        <i class="fas fa-wrench text-4xl text-primary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Manutenção Programada</h3>
+                    <p class="text-gray-600">Agendamento automático e alertas para revisões, inspeções e manutenção preventiva.</p>
+                </div>
+
+                <!-- Service Card 4 -->
+                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary">
+                    <div class="mb-4">
+                        <i class="fas fa-file-alt text-4xl text-primary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Gestão Documental</h3>
+                    <p class="text-gray-600">Centralização de documentos com controle de validade e notificações automáticas.</p>
+                </div>
+
+                <!-- Service Card 5 -->
+                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary">
+                    <div class="mb-4">
+                        <i class="fas fa-bell text-4xl text-primary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Alertas Inteligentes</h3>
+                    <p class="text-gray-600">Notificações em tempo real para documentos próximos do vencimento e problemas críticos.</p>
+                </div>
+
+                <!-- Service Card 6 -->
+                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary">
+                    <div class="mb-4">
+                        <i class="fas fa-chart-line text-4xl text-primary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Relatórios Avançados</h3>
+                    <p class="text-gray-600">Analytics detalhados sobre custos, consumo e performance operacional da frota.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="beneficios" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Por Que Escolher VeiGest?</h2>
+                <p class="text-xl text-gray-600">Benefícios comprovados para sua operação</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="flex gap-6">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary text-white">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Redução de Custos</h3>
+                        <p class="text-gray-600">Otimização de rotas e monitorização reduzem custos operacionais em até 30%.</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-6">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary text-white">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Transparência Total</h3>
+                        <p class="text-gray-600">Visualização em tempo real de toda a atividade da frota e conformidade documental.</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-6">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary text-white">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Conformidade Legal</h3>
+                        <p class="text-gray-600">Gestão automática de documentação garante conformidade com requisitos legais.</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-6">
+                    <div class="flex-shrink-0">
+                        <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary text-white">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Fácil de Usar</h3>
+                        <p class="text-gray-600">Interface intuitiva que não requer treinamento especializado para operadores.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="hero-gradient text-white py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Comece a Otimizar Sua Frota Hoje</h2>
+            <p class="text-lg mb-8 text-opacity-90">
+                Junte-se a centenas de empresas que já confiam em VeiGest para gerir suas operações
+            </p>
+            <?= yii\bootstrap5\Html::a('Aceder ao Sistema', ['/site/login'], [
+                'class' => 'inline-block bg-white text-primary px-10 py-4 rounded-lg font-bold hover:bg-gray-100 transition text-lg',
+            ]) ?>
+        </div>
+    </section>
+
+    
+</body>
+</html>
