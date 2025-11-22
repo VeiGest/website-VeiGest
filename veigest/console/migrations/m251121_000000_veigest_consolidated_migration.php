@@ -91,6 +91,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'password_hash' => $this->string(255)->notNull(),
             'phone' => $this->string(20),
             'status' => "ENUM('active','inactive') NOT NULL DEFAULT 'active'",
+            'estado' => "ENUM('ativo','inativo','suspenso') NOT NULL DEFAULT 'ativo'",
             'auth_key' => $this->string(32)->comment('For Yii2 authentication'),
             'password_reset_token' => $this->string(255),
             // Driver fields (only filled if user is a driver)
@@ -106,6 +107,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         $this->createIndex('uk_email_company', '{{%users}}', ['email', 'company_id'], true);
         $this->createIndex('idx_company_id', '{{%users}}', 'company_id');
         $this->createIndex('idx_status', '{{%users}}', 'status');
+        $this->createIndex('idx_estado', '{{%users}}', 'estado');
         $this->createIndex('idx_license_expiry', '{{%users}}', 'license_expiry');
         $this->createIndex('idx_password_reset_token', '{{%users}}', 'password_reset_token');
         $this->createIndex('idx_roles', '{{%users}}', 'roles');
@@ -402,6 +404,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'email' => 'admin@veigest.com',
             'password_hash' => '$2a$12$/piK/Am/.6Wau7PpIzvO5ergX4AG17Xzk5RicS1Yom6YSsE5sSlgG', // password: admin
             'status' => 'active',
+            'estado' => 'ativo',
             'auth_key' => md5('admin@veigest.com' . time()),
             'roles' => 'super-admin',
         ]);
@@ -521,7 +524,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         // Admin: All except critical settings
         $this->execute("INSERT INTO auth_item_child (parent, child) SELECT 'admin', name FROM auth_item WHERE type = 2 AND name NOT IN ('system.config')");
 
-        // Fleet Manager
+        // Manager (Fleet Administrator)
         $this->batchInsert('{{%auth_item_child}}', ['parent', 'child'], [
             ['manager', 'companies.view'],
             ['manager', 'users.view'], ['manager', 'users.create'], ['manager', 'users.update'],
@@ -599,7 +602,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
          * MANAGER:
          * - Username: manager
          * - Password: manager123
-         * - Role: manager (fleet management)
+         * - Role: admin (administrator access)
          *
          * MAINTENANCE MANAGER:
          * - Username: maintenance
@@ -619,26 +622,26 @@ class m251121_000000_veigest_consolidated_migration extends Migration
 
         // Additional users (drivers and managers) - with different roles for testing
         $this->batchInsert('{{%users}}', [
-            'id', 'company_id', 'name', 'username', 'email', 'password_hash', 'phone', 'status',
+            'id', 'company_id', 'name', 'username', 'email', 'password_hash', 'phone', 'status', 'estado',
             'license_number', 'license_expiry', 'photo', 'roles', 'created_at'
         ], [
             // Manager user - username: manager / password: manager123
-            [2, 1, 'Carlos Ferreira', 'manager', 'manager@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351912345678', 'active', null, null, null, 'manager', date('Y-m-d H:i:s')],
+            [2, 1, 'Carlos Ferreira', 'manager', 'manager@veigest.com', '$2a$12$Z3uvYUYgFi02a4lIFswhteTtub2PZ0s2hK1f7B/83S3TN1fj6wHSy', '+351912345678', 'active', 'ativo', null, null, null, 'manager', date('Y-m-d H:i:s')],
             // Maintenance Manager - username: maintenance / password: maint123
-            [3, 1, 'Ana Costa', 'maintenance', 'maintenance@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351923456789', 'active', null, null, null, 'maintenance-manager', date('Y-m-d H:i:s')],
+            [3, 1, 'Ana Costa', 'maintenance', 'maintenance@veigest.com', '$2a$12$hVqmmDeP4oLU4rZKB4dNfO7g9eonLzHXM/JXf5LyF7yz0vl5DB0Gi', '+351923456789', 'active', 'ativo', null, null, null, 'maintenance-manager', date('Y-m-d H:i:s')],
             // Senior Driver - username: senior / password: senior123
-            [4, 1, 'João Silva', 'senior', 'senior@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351934567890', 'active', 'PT123456789', '2026-12-31', null, 'senior-driver', date('Y-m-d H:i:s')],
+            [4, 1, 'João Silva', 'senior', 'senior@veigest.com', '$2a$12$DiRmg0enR/IFBRymUnWeNu4zZs.XoMNu4U7paEFzApVlycBmwERhK', '+351934567890', 'active', 'ativo', 'PT123456789', '2026-12-31', null, 'senior-driver', date('Y-m-d H:i:s')],
             // Regular Driver 1 - username: driver1 / password: driver123
-            [5, 1, 'Maria Santos', 'driver1', 'driver1@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351945678901', 'active', 'PT987654321', '2027-06-15', null, 'driver', date('Y-m-d H:i:s')],
+            [5, 1, 'Maria Santos', 'driver1', 'driver1@veigest.com', '$2a$12$juAwSVZA1AlkwtKr4owi/.o6GTYIBv2Abl.jL8Qgj0NSknBqbt5XC', '+351945678901', 'active', 'ativo', 'PT987654321', '2027-06-15', null, 'driver', date('Y-m-d H:i:s')],
             // Regular Driver 2 - username: driver2 / password: driver123
-            [6, 1, 'Pedro Gomes', 'driver2', 'driver2@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351956789012', 'active', 'PT456789123', '2026-08-20', null, 'driver', date('Y-m-d H:i:s')],
+            [6, 1, 'Pedro Gomes', 'driver2', 'driver2@veigest.com', '$2a$12$juAwSVZA1AlkwtKr4owi/.o6GTYIBv2Abl.jL8Qgj0NSknBqbt5XC', '+351956789012', 'active', 'ativo', 'PT456789123', '2026-08-20', null, 'driver', date('Y-m-d H:i:s')],
             // Regular Driver 3 - username: driver3 / password: driver123
-            [7, 1, 'Sofia Almeida', 'driver3', 'driver3@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351967890123', 'active', 'PT789123456', '2025-12-15', null, 'driver', date('Y-m-d H:i:s')],
+            [7, 1, 'Sofia Almeida', 'driver3', 'driver3@veigest.com', '$2a$12$juAwSVZA1AlkwtKr4owi/.o6GTYIBv2Abl.jL8Qgj0NSknBqbt5XC', '+351967890123', 'active', 'ativo', 'PT789123456', '2025-12-15', null, 'driver', date('Y-m-d H:i:s')],
         ]);
 
         // Assign roles to users (RBAC assignments)
         $this->batchInsert('{{%auth_assignment}}', ['item_name', 'user_id', 'created_at'], [
-            ['manager', 2, $time],
+            ['admin', 2, $time],
             ['maintenance-manager', 3, $time],
             ['senior-driver', 4, $time],
             ['driver', 5, $time],
