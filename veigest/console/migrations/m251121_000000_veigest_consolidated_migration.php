@@ -97,6 +97,8 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'license_number' => $this->string(50),
             'license_expiry' => $this->date(),
             'photo' => $this->string(255),
+            // RBAC integration field
+            'roles' => $this->string(255)->comment('Comma-separated list of user roles for quick access'),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->dateTime()->defaultExpression('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
         ], 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
@@ -106,6 +108,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         $this->createIndex('idx_status', '{{%users}}', 'status');
         $this->createIndex('idx_license_expiry', '{{%users}}', 'license_expiry');
         $this->createIndex('idx_password_reset_token', '{{%users}}', 'password_reset_token');
+        $this->createIndex('idx_roles', '{{%users}}', 'roles');
         $this->addForeignKey('fk_users_company', '{{%users}}', 'company_id', '{{%companies}}', 'id', 'CASCADE');
 
         // ============================================================================
@@ -394,12 +397,13 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         $this->insert('{{%users}}', [
             'id' => 1,
             'company_id' => 1,
-            'name' => 'admin',
+            'name' => 'Administrator',
             'username' => 'admin',
             'email' => 'admin@veigest.com',
-            'password_hash' => '$2a$12$/piK/Am/.6Wau7PpIzvO5ergX4AG17Xzk5RicS1Yom6YSsE5sSlgG',
+            'password_hash' => '$2a$12$/piK/Am/.6Wau7PpIzvO5ergX4AG17Xzk5RicS1Yom6YSsE5sSlgG', // password: admin
             'status' => 'active',
             'auth_key' => md5('admin@veigest.com' . time()),
+            'roles' => 'super-admin',
         ]);
 
         // ============================================================================
@@ -581,7 +585,176 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'created_at' => $time,
         ]);
 
+        // ============================================================================
+        // SAMPLE DATA - DEMO CONTENT
+        // ============================================================================
+        /*
+         * TEST USERS AVAILABLE (all passwords are the same for simplicity):
+         *
+         * SUPER ADMIN:
+         * - Username: admin
+         * - Password: admin
+         * - Role: super-admin (full access)
+         *
+         * MANAGER:
+         * - Username: manager
+         * - Password: manager123
+         * - Role: manager (fleet management)
+         *
+         * MAINTENANCE MANAGER:
+         * - Username: maintenance
+         * - Password: maint123
+         * - Role: maintenance-manager (maintenance operations)
+         *
+         * SENIOR DRIVER:
+         * - Username: senior
+         * - Password: senior123
+         * - Role: senior-driver (senior driver privileges)
+         *
+         * DRIVERS:
+         * - Username: driver1, driver2, driver3
+         * - Password: driver123 (for all drivers)
+         * - Role: driver (basic driver access)
+         */
+
+        // Additional users (drivers and managers) - with different roles for testing
+        $this->batchInsert('{{%users}}', [
+            'id', 'company_id', 'name', 'username', 'email', 'password_hash', 'phone', 'status',
+            'license_number', 'license_expiry', 'photo', 'roles', 'created_at'
+        ], [
+            // Manager user - username: manager / password: manager123
+            [2, 1, 'Carlos Ferreira', 'manager', 'manager@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351912345678', 'active', null, null, null, 'manager', date('Y-m-d H:i:s')],
+            // Maintenance Manager - username: maintenance / password: maint123
+            [3, 1, 'Ana Costa', 'maintenance', 'maintenance@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351923456789', 'active', null, null, null, 'maintenance-manager', date('Y-m-d H:i:s')],
+            // Senior Driver - username: senior / password: senior123
+            [4, 1, 'João Silva', 'senior', 'senior@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351934567890', 'active', 'PT123456789', '2026-12-31', null, 'senior-driver', date('Y-m-d H:i:s')],
+            // Regular Driver 1 - username: driver1 / password: driver123
+            [5, 1, 'Maria Santos', 'driver1', 'driver1@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351945678901', 'active', 'PT987654321', '2027-06-15', null, 'driver', date('Y-m-d H:i:s')],
+            // Regular Driver 2 - username: driver2 / password: driver123
+            [6, 1, 'Pedro Gomes', 'driver2', 'driver2@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351956789012', 'active', 'PT456789123', '2026-08-20', null, 'driver', date('Y-m-d H:i:s')],
+            // Regular Driver 3 - username: driver3 / password: driver123
+            [7, 1, 'Sofia Almeida', 'driver3', 'driver3@veigest.com', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPjkuU5AeTjyi', '+351967890123', 'active', 'PT789123456', '2025-12-15', null, 'driver', date('Y-m-d H:i:s')],
+        ]);
+
+        // Assign roles to users (RBAC assignments)
+        $this->batchInsert('{{%auth_assignment}}', ['item_name', 'user_id', 'created_at'], [
+            ['manager', 2, $time],
+            ['maintenance-manager', 3, $time],
+            ['senior-driver', 4, $time],
+            ['driver', 5, $time],
+            ['driver', 6, $time],
+            ['driver', 7, $time],
+        ]);
+
+        // Sample vehicles
+        $this->batchInsert('{{%vehicles}}', [
+            'id', 'company_id', 'license_plate', 'brand', 'model', 'year', 'fuel_type', 'mileage', 'status', 'driver_id', 'created_at'
+        ], [
+            [1, 1, 'AA-12-34', 'Mercedes-Benz', 'Sprinter', 2020, 'diesel', 125000, 'active', 4, date('Y-m-d H:i:s')], // assigned to senior driver (João Silva)
+            [2, 1, 'BB-56-78', 'Volkswagen', 'Crafter', 2019, 'diesel', 98000, 'active', 5, date('Y-m-d H:i:s')], // assigned to driver1 (Maria Santos)
+            [3, 1, 'CC-90-12', 'Iveco', 'Daily', 2021, 'diesel', 67000, 'active', 6, date('Y-m-d H:i:s')], // assigned to driver2 (Pedro Gomes)
+            [4, 1, 'DD-34-56', 'Ford', 'Transit', 2018, 'diesel', 145000, 'maintenance', null, date('Y-m-d H:i:s')], // no driver assigned
+        ]);
+
+        // Sample files
+        $this->batchInsert('{{%files}}', [
+            'id', 'company_id', 'original_name', 'size', 'path', 'uploaded_by', 'created_at'
+        ], [
+            [1, 1, 'vehicle_insurance.pdf', 2048576, '/uploads/documents/vehicle_insurance.pdf', 1, date('Y-m-d H:i:s')],
+            [2, 1, 'driver_license.jpg', 512000, '/uploads/documents/driver_license.jpg', 1, date('Y-m-d H:i:s')],
+            [3, 1, 'vehicle_registration.pdf', 1536000, '/uploads/documents/vehicle_registration.pdf', 1, date('Y-m-d H:i:s')],
+        ]);
+
+        // Sample maintenances
+        $this->batchInsert('{{%maintenances}}', [
+            'id', 'company_id', 'vehicle_id', 'type', 'description', 'date', 'cost', 'mileage_record', 'next_date', 'workshop', 'created_at'
+        ], [
+            [1, 1, 1, 'Oil Change', 'Regular oil and filter change', '2025-10-15', 85.50, 120000, '2026-01-15', 'AutoCenter Lisbon', date('Y-m-d H:i:s')],
+            [2, 1, 2, 'Tire Replacement', 'Replaced all 4 tires', '2025-09-20', 450.00, 95000, '2026-09-20', 'Pneus & Rodas', date('Y-m-d H:i:s')],
+            [3, 1, 3, 'Brake Pads', 'Front brake pads replacement', '2025-11-01', 120.75, 65000, '2026-05-01', 'Freios Express', date('Y-m-d H:i:s')],
+            [4, 1, 4, 'Engine Repair', 'Timing belt replacement', '2025-10-30', 680.00, 140000, '2026-10-30', 'MotorTech', date('Y-m-d H:i:s')],
+        ]);
+
+        // Sample documents
+        $this->batchInsert('{{%documents}}', [
+            'id', 'company_id', 'file_id', 'vehicle_id', 'driver_id', 'type', 'expiry_date', 'status', 'notes', 'created_at'
+        ], [
+            [1, 1, 1, 1, null, 'insurance', '2026-03-15', 'valid', 'Comprehensive insurance coverage', date('Y-m-d H:i:s')],
+            [2, 1, 3, 1, null, 'registration', '2026-12-31', 'valid', 'Vehicle registration document', date('Y-m-d H:i:s')],
+            [3, 1, 2, null, 4, 'license', '2026-12-31', 'valid', 'Driver license - Category C+E (João Silva - senior driver)', date('Y-m-d H:i:s')],
+            [4, 1, 1, 2, null, 'insurance', '2026-06-20', 'valid', 'Third party insurance', date('Y-m-d H:i:s')],
+            [5, 1, 3, 3, null, 'inspection', '2026-02-28', 'valid', 'Annual technical inspection', date('Y-m-d H:i:s')],
+        ]);
+
+        // Sample fuel logs
+        $this->batchInsert('{{%fuel_logs}}', [
+            'id', 'company_id', 'vehicle_id', 'driver_id', 'date', 'liters', 'value', 'current_mileage', 'notes', 'created_at'
+        ], [
+            [1, 1, 1, 4, '2025-11-15', 45.50, 65.00, 125500, 'Regular fill-up by senior driver', date('Y-m-d H:i:s')],
+            [2, 1, 2, 5, '2025-11-14', 52.30, 75.50, 98500, 'Highway trip by driver1', date('Y-m-d H:i:s')],
+            [3, 1, 3, 6, '2025-11-13', 38.75, 55.75, 67200, 'City delivery by driver2', date('Y-m-d H:i:s')],
+            [4, 1, 1, 4, '2025-11-10', 48.20, 69.50, 124800, 'Weekly fill-up by senior driver', date('Y-m-d H:i:s')],
+        ]);
+
+        // Sample alerts
+        $this->batchInsert('{{%alerts}}', [
+            'id', 'company_id', 'type', 'title', 'description', 'priority', 'status', 'details', 'created_at'
+        ], [
+            [1, 1, 'document', 'Insurance Expiring Soon', 'Vehicle AA-12-34 insurance expires in 15 days', 'high', 'active', '{"vehicle_id": 1, "document_id": 1}', date('Y-m-d H:i:s')],
+            [2, 1, 'maintenance', 'Oil Change Due', 'Vehicle BB-56-78 needs oil change at 100,000 km', 'medium', 'active', '{"vehicle_id": 2, "next_mileage": 100000}', date('Y-m-d H:i:s')],
+            [3, 1, 'document', 'Driver License Expires', 'João Silva (senior driver) license expires in 45 days', 'medium', 'active', '{"driver_id": 4, "document_id": 3}', date('Y-m-d H:i:s')],
+            [4, 1, 'fuel', 'High Fuel Consumption', 'Vehicle CC-90-12 showing higher than average fuel consumption', 'low', 'active', '{"vehicle_id": 3}', date('Y-m-d H:i:s')],
+        ]);
+
+        // Sample routes
+        $this->batchInsert('{{%routes}}', [
+            'id', 'company_id', 'vehicle_id', 'driver_id', 'start_location', 'end_location', 'start_time', 'end_time', 'created_at'
+        ], [
+            [1, 1, 1, 4, 'Lisbon Warehouse', 'Porto Distribution Center', '2025-11-25 08:00:00', '2025-11-25 16:30:00', date('Y-m-d H:i:s')], // senior driver
+            [2, 1, 2, 5, 'Lisbon Central', 'Coimbra Depot', '2025-11-26 07:30:00', '2025-11-26 15:45:00', date('Y-m-d H:i:s')], // driver1
+            [3, 1, 3, 6, 'Porto Hub', 'Viseu Warehouse', '2025-11-27 09:00:00', null, date('Y-m-d H:i:s')], // driver2
+            [4, 1, 1, 4, 'Lisbon Airport', 'Faro Terminal', '2025-11-28 06:00:00', '2025-11-28 18:00:00', date('Y-m-d H:i:s')], // senior driver
+        ]);
+
+        // Sample tickets
+        $this->batchInsert('{{%tickets}}', [
+            'id', 'company_id', 'route_id', 'passenger_name', 'passenger_phone', 'status', 'created_at'
+        ], [
+            [1, 1, 1, 'Manuel Rodrigues', '+351967890123', 'completed', date('Y-m-d H:i:s')],
+            [2, 1, 1, 'Sofia Almeida', '+351978901234', 'active', date('Y-m-d H:i:s')],
+            [3, 1, 2, 'Pedro Gomes', '+351989012345', 'active', date('Y-m-d H:i:s')],
+            [4, 1, 3, 'Luisa Pereira', '+351990123456', 'cancelled', date('Y-m-d H:i:s')],
+            [5, 1, 4, 'Antonio Silva', '+351901234567', 'active', date('Y-m-d H:i:s')],
+        ]);
+
+        // Sample activity logs
+        $this->batchInsert('{{%activity_logs}}', [
+            'id', 'company_id', 'user_id', 'action', 'entity', 'entity_id', 'details', 'ip', 'created_at'
+        ], [
+            [1, 1, 1, 'Created vehicle', 'vehicle', 1, '{"license_plate": "AA-12-34"}', '192.168.1.100', date('Y-m-d H:i:s')], // admin
+            [2, 1, 1, 'Uploaded document', 'document', 1, '{"filename": "vehicle_insurance.pdf"}', '192.168.1.100', date('Y-m-d H:i:s')], // admin
+            [3, 1, 3, 'Created maintenance', 'maintenance', 1, '{"vehicle_id": 1, "type": "Oil Change"}', '192.168.1.101', date('Y-m-d H:i:s')], // maintenance manager
+            [4, 1, 4, 'Recorded fuel', 'fuel_log', 1, '{"vehicle_id": 1, "liters": 45.5}', '192.168.1.102', date('Y-m-d H:i:s')], // senior driver
+            [5, 1, 1, 'Created route', 'route', 1, '{"start_location": "Lisbon Warehouse"}', '192.168.1.100', date('Y-m-d H:i:s')], // admin
+        ]);
+
+        // Update user roles field based on RBAC assignments for better performance
+        $this->execute("
+            UPDATE users u
+            SET u.roles = (
+                SELECT GROUP_CONCAT(DISTINCT aa.item_name SEPARATOR ',')
+                FROM auth_assignment aa
+                WHERE aa.user_id = u.id
+            )
+            WHERE u.company_id = 1
+        ");
+
         $this->execute('SET FOREIGN_KEY_CHECKS = 1');
+
+
+
+
+
     }
 
     /**
