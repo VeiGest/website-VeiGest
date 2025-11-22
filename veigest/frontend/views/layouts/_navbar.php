@@ -43,6 +43,14 @@ use yii\bootstrap5\Html;
                     ]) ?>
                     <button class="btn-primary px-6 py-2 rounded-lg font-medium hover:opacity-90">Registar</button>
                 <?php else: ?>
+
+                    <!-- dashboard button -->
+                    <?= Html::a('Dashboard', ['/dashboard/index'], [
+                        'class' => 'text-gray-700 hover:text-primary font-medium px-4 py-2 rounded transition 
+                        bg-primary text-white
+                        ',
+                    ]) ?>
+
                     <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'inline'])
                         . Html::submitButton(
                             'Logout (' . Yii::$app->user->identity->username . ')',
