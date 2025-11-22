@@ -10,14 +10,27 @@ use yii\bootstrap5\Html;
             </div>
             <div class="hidden md:flex space-x-8">
                 <a href="#" class="text-gray-700 hover:text-primary transition">Home</a>
-                <a href="#services" class="text-gray-700 hover:text-primary transition">Serviços</a>
-                <a href="#beneficios" class="text-gray-700 hover:text-primary transition">Benefícios</a>
+                <?= Html::a('Serviços', ['/site/services'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
+                <?= Html::a('Benefícios', ['/site/benefits'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
                 <?= Html::a('Preços', ['/site/pricing'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
                 <?= Html::a('Contactos', ['/site/contact'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
+
+                <!-- 
+                    // Ticket page need rbac role minimun 'driver' to access
+                -->
+                <?php if (!Yii::$app->user->isGuest): ?>
+                    <?= Html::a('Suporte', ['/site/ticket'], [
+                        'class' => 'text-gray-700 hover:text-primary transition',
+                    ]) ?>
+                <?php endif; ?>
                 
             </div>
             <div class="flex items-center space-x-4">

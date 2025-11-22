@@ -4,48 +4,13 @@ use yii\helpers\Html;
 
 $this->title = 'Bem-vindo à VeiGest';
 ?>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Segurança - VeiGest</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --color-primary: #09BC8A;
-            --color-onyx: #3C3C3C;
-        }
-        .text-primary { color: var(--color-primary); }
-        .bg-primary { background-color: var(--color-primary); }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-2">
-                    <img src="/images/veigest-logo.png" alt="VeiGest" class="h-10 w-10">
-                    <span class="text-xl font-bold text-primary">VeiGest</span>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition">Home</a>
-                    <a href="pricing.html" class="text-gray-700 hover:text-primary transition">Preços</a>
-                    <a href="security.html" class="text-gray-700 hover:text-primary transition font-bold">Segurança</a>
-                    <a href="support.html" class="text-gray-700 hover:text-primary transition">Suporte</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="login.html" class="text-gray-700 hover:text-primary font-medium">Login</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+<div class="bg-gray-50">
 
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-primary to-blue-500 text-white py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Segurança em Primeiro Lugar</h1>
-            <p class="text-lg text-opacity-90">Protegemos seus dados com as melhores práticas de segurança</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-black">Segurança em Primeiro Lugar</h1>
+            <p class="text-lg text-opacity-90 text-black">Protegemos seus dados com as melhores práticas de segurança</p>
         </div>
     </section>
 
@@ -132,45 +97,190 @@ $this->title = 'Bem-vindo à VeiGest';
                     </div>
                 </div>
             </div>
+
+            <!-- Additional Security Features -->
+            <div class="mt-16 pt-16 border-t border-gray-200">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Recursos de Segurança Avançados</h2>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <!-- Feature 5 -->
+                    <div class="flex gap-6">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-md bg-primary text-white">
+                                <i class="fas fa-eye text-2xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Monitoramento 24/7</h3>
+                            <p class="text-gray-600">Sistema de monitoramento contínuo que detecta e responde a ameaças em tempo real, com alertas automáticos para a equipe de segurança.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 6 -->
+                    <div class="flex gap-6">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-md bg-primary text-white">
+                                <i class="fas fa-key text-2xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Autenticação Multifator</h3>
+                            <p class="text-gray-600">MFA obrigatório para todos os usuários, com suporte a aplicativos autenticadores, SMS e tokens de hardware para máxima segurança.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 7 -->
+                    <div class="flex gap-6">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-md bg-primary text-white">
+                                <i class="fas fa-database text-2xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Backup Seguro</h3>
+                            <p class="text-gray-600">Backups automáticos criptografados armazenados em múltiplas localizações geográficas, com testes regulares de recuperação.</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 8 -->
+                    <div class="flex gap-6">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center h-16 w-16 rounded-md bg-primary text-white">
+                                <i class="fas fa-user-graduate text-2xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Treinamento Contínuo</h3>
+                            <p class="text-gray-600">Programas de conscientização em segurança para usuários, com treinamentos regulares sobre melhores práticas e reconhecimento de ameaças.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Statistics -->
+            <div class="mt-16 pt-16 border-t border-gray-200 bg-gray-50 rounded-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Nossa Performance de Segurança</h2>
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-primary mb-2">99.9%</div>
+                        <p class="text-gray-600">Uptime do Sistema</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-primary mb-2">0</div>
+                        <p class="text-gray-600">Incidentes de Segurança em 2024</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-primary mb-2">< 1min</div>
+                        <p class="text-gray-600">Tempo Médio de Detecção</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold text-primary mb-2">24/7</div>
+                        <p class="text-gray-600">Monitoramento de Segurança</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance & Audit -->
+            <div class="mt-16 pt-16 border-t border-gray-200">
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Auditoria e Conformidade</h2>
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Auditorias Regulares</h3>
+                                    <p class="text-gray-600">Auditorias de segurança realizadas trimestralmente por terceiros certificados, com relatórios detalhados disponíveis.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Logs de Auditoria</h3>
+                                    <p class="text-gray-600">Registro completo de todas as ações do sistema, com retenção de logs por 7 anos conforme requisitos legais.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Relatórios de Conformidade</h3>
+                                    <p class="text-gray-600">Relatórios automáticos demonstrando conformidade com todas as regulamentações aplicáveis ao setor de transporte.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Suporte de Segurança</h2>
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-headset text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Centro de Segurança 24/7</h3>
+                                    <p class="text-gray-600">Equipe dedicada de especialistas em segurança disponível 24 horas por dia, 7 dias por semana.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-shield-virus text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Resposta a Incidentes</h3>
+                                    <p class="text-gray-600">Protocolos estabelecidos para resposta rápida a qualquer incidente de segurança, minimizando impactos.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-book text-primary text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Documentação Técnica</h3>
+                                    <p class="text-gray-600">Documentação completa sobre arquitetura de segurança, políticas e procedimentos para transparência total.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Partners -->
+            <div class="mt-16 pt-16 border-t border-gray-200 bg-gray-50 rounded-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Parceiros de Segurança</h2>
+                <div class="grid md:grid-cols-5 gap-6 text-center">
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <i class="fab fa-aws text-3xl text-primary mb-2"></i>
+                        <p class="font-medium text-gray-900">Amazon Web Services</p>
+                        <p class="text-sm text-gray-600">Infraestrutura Cloud</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <i class="fab fa-microsoft text-3xl text-primary mb-2"></i>
+                        <p class="font-medium text-gray-900">Microsoft Azure</p>
+                        <p class="text-sm text-gray-600">Segurança Empresarial</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <i class="fas fa-lock text-3xl text-primary mb-2"></i>
+                        <p class="font-medium text-gray-900">CrowdStrike</p>
+                        <p class="text-sm text-gray-600">Proteção Avançada</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <i class="fas fa-shield-alt text-3xl text-primary mb-2"></i>
+                        <p class="font-medium text-gray-900">Palo Alto</p>
+                        <p class="text-sm text-gray-600">Firewall Next-Gen</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-6 shadow-md">
+                        <i class="fas fa-user-secret text-3xl text-primary mb-2"></i>
+                        <p class="font-medium text-gray-900">Okta</p>
+                        <p class="text-sm text-gray-600">Gestão de Identidade</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <h4 class="text-white font-bold mb-4">VeiGest</h4>
-                    <p class="text-sm">Plataforma inteligente de gestão de frotas.</p>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Recursos</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="documentation.html" class="hover:text-primary">Documentação</a></li>
-                        <li><a href="blog.html" class="hover:text-primary">Blog</a></li>
-                        <li><a href="support.html" class="hover:text-primary">Suporte</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Produto</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="services.html" class="hover:text-primary">Serviços</a></li>
-                        <li><a href="pricing.html" class="hover:text-primary">Preços</a></li>
-                        <li><a href="security.html" class="hover:text-primary">Segurança</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Contacto</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center gap-2"><i class="fas fa-envelope"></i> info@veigest.com</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-phone"></i> +351 21 0000 000</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-gray-700 pt-8 text-center text-sm">
-                <p>&copy; 2025 VeiGest. Todos os direitos reservados.</p>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+</div>
