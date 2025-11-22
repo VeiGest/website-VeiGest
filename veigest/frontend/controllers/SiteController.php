@@ -97,8 +97,8 @@ class SiteController extends Controller
             return $this->goBack();
         }
 
-        $model->password = '1234';
-        $model->nome = 'admin';
+        $model->password = '12345';
+        $model->username = 'veigest_admin';
 
 
         return $this->render('login', ['model' => $model]);

@@ -53,7 +53,7 @@ $this->title = 'Login';
                 <form class="space-y-6">
                     <!-- Email -->
                     <div>
-                        <?= $form->field($model, 'nome')->textInput([
+                        <?= $form->field($model, 'username')->textInput([
                             'autofocus' => true,
                             'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
                             'placeholder' => 'Nome de Utilizador ou Email',

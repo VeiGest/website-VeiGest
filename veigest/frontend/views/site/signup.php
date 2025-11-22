@@ -20,7 +20,7 @@ $this->title = 'Registar';
 
       <?php $form = ActiveForm::begin(['id' => 'form-signup', 'options' => ['class' => 'space-y-4']]); ?>
 
-          <?= $form->field($model, 'nome')->textInput([
+          <?= $form->field($model, 'username')->textInput([
               'autofocus' => true,
               'placeholder' => 'Nome de utilizador',
               'class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white'

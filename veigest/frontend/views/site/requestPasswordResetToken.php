@@ -1,6 +1,7 @@
 <?php
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
+use yii\widgets\Alert;
 
 $this->title = 'Recuperar Palavra-passe';
 ?>
@@ -11,7 +12,18 @@ $this->title = 'Recuperar Palavra-passe';
           <h1 class="text-2xl font-bold text-center text-gray-900 dark:text-white"><?= Html::encode($this->title) ?></h1>
           <p class="text-center text-gray-600 dark:text-gray-400 text-sm mb-4">Insira o seu email para receber o link de redefinição.</p>
 
+          <?php // Mostrar flashes (success / error) ?>
+          <?php foreach (Yii::$app->session->getAllFlashes() as $type => $message): ?>
+              <div class="mb-3">
+                  <div class="alert alert-<?= $type === 'error' ? 'danger' : $type; ?>" role="alert">
+                      <?= Html::encode($message) ?>
+                  </div>
+              </div>
+          <?php endforeach; ?>
+
           <?php $form = ActiveForm::begin(['id' => 'request-password-reset-form']); ?>
+
+              <?= $form->errorSummary($model) // mostra erros de validação se existirem ?>
 
               <?= $form->field($model, 'email')->textInput([
                   'class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white',

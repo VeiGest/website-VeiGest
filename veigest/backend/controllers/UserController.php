@@ -68,7 +68,8 @@ class UserController extends Controller
     public function actionCreate()
     {
         $model = new User();
-         $roles = [
+        $model->scenario = 'create';
+        $roles = [
             'gestor' => 'Gestor',
             'condutor' => 'Condutor',
         ];
@@ -81,13 +82,13 @@ class UserController extends Controller
             $model->loadDefaultValues();
         }
 
-       
 
 
-       return $this->render('create', [
-        'model' => $model,
-        'roles' => $roles, // 
-    ]);
+
+        return $this->render('create', [
+            'model' => $model,
+            'roles' => $roles, // 
+        ]);
     }
 
     /**
@@ -100,7 +101,7 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
+        $model->scenario = 'update';
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
