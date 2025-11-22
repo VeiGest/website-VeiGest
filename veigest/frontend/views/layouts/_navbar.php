@@ -9,7 +9,10 @@ use yii\bootstrap5\Html;
                 <span class="text-xl font-bold text-primary">VeiGest</span>
             </div>
             <div class="hidden md:flex space-x-8">
-                <a href="#" class="text-gray-700 hover:text-primary transition">Home</a>
+                <!-- <a href="#" class="text-gray-700 hover:text-primary transition">Home</a> -->
+                <?= Html::a('Início', ['/site/index'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
                 <?= Html::a('Serviços', ['/site/services'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
