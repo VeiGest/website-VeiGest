@@ -12,7 +12,13 @@ use yii\bootstrap5\Html;
                 <a href="#" class="text-gray-700 hover:text-primary transition">Home</a>
                 <a href="#services" class="text-gray-700 hover:text-primary transition">Serviços</a>
                 <a href="#beneficios" class="text-gray-700 hover:text-primary transition">Benefícios</a>
-                <a href="#contacto" class="text-gray-700 hover:text-primary transition">Contacto</a>
+                <?= Html::a('Preços', ['/site/pricing'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
+                <?= Html::a('Contactos', ['/site/contact'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
+                
             </div>
             <div class="flex items-center space-x-4">
                 <?php if (Yii::$app->user->isGuest): ?>
