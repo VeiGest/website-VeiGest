@@ -1,5 +1,5 @@
 <?php
-<<<<<<< HEAD
+
 namespace console\controllers;
 
 use Yii;
@@ -11,7 +11,7 @@ class UserController extends Controller
     public function actionCreate($username = 'admin', $email = 'admin@veigest.pt', $password = '123456')
     {
         echo "🚀 Criando utilizador VeiGest...\n";
-        
+
         // Verificar se já existe
         $existingUser = User::findByUsername($username);
         if ($existingUser) {
@@ -19,7 +19,7 @@ class UserController extends Controller
             echo "📧 Email: {$existingUser->email}\n";
             return 0;
         }
-        
+
         // Verificar se há empresas
         $companyExists = Yii::$app->db->createCommand("SELECT COUNT(*) FROM companies")->queryScalar();
         if ($companyExists == 0) {
@@ -41,19 +41,19 @@ class UserController extends Controller
                 ->execute();
             echo "✅ Empresa padrão criada\n";
         }
-        
+
         // Criar utilizador
         $user = new User();
         $user->username = $username;
         $user->nome = $username;
         $user->email = $email;
-        $user->status = User::STATUS_ACTIVE;
+        $user->status = 'active';
         $user->company_id = 1;
-        
+
         // Definir password
         $user->setPassword($password);
         $user->generateAuthKey();
-        
+
         if ($user->save()) {
             echo "✅ Utilizador criado com sucesso!\n";
             echo "👤 Username: $username\n";
@@ -75,20 +75,8 @@ class UserController extends Controller
             return 1;
         }
     }
-}
-=======
 
-namespace console\controllers;
-
-use yii\console\Controller;
-use common\models\User;
-use Yii;
-
-class UserController extends Controller
-{
-    
-     
-     //Gera auth_key para todos os utilizadores que não têm.
+    // Gera auth_key para todos os utilizadores que não têm.
     public function actionGenerateAuthKeys()
     {
         $users = User::find()->where(['auth_key' => null])->orWhere(['auth_key' => ''])->all();
@@ -110,4 +98,3 @@ class UserController extends Controller
         $this->stdout("DONE!\n");
     }
 }
->>>>>>> 94f777fb87e08d0ac5ea136e3b32f0cc307d2196

@@ -4,58 +4,7 @@ use yii\helpers\Html;
 
 $this->title = 'Bem-vindo à VeiGest';
 ?>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VeiGest - Plataforma de Gestão de Frotas</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --color-primary: #09BC8A;
-            --color-onyx: #3C3C3C;
-            --color-turquoise: #75DDDD;
-            --color-lavender-gray: #C8BFC7;
-            --color-lavender-blush: #FFEAEE;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .text-primary { color: var(--color-primary); }
-        .bg-primary { background-color: var(--color-primary); }
-        .border-primary { border-color: var(--color-primary); }
-        
-        .hero-gradient {
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-turquoise) 100%);
-        }
-        
-        .card-shadow {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-primary {
-            background-color: var(--color-primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #0a9a71;
-        }
-        
-        .service-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(9, 188, 138, 0.15);
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <!-- Hero Section -->
+<div class="bg-gray-50">
     <section class="hero-gradient text-white py-20 md:py-32">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-12 items-center">
@@ -222,5 +171,4 @@ $this->title = 'Bem-vindo à VeiGest';
     </section>
 
     
-</body>
-</html>
+</div>
