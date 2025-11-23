@@ -61,14 +61,9 @@ use yii\bootstrap5\Html;
                     <?php if (Yii::$app->user->can('admin')): ?>
                         <a href="<?= Yii::getAlias('@backendUrl') ?>"
                            class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-green-600 transition mr-2">
-                            Backoffice
+                            Dashboard
                         </a>
                     <?php endif; ?>
-
-                    <!-- BOTÃO DASHBOARD -->
-                    <?= Html::a('Dashboard', ['/dashboard/index'], [
-                        'class' => 'text-gray-700 hover:text-primary font-medium px-4 py-2 rounded transition mr-2',
-                    ]) ?>
 
                     <!-- LOGOUT -->
                     <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'inline'])

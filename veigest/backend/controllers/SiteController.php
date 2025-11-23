@@ -16,33 +16,41 @@ class SiteController extends Controller
 {
     /**
      * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                        'roles' => ['createPost'],
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['admin', 'gestor'],
-                    ],
+     */public function behaviors()
+{
+    return [
+        'access' => [
+            'class' => AccessControl::class,
+            'only' => ['login', 'logout', 'index', 'test-session'], // <- adicionamos aqui
+            'rules' => [
+
+                // Liberado para TODOS (sem login)
+                [
+                    'actions' => ['login', 'error', 'test-session'], // <- adicionamos aqui
+                    'allow' => true,
+                    'roles' => ['?'], 
+                ],
+
+                // Apenas ADMIN pode ver o backend
+                [
+                    'actions' => ['index', 'logout'],
+                    'allow' => true,
+                    'roles' => ['admin'], 
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
-                ],
+        ],
+
+        'verbs' => [
+            'class' => VerbFilter::class,
+            'actions' => [
+                'logout' => ['post'],
             ],
-        ];
-    }
+        ],
+    ];
+}
+
+
+
 
     /**
      * {@inheritdoc}
@@ -91,6 +99,7 @@ class SiteController extends Controller
         ]);
     }
 
+    
     /**
      * Logout action.
      *
@@ -102,4 +111,25 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
+
+ public function actionTestSession()
+{
+    echo "<pre>";
+
+    echo "SESSION ID (PHP): " . session_id() . "\n\n";
+
+    echo "RAW PHP SESSION:\n";
+    print_r($_SESSION);
+
+    echo "\nYii Session (keys):\n";
+    print_r(Yii::$app->session->getAllFlashes()); // apenas para ver algo
+
+    echo "\nUSER IDENTITY:\n";
+    print_r(Yii::$app->user->identity);
+
+    echo "</pre>";
+    exit;
+}
+
+
 }
