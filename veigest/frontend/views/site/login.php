@@ -1,4 +1,5 @@
 <?php
+
 /** @var yii\web\View $this */
 /** @var yii\bootstrap5\ActiveForm $form */
 /** @var \common\models\LoginForm $model */
@@ -10,6 +11,7 @@ $this->title = 'Login';
 ?>
 <!DOCTYPE html>
 <html lang="pt-PT">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,23 +24,29 @@ $this->title = 'Login';
             --color-onyx: #3C3C3C;
             --color-turquoise: #75DDDD;
         }
-        
-        .bg-primary { background-color: var(--color-primary); }
-        .text-primary { color: var(--color-primary); }
-        
+
+        .bg-primary {
+            background-color: var(--color-primary);
+        }
+
+        .text-primary {
+            color: var(--color-primary);
+        }
+
         .input-focus:focus {
             border-color: var(--color-primary);
             box-shadow: 0 0 0 3px rgba(9, 188, 138, 0.1);
         }
     </style>
 </head>
+
 <body class="bg-white">
-    <div class="min-h-screen flex items-center justify-center px-4">
+    <div class="min-h-screen flex items-center justify-center px-4 pt-10 pb-10">
         <div class="w-full max-w-md">
             <!-- Logo -->
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center space-x-2 mb-4">
-                    <img src="/images/veigest-logo.png" alt="VeiGest" class="h-12 w-12">
+                    <img src="./images/veigest-logo.png" alt="VeiGest" class="h-12 w-12">
                     <span class="text-2xl font-bold text-primary">VeiGest</span>
                 </div>
                 <h1 class="text-3xl font-bold text-gray-900">Aceder ao Sistema</h1>
@@ -49,42 +57,46 @@ $this->title = 'Login';
             <div class="bg-white rounded-lg shadow-lg p-8">
                 <?php $form = ActiveForm::begin([
                     'id' => 'login-form',
+                    'options' => ['class' => 'space-y-6']
                 ]); ?>
-                <form class="space-y-6">
-                    <!-- Email -->
-                    <div>
-                        <?= $form->field($model, 'nome')->textInput([
-                            'autofocus' => true,
-                            'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
-                            'placeholder' => 'Nome de Utilizador ou Email',
-                        ])->label('Nome de Utilizador', ['class' => 'text-sm font-medium text-gray-900']) ?>
-                    </div>
+                <!-- Email -->
+                <div>
+                    <?= $form->field($model, 'username')->textInput([
+                        'autofocus' => true,
+                        'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
+                        'placeholder' => 'Nome de Utilizador ou Email',
+                    ])->label('Nome de Utilizador', ['class' => 'text-sm font-medium text-gray-900']) ?>
+                </div>
 
-                    <!-- Password -->
-                    <div>
-                        <?= $form->field($model, 'password')->passwordInput([
-                            'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
-                            'placeholder' => '••••••••',
-                        ])->label('Palavra-passe', ['class' => 'text-sm font-medium text-gray-900']) ?>
-                    </div>
+                <!-- Password -->
+                <div>
+                    <?= $form->field($model, 'password')->passwordInput([
+                        'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
+                        'placeholder' => '••••••••',
+                    ])->label('Palavra-passe', ['class' => 'text-sm font-medium text-gray-900']) ?>
+                </div>
 
-                    <!-- Remember & Forgot -->
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <?= $form->field($model, 'rememberMe')->checkbox()->label('Lembrar-me') ?>
-                        </div>
-                        <div>
-                            <?= Html::a('Esqueceu a senha?', ['site/request-password-reset'], ['class' => 'text-sm font-medium text-primary-600 hover:underline dark:text-primary-500']) ?>
-                        </div>
-                    </div>
-
-                    <!-- Login Button -->
+                <!-- Remember & Forgot -->
+                <div class="flex items-center justify-between">
                     <div>
-                        <?= Html::submitButton('Entrar', [
-                            'class' => 'w-full text-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center',
-                        ]) ?>
+                        <?= $form->field($model, 'rememberMe')->checkbox()->label('Lembrar-me') ?>
                     </div>
-                </form>
+                    <div>
+                        <?= Html::a('Esqueceu a senha?', ['site/request-password-reset'], ['class' => 'text-sm font-medium text-primary-600 hover:underline dark:text-primary-500']) ?>
+                    </div>
+                </div>
+
+                <!-- Login Button -->
+                <div>
+                    <?= Html::submitButton('Entrar', [
+                        'class' => '
+                    w-full text-white font-semibold text-sm py-3 rounded-lg
+                    bg-gradient-to-r from-emerald-500 to-teal-500
+                    hover:from-emerald-600 hover:to-teal-600
+                    transition-all duration-300
+                    shadow-md hover:shadow-xl hover:scale-[1.02]',
+                    ]) ?>
+                </div>
                 <?php ActiveForm::end(); ?>
 
                 <!-- Divider -->
@@ -126,4 +138,5 @@ $this->title = 'Login';
         </div>
     </div>
 </body>
+
 </html>

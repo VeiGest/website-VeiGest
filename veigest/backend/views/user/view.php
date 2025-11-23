@@ -6,8 +6,9 @@ use yii\widgets\DetailView;
 /** @var yii\web\View $this */
 /** @var common\models\User $model */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
+// título com o username em vez do id
+$this->title = $model->nome;
+$this->params['breadcrumbs'][] = ['label' => 'Utilizadores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -20,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
+                'confirm' => 'Tem a certeza que quer eliminar este utilizador?',
                 'method' => 'post',
             ],
         ]) ?>
@@ -29,19 +30,29 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'company_id',
+            // campos essenciais
+            'username',
             'nome',
             'email:email',
-            'password_hash',
-            'password_reset_token',
-            'auth_key',
             'role',
             'estado',
-            'data_criacao',
-            'created_at',
-            'updated_at',
-            'verification_token',
+            'company_id',
+
+            // datas (convertendo timestamp para formato legível)
+            [
+                'attribute' => 'created_at',
+                'label' => 'Created At',
+                'value' => function($m) {
+                    return $m->created_at ? date('Y-m-d H:i:s', $m->created_at) : null;
+                },
+            ],
+            [
+                'attribute' => 'updated_at',
+                'label' => 'Updated At',
+                'value' => function($m) {
+                    return $m->updated_at ? date('Y-m-d H:i:s', $m->updated_at) : null;
+                },
+            ],
         ],
     ]) ?>
 

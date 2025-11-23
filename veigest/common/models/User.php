@@ -54,16 +54,40 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
-        return [
-            [['nome', 'email', 'company_id'], 'required'],
-            ['password', 'required', 'on' => 'create'],
-            ['password', 'safe'],
-            ['email', 'email'],
-            ['estado', 'in', 'range' => ['ativo', 'inativo']],
-        ];
-    }
+ public function rules()
+{
+    return [
+        [['username', 'nome', 'email', 'company_id', 'role'], 'required'],
+        ['password', 'required', 'on' => 'create'],
+
+        ['email', 'email'],
+        ['username', 'string', 'max' => 255],
+        ['username', 'unique'],
+
+        ['role', 'in', 'range' => ['admin', 'gestor', 'condutor']],
+        ['estado', 'in', 'range' => ['ativo', 'inativo']],
+    ];
+}
+
+
+public function scenarios()
+{
+    $scenarios = parent::scenarios();
+
+    // Cenário de criação → password obrigatória
+    $scenarios['create'] = [
+        'username', 'nome', 'email', 'company_id',
+        'password', 'role', 'estado'
+    ];
+
+    // Cenário de edição → password opcional
+    $scenarios['update'] = [
+        'username', 'nome', 'email', 'company_id',
+        'role', 'estado'
+    ];
+
+    return $scenarios;
+}
 
 
 
@@ -172,7 +196,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function getUsername()
     {
-        return $this->nome;
+        return $this->username;
     }
 
     /**
@@ -303,4 +327,12 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return Yii::$app->authManager->getAssignment($roleName, $this->id) !== null;
     }
+
+    public function attributes()
+{
+    return array_merge(parent::attributes(), [
+        'password',
+    ]);
+}
+
 }

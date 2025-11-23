@@ -11,7 +11,7 @@ use common\models\User;
  */
 class SignupForm extends Model
 {
-    public $nome;
+    public $username;
     public $email;
     public $password;
 
@@ -24,10 +24,10 @@ class SignupForm extends Model
     public function rules()
     {
         return [
-            ['nome', 'trim'],
-            ['nome', 'required'],
-            ['nome', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
-            ['nome', 'string', 'min' => 2, 'max' => 255],
+            ['username', 'trim'],
+            ['username', 'required'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'string', 'min' => 2, 'max' => 255],
 
             ['email', 'trim'],
             ['email', 'required'],
@@ -52,12 +52,19 @@ class SignupForm extends Model
         }
         
         $user = new User();
-        $user->nome = $this->nome;
+        $user->username = $this->username;
+        $user->nome = $this->username;
         $user->email = $this->email;
         $user->company_id = $this->company_id;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
+
+        if (!$user->save()) {
+    var_dump($user->errors);
+    exit;
+}
+
         
         return $user->save() && $this->sendEmail($user);
     }

@@ -26,8 +26,13 @@ return [
         ],
 
         'session' => [
-            'name' => 'advanced-frontend',
+            'class' => 'yii\web\Session',
+            'name' => 'VeiGestSession',
+            'cookieParams' => [
+                'path' => '/',
+            ],
         ],
+
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [

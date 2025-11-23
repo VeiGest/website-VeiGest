@@ -36,26 +36,30 @@ class PasswordResetRequestForm extends Model
      *
      * @return bool whether the email was send
      */
-    public function sendEmail()
-    {
-        /* @var $user User */
-        $user = User::findOne([
-            'estado' => 'ativo',
-            'email' => $this->email,
-        ]);
+  public function sendEmail()
+{
+    /* @var $user \common\models\User */
+    $user = User::findOne([
+        'estado' => 'ativo',
+        'email' => $this->email,
+    ]);
 
-        if (!$user) {
+    if (!$user) {
+        Yii::error("PasswordResetRequest: user not found for email: {$this->email}");
+        return false;
+    }
+
+    // Se token inválido ou vazio, gere novo e salve
+    if (!User::isPasswordResetTokenValid($user->password_reset_token)) {
+        $user->generatePasswordResetToken();
+        if (!$user->save()) {
+            Yii::error('PasswordResetRequest: failed to save user with new token. Errors: ' . json_encode($user->errors));
             return false;
         }
-        
-        if (!User::isPasswordResetTokenValid($user->password_reset_token)) {
-            $user->generatePasswordResetToken();
-            if (!$user->save()) {
-                return false;
-            }
-        }
+    }
 
-        return Yii::$app
+    try {
+        $result = Yii::$app
             ->mailer
             ->compose(
                 ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
@@ -65,5 +69,16 @@ class PasswordResetRequestForm extends Model
             ->setTo($this->email)
             ->setSubject('Password reset for ' . Yii::$app->name)
             ->send();
+
+        if (!$result) {
+            Yii::error("PasswordResetRequest: mailer->send() returned false for email: {$this->email}");
+        }
+
+        return $result;
+    } catch (\Throwable $e) {
+        Yii::error("PasswordResetRequest: Exception while sending email: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+        return false;
     }
+}
+
 }
