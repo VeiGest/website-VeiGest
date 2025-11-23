@@ -15,6 +15,7 @@ use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
+use frontend\models\TicketForm;
 
 /**
  * Site controller
@@ -29,7 +30,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'signup', 'ticket'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -40,6 +41,11 @@ class SiteController extends Controller
                         'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
+                    ],
+                    [
+                        'actions' => ['ticket'],
+                        'allow' => true,
+                        'roles' => ['driver', 'senior-driver', 'maintenance-manager', 'manager', 'admin', 'super-admin'],
                     ],
                 ],
             ],
@@ -258,5 +264,58 @@ class SiteController extends Controller
         return $this->render('resendVerificationEmail', [
             'model' => $model
         ]);
+    }
+
+    /**
+     * Displays ticket page.
+     *
+     * @return mixed
+     */
+    public function actionTicket()
+    {
+        $model = new TicketForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
+                Yii::$app->session->setFlash('success', 'Obrigado por entrar em contato. Responderemos o mais breve possível.');
+            } else {
+                Yii::$app->session->setFlash('error', 'Ocorreu um erro ao enviar sua mensagem.');
+            }
+
+            return $this->refresh();
+        }
+
+        return $this->render('ticket', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Displays pricing page.
+     *
+     * @return mixed
+     */
+    public function actionPricing()
+    {
+        return $this->render('pricing');
+    }
+
+    /**
+     * Displays benefits page.
+     *
+     * @return mixed
+     */
+    public function actionBenefits()
+    {
+        return $this->render('bennefits');
+    }
+
+    /**
+     * Displays services page.
+     *
+     * @return mixed
+     */
+    public function actionServices()
+    {
+        return $this->render('services');
     }
 }

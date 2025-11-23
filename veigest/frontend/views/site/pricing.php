@@ -4,48 +4,48 @@ use yii\helpers\Html;
 
 $this->title = 'Bem-vindo à VeiGest';
 ?>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preços - VeiGest</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --color-primary: #09BC8A;
-            --color-onyx: #3C3C3C;
-        }
-        .text-primary { color: var(--color-primary); }
-        .bg-primary { background-color: var(--color-primary); }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-2">
-                    <img src="/images/veigest-logo.png" alt="VeiGest" class="h-10 w-10">
-                    <span class="text-xl font-bold text-primary">VeiGest</span>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition">Home</a>
-                    <a href="services.html" class="text-gray-700 hover:text-primary transition">Serviços</a>
-                    <a href="pricing.html" class="text-gray-700 hover:text-primary transition font-bold">Preços</a>
-                    <a href="support.html" class="text-gray-700 hover:text-primary transition">Suporte</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="login.html" class="text-gray-700 hover:text-primary font-medium">Login</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-primary to-blue-500 text-white py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Planos e Preços</h1>
-            <p class="text-lg text-opacity-90">Escolha o plano ideal para sua empresa</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-black">Planos e Preços</h1>
+            <p class="text-lg text-opacity-90 text-black">Escolha o plano ideal para sua empresa</p>
+        </div>
+    </section>
+
+    <!-- Product Introduction -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Simplifique a Gestão da Sua Frota</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
+                    A VeiGest é a plataforma completa para gestão inteligente de frotas. Controle todos os aspectos da sua frota
+                    em um só lugar: documentos, manutenções, alertas, relatórios e muito mais. Aumente a produtividade,
+                    reduza custos e mantenha sua frota sempre em dia.
+                </p>
+                <div class="grid md:grid-cols-3 gap-8 mt-12">
+                    <div class="text-center">
+                        <div class="bg-primary bg-opacity-10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shield-alt text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Conformidade Total</h3>
+                        <p class="text-gray-600">Mantenha todos os documentos e certificados em dia automaticamente</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-primary bg-opacity-10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-chart-line text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Relatórios Inteligentes</h3>
+                        <p class="text-gray-600">Insights valiosos para otimizar custos e melhorar a eficiência</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-primary bg-opacity-10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-clock text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Alertas Automáticos</h3>
+                        <p class="text-gray-600">Nunca mais perca prazos importantes com notificações inteligentes</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -107,42 +107,173 @@ $this->title = 'Bem-vindo à VeiGest';
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-4 gap-8 mb-8">
-                <div>
-                    <h4 class="text-white font-bold mb-4">VeiGest</h4>
-                    <p class="text-sm">Plataforma inteligente de gestão de frotas.</p>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Recursos</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="documentation.html" class="hover:text-primary">Documentação</a></li>
-                        <li><a href="blog.html" class="hover:text-primary">Blog</a></li>
-                        <li><a href="support.html" class="hover:text-primary">Suporte</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Produto</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="services.html" class="hover:text-primary">Serviços</a></li>
-                        <li><a href="pricing.html" class="hover:text-primary">Preços</a></li>
-                        <li><a href="security.html" class="hover:text-primary">Segurança</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Contacto</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center gap-2"><i class="fas fa-envelope"></i> info@veigest.com</li>
-                        <li class="flex items-center gap-2"><i class="fas fa-phone"></i> +351 21 0000 000</li>
-                    </ul>
-                </div>
+    <!-- FAQ Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Perguntas Frequentes</h2>
+                <p class="text-lg text-gray-600">Tire suas dúvidas sobre nossos planos</p>
             </div>
-            <div class="border-t border-gray-700 pt-8 text-center text-sm">
-                <p>&copy; 2025 VeiGest. Todos os direitos reservados.</p>
+
+            <div class="space-y-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Posso mudar de plano a qualquer momento?</h3>
+                    <p class="text-gray-600">Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. As alterações entram em vigor no próximo ciclo de cobrança.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Existe período de teste gratuito?</h3>
+                    <p class="text-gray-600">Oferecemos 14 dias de teste gratuito para todos os planos. Não é necessário cartão de crédito para começar.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Como funciona o suporte técnico?</h3>
+                    <p class="text-gray-600">O plano Starter inclui suporte por email. Os planos Professional e Enterprise incluem suporte prioritário por telefone e chat.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Posso cancelar a qualquer momento?</h3>
+                    <p class="text-gray-600">Sim, você pode cancelar sua assinatura a qualquer momento. Não há taxas de cancelamento ou contratos de longo prazo.</p>
+                </div>
             </div>
         </div>
-    </footer>
+    </section>
+
+    <!-- Features Comparison -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Compare os Planos</h2>
+                <p class="text-lg text-gray-600">Veja detalhadamente o que cada plano oferece</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full bg-white rounded-lg shadow-md">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-bold text-gray-900">Funcionalidades</th>
+                            <th class="px-6 py-4 text-center text-sm font-bold text-gray-900">Starter</th>
+                            <th class="px-6 py-4 text-center text-sm font-bold text-gray-900">Professional</th>
+                            <th class="px-6 py-4 text-center text-sm font-bold text-gray-900">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-medium">Número de veículos</td>
+                            <td class="px-6 py-4 text-center text-sm text-gray-600">Até 5</td>
+                            <td class="px-6 py-4 text-center text-sm text-gray-600">Até 50</td>
+                            <td class="px-6 py-4 text-center text-sm text-gray-600">Ilimitado</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-900 font-medium">Gestão de documentos</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-medium">Alertas inteligentes</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-times text-gray-400"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-900 font-medium">Relatórios avançados</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-times text-gray-400"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 text-sm text-gray-900 font-medium">Suporte prioritário</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-times text-gray-400"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-times text-gray-400"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-900 font-medium">Integração API</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-times text-gray-400"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-times text-gray-400"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-primary"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">O que nossos clientes dizem</h2>
+                <p class="text-lg text-gray-600">Histórias de sucesso de empresas que confiam na VeiGest</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-primary">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"A VeiGest revolucionou nossa gestão de frota. Conseguimos reduzir custos em 30% e aumentar a produtividade da equipe."</p>
+                    <div class="font-bold text-gray-900">Maria Silva</div>
+                    <div class="text-sm text-gray-600">Diretora de Operações, Transportes Silva</div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-primary">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Excelente plataforma! O suporte é incrível e as funcionalidades atendem perfeitamente às nossas necessidades."</p>
+                    <div class="font-bold text-gray-900">João Santos</div>
+                    <div class="text-sm text-gray-600">Gerente de Frota, Logística Express</div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-primary">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-4">"Desde que implementamos a VeiGest, nossa frota está mais organizada e segura. Recomendo para todas as empresas!"</p>
+                    <div class="font-bold text-gray-900">Ana Costa</div>
+                    <div class="text-sm text-gray-600">Coordenadora de Frotas, Distribuidora Nacional</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-primary to-blue-500 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Pronto para começar?</h2>
+            <p class="text-lg text-opacity-90 mb-8">Junte-se a centenas de empresas que já confiam na VeiGest para gerenciar suas frotas</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/site/signup" class="bg-white text-primary px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition border-primary">
+                    Começar Teste Gratuito
+                </a>
+                <a href="/site/contact" class="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition">
+                    Falar com Especialista
+                </a>
+            </div>
+            <p class="text-sm text-opacity-75 mt-4">Sem compromisso • 14 dias grátis • Cancele quando quiser</p>
+        </div>
+    </section>
+
+
 </body>
 </html>

@@ -14,10 +14,32 @@ use yii\bootstrap5\Html;
 
             <!-- MENU -->
             <div class="hidden md:flex space-x-8">
-                <a href="#" class="text-gray-700 hover:text-primary transition">Home</a>
-                <a href="#services" class="text-gray-700 hover:text-primary transition">Serviços</a>
-                <a href="#beneficios" class="text-gray-700 hover:text-primary transition">Benefícios</a>
-                <a href="#contacto" class="text-gray-700 hover:text-primary transition">Contacto</a>
+                <!-- <a href="#" class="text-gray-700 hover:text-primary transition">Home</a> -->
+                <?= Html::a('Início', ['/site/index'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
+                <?= Html::a('Serviços', ['/site/services'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
+                <?= Html::a('Benefícios', ['/site/benefits'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
+                <?= Html::a('Preços', ['/site/pricing'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
+                <?= Html::a('Contactos', ['/site/contact'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
+
+                <!-- 
+                    // Ticket page need rbac role minimun 'driver' to access
+                -->
+                <?php if (!Yii::$app->user->isGuest): ?>
+                    <?= Html::a('Suporte', ['/site/ticket'], [
+                        'class' => 'text-gray-700 hover:text-primary transition',
+                    ]) ?>
+                <?php endif; ?>
+                
             </div>
 
             <!-- AUTENTICAÇÃO -->
@@ -38,18 +60,23 @@ use yii\bootstrap5\Html;
                     <!-- BOTÃO BACKOFFICE SE FOR ADMIN -->
                     <?php if (Yii::$app->user->can('admin')): ?>
                         <a href="<?= Yii::getAlias('@backendUrl') ?>"
-                           class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-green-600 transition">
+                           class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-green-600 transition mr-2">
                             Backoffice
                         </a>
                     <?php endif; ?>
 
+                    <!-- BOTÃO DASHBOARD -->
+                    <?= Html::a('Dashboard', ['/dashboard/index'], [
+                        'class' => 'text-gray-700 hover:text-primary font-medium px-4 py-2 rounded transition mr-2',
+                    ]) ?>
+
                     <!-- LOGOUT -->
-                    <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'inline']) .
-                        Html::submitButton(
+                    <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'inline'])
+                        . Html::submitButton(
                             'Logout (' . Yii::$app->user->identity->username . ')',
                             ['class' => 'btn btn-danger px-4 py-2 rounded font-medium']
-                        ) .
-                        Html::endForm();
+                        )
+                        . Html::endForm();
                     ?>
 
                 <?php endif; ?>
