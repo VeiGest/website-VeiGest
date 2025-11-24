@@ -99,7 +99,6 @@ $this->title = 'Login';
                 </div>
                 <?php ActiveForm::end(); ?>
 
-                <!-- Divider -->
                 <div class="relative my-6">
                     <div class="absolute inset-0 flex items-center">
                         <div class="w-full border-t border-gray-300"></div>
@@ -115,7 +114,6 @@ $this->title = 'Login';
                 </a>
             </div>
 
-            <!-- Info Cards -->
             <div class="mt-8 grid grid-cols-3 gap-4">
                 <div class="bg-white rounded-lg p-4 text-center">
                     <i class="fas fa-lock text-2xl text-primary mb-2"></i>

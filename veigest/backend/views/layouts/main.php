@@ -9,19 +9,18 @@ use yii\helpers\Url;
 $this->title = $this->title ?: 'VeiGest';
 
 $identity = Yii::$app->user->identity ?? null;
-
-// Nome dinâmico
+//nome do utilizador
 $displayName = $identity
     ? (!empty($identity->nome) ? $identity->nome : (!empty($identity->username) ? $identity->username : 'Utilizador'))
     : 'Convidado';
 
-// Foto (placeholder, conforme tua escolha 3)
 $avatar = Url::to('@web/img/user-placeholder.png');
 
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>">
+
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,186 +41,204 @@ $avatar = Url::to('@web/img/user-placeholder.png');
             --primary-color: #09BC8A;
             --dark-color: #3C3C3C;
         }
-        * { font-family: 'Poppins', sans-serif; }
-        .nav-link:hover { background-color: rgba(9,188,138,0.1) !important; color: var(--primary-color) !important; }
-        .main-sidebar { background-color: #f8f9fa !important; }
-        .brand-link { background-color: var(--primary-color) !important; }
-        .img-circle { object-fit: cover; }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(9, 188, 138, 0.1) !important;
+            color: var(--primary-color) !important;
+        }
+
+        .main-sidebar {
+            background-color: #f8f9fa !important;
+        }
+
+        .brand-link {
+            background-color: var(--primary-color) !important;
+        }
+
+        .img-circle {
+            object-fit: cover;
+        }
     </style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
-<?php $this->beginBody() ?>
+    <?php $this->beginBody() ?>
 
-<div class="wrapper">
+    <div class="wrapper">
 
-    <!-- NAVBAR -->
-    <nav class="main-header navbar navbar-expand navbar-dark" style="background-color: var(--dark-color);">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-                <?= Html::a('Home', ['/site/index'], ['class' => 'nav-link']) ?>
-            </li>
-        </ul>
+        <!-- NAVBAR -->
+        <nav class="main-header navbar navbar-expand navbar-dark" style="background-color: var(--dark-color);">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <?= Html::a('Home', ['/site/index'], ['class' => 'nav-link']) ?>
+                </li>
+            </ul>
 
-        <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ml-auto">
 
-            <!-- Notificações -->
-            <li class="nav-item dropdown">
-                <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="fas fa-bell"></i>
-                    <span class="badge badge-danger navbar-badge">3</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <span class="dropdown-header">3 Notificações</span>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-warning text-warning mr-2"></i> Manutenção programada
-                    </a>
-                </div>
-            </li>
-
-            <!-- Perfil -->
-            <li class="nav-item dropdown">
-                <?php if (Yii::$app->user->isGuest): ?>
-                    <a href="<?= Url::to(['/site/login']) ?>" class="nav-link">
-                        <i class="fas fa-sign-in-alt"></i>
-                    </a>
-                <?php else: ?>
-                    <a class="nav-link" data-toggle="dropdown">
-                        <i class="fas fa-user-circle"></i>
+                <!-- Notificações -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger navbar-badge">3</span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <?= Html::a('<i class="fas fa-user mr-2"></i> Perfil', ['/user/view', 'id'=>$identity->id], ['class'=>'dropdown-item']) ?>
+                        <span class="dropdown-header">3 Notificações</span>
                         <div class="dropdown-divider"></div>
-                        <?= Html::beginForm(['/site/logout'], 'post')
-                            . Html::submitButton('<i class="fas fa-sign-out-alt mr-2"></i> Sair', ['class'=>'dropdown-item'])
-                            . Html::endForm() ?>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-warning text-warning mr-2"></i> Manutenção programada
+                        </a>
                     </div>
-                <?php endif; ?>
-            </li>
+                </li>
 
-        </ul>
-    </nav>
-
-
-    <!-- SIDEBAR -->
-    <aside class="main-sidebar elevation-4">
-
-        <!-- Logo -->
-        <a href="<?= Url::to(['/site/index']) ?>" class="brand-link d-flex align-items-center">
-            <img src="/images/veigest-logo.png" style="width:35px;height:35px;margin-right:10px;">
-            <span class="brand-text font-weight-bold" style="color:white;">VeiGest</span>
-        </a>
-
-        <div class="sidebar">
-
-            <!-- Painel do utilizador -->
-            <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                <div class="image">
-                    <img src="<?= $avatar ?>" class="img-circle elevation-2" style="width:40px;height:40px;">
-                </div>
-                <div class="info">
+                <!-- Perfil -->
+                <li class="nav-item dropdown">
                     <?php if (Yii::$app->user->isGuest): ?>
-                        <a href="<?= Url::to(['/site/login']) ?>" class="d-block" style="font-weight:600;color:var(--dark-color);">
-                            Convidado
+                        <a href="<?= Url::to(['/site/login']) ?>" class="nav-link">
+                            <i class="fas fa-sign-in-alt"></i>
                         </a>
                     <?php else: ?>
-                        <a class="d-block" href="<?= Url::to(['/user/view','id'=>$identity->id]) ?>" style="font-weight:600;color:var(--dark-color);">
-                            <?= Html::encode($displayName) ?>
+                        <a class="nav-link" data-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i>
                         </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <?= Html::a('<i class="fas fa-user mr-2"></i> Perfil', ['/user/view', 'id' => $identity->id], ['class' => 'dropdown-item']) ?>
+                            <div class="dropdown-divider"></div>
+                            <?= Html::beginForm(['/site/logout'], 'post')
+                                . Html::submitButton('<i class="fas fa-sign-out-alt mr-2"></i> Sair', ['class' => 'dropdown-item'])
+                                . Html::endForm() ?>
+                        </div>
+                    <?php endif; ?>
+                </li>
+
+            </ul>
+        </nav>
+
+
+        <!-- SIDEBAR -->
+        <aside class="main-sidebar elevation-4">
+
+            <!-- Logo -->
+            <a href="<?= Url::to(['/site/index']) ?>" class="brand-link d-flex align-items-center">
+                <img src="<?= Yii::getAlias('@web') ?>/images/veigest-logo.png"
+                    style="width:35px;height:35px;margin-right:10px;">
+                <span class="brand-text font-weight-bold" style="color:white;">VeiGest</span>
+            </a>
+
+            <div class="sidebar">
+
+                <!-- Painel do utilizador -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="<?= $avatar ?>" class="img-circle elevation-2" style="width:40px;height:40px;">
+                    </div>
+                    <div class="info">
+                        <?php if (Yii::$app->user->isGuest): ?>
+                            <a href="<?= Url::to(['/site/login']) ?>" class="d-block" style="font-weight:600;color:var(--dark-color);">
+                                Convidado
+                            </a>
+                        <?php else: ?>
+                            <a class="d-block" href="<?= Url::to(['/user/view', 'id' => $identity->id]) ?>" style="font-weight:600;color:var(--dark-color);">
+                                <?= Html::encode($displayName) ?>
+                            </a>
+
+                            <?php if (Yii::$app->user->can('admin')): ?>
+                                <span class="badge badge-danger mt-1">Admin</span>
+                            <?php elseif (!empty($identity->role)): ?>
+                                <span class="badge badge-secondary mt-1"><?= Html::encode($identity->role) ?></span>
+                            <?php endif; ?>
+
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- MENU -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
+
+                        <li class="nav-item">
+                            <?= Html::a(
+                                '<i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p>',
+                                ['/site/index'],
+                                ['class' => 'nav-link ' . (Yii::$app->controller->id == 'site' ? 'active' : '')]
+                            ) ?>
+                        </li>
+
+                        <li class="nav-item has-treeview menu-open">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-car"></i>
+                                <p> Frota <i class="right fas fa-angle-left"></i></p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <?= Html::a('<i class="nav-icon fas fa-tools"></i><p>Manutenção</p>', ['/maintenance/index'], ['class' => 'nav-link']) ?>
+                        </li>
+
+                        <li class="nav-item">
+                            <?= Html::a('<i class="nav-icon fas fa-file-alt"></i><p>Documentos</p>', ['/document/index'], ['class' => 'nav-link']) ?>
+                        </li>
+
+                        <li class="nav-item">
+                            <?= Html::a('<i class="nav-icon fas fa-bell"></i><p>Alertas</p>', ['/alert/index'], ['class' => 'nav-link']) ?>
+                        </li>
+
+                        <li class="nav-item">
+                            <?= Html::a('<i class="nav-icon fas fa-chart-bar"></i><p>Relatórios</p>', ['/report/index'], ['class' => 'nav-link']) ?>
+                        </li>
 
                         <?php if (Yii::$app->user->can('admin')): ?>
-                            <span class="badge badge-danger mt-1">Admin</span>
-                        <?php elseif (!empty($identity->role)): ?>
-                            <span class="badge badge-secondary mt-1"><?= Html::encode($identity->role) ?></span>
+
+                            <li class="nav-header" style="color:#999;">ADMINISTRAÇÃO</li>
+
+                            <li class="nav-item">
+                                <?= Html::a('<i class="nav-icon fas fa-users"></i><p>Gestão de Utilizadores</p>', ['/user/index'], ['class' => 'nav-link']) ?>
+                            </li>
+
+                            <li class="nav-item">
+                                <?= Html::a('<i class="nav-icon fas fa-cogs"></i><p>Configurações</p>', ['/system/settings'], ['class' => 'nav-link']) ?>
+                            </li>
+
                         <?php endif; ?>
 
-                    <?php endif; ?>
+
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+
+        <!-- CONTENT -->
+        <div class="content-wrapper">
+            <section class="content pt-3">
+                <div class="container-fluid">
+                    <?= $content ?>
                 </div>
-            </div>
-
-            <!-- MENU -->
-            <nav class="mt-2">
-                <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
-
-                    <li class="nav-item">
-                        <?= Html::a('<i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p>',
-                            ['/site/index'], ['class' => 'nav-link '.(Yii::$app->controller->id=='site'?'active':'')]) ?>
-                    </li>
-
-                    <li class="nav-item has-treeview menu-open">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-car"></i>
-                            <p> Frota <i class="right fas fa-angle-left"></i></p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <?= Html::a('<i class="far fa-circle nav-icon"></i><p>Veículos</p>', ['/veiculo/index'], ['class'=>'nav-link']) ?>
-                            </li>
-                            <li class="nav-item">
-                                <?= Html::a('<i class="far fa-circle nav-icon"></i><p>Condutores</p>', ['/user/drivers'], ['class'=>'nav-link']) ?>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="nav-item">
-                        <?= Html::a('<i class="nav-icon fas fa-tools"></i><p>Manutenção</p>', ['/maintenance/index'], ['class'=>'nav-link']) ?>
-                    </li>
-
-                    <li class="nav-item">
-                        <?= Html::a('<i class="nav-icon fas fa-file-alt"></i><p>Documentos</p>', ['/document/index'], ['class'=>'nav-link']) ?>
-                    </li>
-
-                    <li class="nav-item">
-                        <?= Html::a('<i class="nav-icon fas fa-bell"></i><p>Alertas</p>', ['/alert/index'], ['class'=>'nav-link']) ?>
-                    </li>
-
-                    <li class="nav-item">
-                        <?= Html::a('<i class="nav-icon fas fa-chart-bar"></i><p>Relatórios</p>', ['/report/index'], ['class'=>'nav-link']) ?>
-                    </li>
-
-                    <li class="nav-header" style="color:#999;">ADMINISTRAÇÃO</li>
-
-                    <li class="nav-item">
-                        <?= Html::a('<i class="nav-icon fas fa-users"></i><p>Gestão de Utilizadores</p>', ['/user/index'], ['class'=>'nav-link']) ?>
-                    </li>
-
-                    <li class="nav-item">
-                        <?= Html::a('<i class="nav-icon fas fa-cogs"></i><p>Configurações</p>', ['/system/settings'], ['class'=>'nav-link']) ?>
-                    </li>
-
-                </ul>
-            </nav>
+            </section>
         </div>
-    </aside>
 
+        <!-- FOOTER -->
+        <footer class="main-footer">
+            <strong>VeiGest &copy; <?= date('Y') ?></strong>
+            <div class="float-right d-none d-sm-inline-block">Version 1.0.0</div>
+        </footer>
 
-    <!-- CONTENT -->
-    <div class="content-wrapper">
-        <section class="content pt-3">
-            <div class="container-fluid">
-                <?= $content ?>
-            </div>
-        </section>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="main-footer">
-        <strong>VeiGest &copy; <?= date('Y') ?></strong>
-        <div class="float-right d-none d-sm-inline-block">Version 1.0.0</div>
-    </footer>
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
 
-</div>
-
-<!-- JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
-
-<?php $this->endBody() ?>
+    <?php $this->endBody() ?>
 </body>
+
 </html>
 <?php $this->endPage() ?>

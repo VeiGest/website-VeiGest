@@ -15,7 +15,6 @@ $this->beginPage();
     <?= $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title ?: 'VeiGest') ?></title>
 
-    <!-- Tailwind / Flowbite CDN (podes trocar por ficheiros locais se preferires) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script>
 
@@ -25,7 +24,6 @@ $this->beginPage();
 <body class="">
     <?php $this->beginBody() ?>
 
-    <!-- A área de conteúdo onde a view 'site/login' vai ser renderizada -->
     <?= $content ?>
 
     <?php $this->endBody() ?>

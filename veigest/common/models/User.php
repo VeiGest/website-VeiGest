@@ -54,40 +54,59 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
- public function rules()
-{
-    return [
-        [['username', 'nome', 'email', 'company_id', 'role'], 'required'],
-        ['password', 'required', 'on' => 'create'],
+    public function rules()
+    {
+        return [
+            [['username', 'nome', 'email', 'company_id'], 'required'],
+            ['role', 'required', 'on' => 'adminCreate'],
 
-        ['email', 'email'],
-        ['username', 'string', 'max' => 255],
-        ['username', 'unique'],
+            ['password', 'required', 'on' => 'create'],
 
-        ['role', 'in', 'range' => ['admin', 'gestor', 'condutor']],
-        ['estado', 'in', 'range' => ['ativo', 'inativo']],
-    ];
-}
+            ['email', 'email'],
+            ['username', 'string', 'max' => 255],
+            ['username', 'unique'],
+
+            ['role', 'in', 'range' => ['admin', 'gestor', 'condutor']],
+            ['estado', 'in', 'range' => ['ativo', 'inativo']],
+        ];
+    }
 
 
-public function scenarios()
-{
-    $scenarios = parent::scenarios();
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
 
-    // Cenário de criação → password obrigatória
-    $scenarios['create'] = [
-        'username', 'nome', 'email', 'company_id',
-        'password', 'role', 'estado'
-    ];
+        // Cenário de criação → password obrigatória
+        $scenarios['create'] = [
+            'username',
+            'nome',
+            'email',
+            'company_id',
+            'password',
+            'role',
+            'estado'
+        ];
 
-    // Cenário de edição → password opcional
-    $scenarios['update'] = [
-        'username', 'nome', 'email', 'company_id',
-        'role', 'estado'
-    ];
+        // Cenário de edição → password opcional
+        $scenarios['update'] = [
+            'username',
+            'nome',
+            'email',
+            'company_id',
+            'role',
+            'estado'
+        ];
 
-    return $scenarios;
-}
+        $scenarios['signup'] = [
+            'username',
+            'nome',
+            'email',
+            'company_id',
+            'password'
+        ];
+
+        return $scenarios;
+    }
 
 
 
@@ -215,24 +234,24 @@ public function scenarios()
         return $this->getAuthKey() === $authKey;
     }
 
-   public function beforeSave($insert)
-{
-    if (!parent::beforeSave($insert)) {
-        return false;
-    }
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
 
-    // Gerar auth_key apenas na criação
-    if ($insert) {
-        $this->generateAuthKey();
-    }
+        // Gerar auth_key apenas na criação
+        if ($insert) {
+            $this->generateAuthKey();
+        }
 
-    // Criar hash da password se for preenchida
-    if (!empty($this->password)) {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
-    }
+        // Criar hash da password se for preenchida
+        if (!empty($this->password)) {
+            $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
+        }
 
-    return true;
-}
+        return true;
+    }
 
 
 
@@ -300,10 +319,10 @@ public function scenarios()
         if (empty($roles)) {
             return null;
         }
-        
+
         // Retorna a primeira role encontrada (ou a mais importante)
         $roleNames = array_keys($roles);
-        
+
         // Prioridade: admin > gestor > condutor
         if (in_array('admin', $roleNames)) {
             return 'admin';
@@ -314,7 +333,7 @@ public function scenarios()
         if (in_array('condutor', $roleNames)) {
             return 'condutor';
         }
-        
+
         return $roleNames[0] ?? null;
     }
 
@@ -329,10 +348,9 @@ public function scenarios()
     }
 
     public function attributes()
-{
-    return array_merge(parent::attributes(), [
-        'password',
-    ]);
-}
-
+    {
+        return array_merge(parent::attributes(), [
+            'password',
+        ]);
+    }
 }

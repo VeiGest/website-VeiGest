@@ -16,9 +16,10 @@ $this->title = 'Bem-vindo à VeiGest';
                         Plataforma completa para monitorizar veículos, condutores e otimizar operações da sua frota em tempo real.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="login.html" class="bg-white text-primary px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition text-center">
+                        <a href="<?= Yii::$app->urlManager->createUrl(['site/login']) ?>" class="bg-white text-primary px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition text-center">
                             Começar Agora
                         </a>
+
                         <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:bg-opacity-10 transition">
                             Ver Demo
                         </button>
@@ -26,7 +27,7 @@ $this->title = 'Bem-vindo à VeiGest';
                 </div>
                 <div class="hidden md:flex justify-center">
                     <div class="relative w-64 h-64">
-                        <img src="./images/veigest-logo.png" alt="VeiGest" class="w-full h-full object-contain filter drop-shadow-lg">
+                        <img src="<?= Yii::getAlias('@web/images/veigest-logo.png') ?>" class="w-full h-full object-contain filter drop-shadow-lg">
                     </div>
                 </div>
             </div>
@@ -157,7 +158,6 @@ $this->title = 'Bem-vindo à VeiGest';
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section class="hero-gradient text-white py-16">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl md:text-4xl font-bold mb-6">Comece a Otimizar Sua Frota Hoje</h2>
@@ -170,5 +170,5 @@ $this->title = 'Bem-vindo à VeiGest';
         </div>
     </section>
 
-    
+
 </div>

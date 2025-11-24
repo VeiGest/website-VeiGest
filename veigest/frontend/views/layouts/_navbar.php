@@ -8,13 +8,12 @@ use yii\bootstrap5\Html;
 
             <!-- LOGO -->
             <div class="flex items-center space-x-2">
-                <img src="./images/veigest-logo.png" alt="VeiGest Logo" class="h-10 w-10">
+                <img src="<?= Yii::getAlias('@web/images/veigest-logo.png') ?>" alt="VeiGest Logo" class="h-10 w-10">
                 <span class="text-xl font-bold text-primary">VeiGest</span>
             </div>
 
             <!-- MENU -->
             <div class="hidden md:flex space-x-8">
-                <!-- <a href="#" class="text-gray-700 hover:text-primary transition">Home</a> -->
                 <?= Html::a('Início', ['/site/index'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
@@ -31,9 +30,7 @@ use yii\bootstrap5\Html;
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
 
-                <!-- 
-                    // Ticket page need rbac role minimun 'driver' to access
-                -->
+                
                 <?php if (!Yii::$app->user->isGuest): ?>
                     <?= Html::a('Suporte', ['/site/ticket'], [
                         'class' => 'text-gray-700 hover:text-primary transition',
