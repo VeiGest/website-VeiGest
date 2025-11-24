@@ -318,4 +318,14 @@ class SiteController extends Controller
     {
         return $this->render('services');
     }
+
+    /**
+     * Redirects to dashboard.
+     *
+     * @return mixed
+     */
+    public function actionDashboard()
+    {
+        return $this->redirect(['dashboard/index']);
+    }
 }

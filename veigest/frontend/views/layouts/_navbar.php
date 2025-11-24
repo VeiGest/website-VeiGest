@@ -57,11 +57,16 @@ use yii\bootstrap5\Html;
 
                 <?php else: ?>
 
+                    <!-- DASHBOARD -->
+                    <?= Html::a('Dashboard', ['/dashboard/index'], [
+                        'class' => 'px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-green-600 transition mr-2',
+                    ]) ?>
+
                     <!-- BOTÃO BACKOFFICE SE FOR ADMIN -->
                     <?php if (Yii::$app->user->can('admin')): ?>
                         <a href="<?= Yii::getAlias('@backendUrl') ?>"
-                           class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-green-600 transition mr-2">
-                            Dashboard
+                           class="px-4 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition mr-2">
+                            Admin
                         </a>
                     <?php endif; ?>
 
