@@ -2,27 +2,22 @@
 
 namespace backend\controllers;
 
+use Yii; 
 use common\models\User;
 use backend\models\UserSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
-/**
- * UserController implements the CRUD actions for User model.
- */
 class UserController extends Controller
 {
-    /**
-     * @inheritDoc
-     */
     public function behaviors()
     {
         return array_merge(
             parent::behaviors(),
             [
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -32,26 +27,21 @@ class UserController extends Controller
     }
 
     /**
-     * Lists all User models.
-     *
-     * @return string
+     * Lista utilizadores
      */
     public function actionIndex()
     {
         $searchModel = new UserSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
+            'searchModel'  => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
 
     /**
-     * Displays a single User model.
-     * @param int $id
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
+     * Ver utilizador
      */
     public function actionView($id)
     {
@@ -61,55 +51,73 @@ class UserController extends Controller
     }
 
     /**
-     * Creates a new User model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
+     * Criar utilizador
      */
     public function actionCreate()
     {
-        $model = new User();
-        $model->scenario = 'create';
+        
+        $model = new User(['scenario' => 'adminCreate']);
+
         $roles = [
-            'gestor' => 'Gestor',
+            'gestor'   => 'Gestor',
             'condutor' => 'Condutor',
         ];
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
+        if (Yii::$app->request->isPost) {
+
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+                // RBAC: atribuir role 
+                $auth = Yii::$app->authManager;
+
+                // remover roles antigas 
+                $auth->revokeAll($model->id);
+
+                // atribuir nova role
+                $role = $auth->getRole($model->role);
+                if ($role) {
+                    $auth->assign($role, $model->id);
+                }
+
                 return $this->redirect(['index']);
             }
-        } else {
-            $model->loadDefaultValues();
         }
-
-
-
 
         return $this->render('create', [
             'model' => $model,
-            'roles' => $roles, // 
+            'roles' => $roles,
         ]);
     }
 
     /**
-     * Updates an existing User model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $id
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * Atualizar utilizador
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
         $model->scenario = 'update';
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
 
         $roles = [
-            'gestor' => 'Gestor',
+            'gestor'   => 'Gestor',
             'condutor' => 'Condutor',
         ];
+
+        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post()) && $model->save()) {
+
+            //RBAC: atualizar role 
+            $auth = Yii::$app->authManager;
+
+            // remover roles antigas
+            $auth->revokeAll($model->id);
+
+            // atribuir nova role
+            $role = $auth->getRole($model->role);
+            if ($role) {
+                $auth->assign($role, $model->id);
+            }
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
 
         return $this->render('update', [
             'model' => $model,
@@ -118,25 +126,21 @@ class UserController extends Controller
     }
 
     /**
-     * Deletes an existing User model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $id
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * Apagar utilizador
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $user = $this->findModel($id);
+
+        Yii::$app->authManager->revokeAll($id);
+
+        $user->delete();
 
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the User model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $id
-     * @return User the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
+     * Encontra modelo User pelo ID
      */
     protected function findModel($id)
     {
@@ -144,6 +148,6 @@ class UserController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('O utilizador não existe.');
     }
 }

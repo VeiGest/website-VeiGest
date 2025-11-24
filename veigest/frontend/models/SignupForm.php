@@ -51,7 +51,7 @@ class SignupForm extends Model
             return null;
         }
         
-        $user = new User();
+        $user = new User(['scenario' => 'signup']);
         $user->username = $this->username;
         $user->nome = $this->username;
         $user->email = $this->email;

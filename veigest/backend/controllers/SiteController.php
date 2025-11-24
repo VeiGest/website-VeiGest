@@ -16,38 +16,42 @@ class SiteController extends Controller
 {
     /**
      * {@inheritdoc}
-     */public function behaviors()
-{
-    return [
-        'access' => [
-            'class' => AccessControl::class,
-            'only' => ['login', 'logout', 'index', 'test-session'], // <- adicionamos aqui
-            'rules' => [
+     */ public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => ['login', 'logout', 'index'],
+                'rules' => [
 
-                // Liberado para TODOS (sem login)
-                [
-                    'actions' => ['login', 'error', 'test-session'], // <- adicionamos aqui
-                    'allow' => true,
-                    'roles' => ['?'], 
-                ],
+                   
+                    [
+                        'actions' => ['login', 'error'],
+                        'allow' => true,
+                    ],
 
-                // Apenas ADMIN pode ver o backend
-                [
-                    'actions' => ['index', 'logout'],
-                    'allow' => true,
-                    'roles' => ['admin'], 
+                    // Backend - apenas quem tem a permissão RBAC
+                    [
+                        'actions' => ['index', 'logout'],
+                        'allow' => true,
+                        'roles' => ['@'], 
+                        'matchCallback' => function () {
+                            return Yii::$app->user->can('acessoBackend');
+                        }
+                    ],
+
                 ],
             ],
-        ],
 
-        'verbs' => [
-            'class' => VerbFilter::class,
-            'actions' => [
-                'logout' => ['post'],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'logout' => ['post'],
+                ],
             ],
-        ],
-    ];
-}
+        ];
+    }
+
 
 
 
@@ -99,7 +103,7 @@ class SiteController extends Controller
         ]);
     }
 
-    
+
     /**
      * Logout action.
      *
@@ -107,29 +111,9 @@ class SiteController extends Controller
      */
     public function actionLogout()
     {
-        Yii::$app->user->logout();
+        Yii::$app->user->logout();       
+        Yii::$app->session->destroy();   
 
-        return $this->goHome();
+        return $this->redirect('http://localhost/website-VeiGest/veigest/frontend/web/site/login');
     }
-
- public function actionTestSession()
-{
-    echo "<pre>";
-
-    echo "SESSION ID (PHP): " . session_id() . "\n\n";
-
-    echo "RAW PHP SESSION:\n";
-    print_r($_SESSION);
-
-    echo "\nYii Session (keys):\n";
-    print_r(Yii::$app->session->getAllFlashes()); // apenas para ver algo
-
-    echo "\nUSER IDENTITY:\n";
-    print_r(Yii::$app->user->identity);
-
-    echo "</pre>";
-    exit;
-}
-
-
 }

@@ -6,47 +6,64 @@
 use yii\bootstrap5\Html;
 use yii\bootstrap5\ActiveForm;
 
+// Força o layout 'login' (usa o frontend/views/layouts/login.php)
+$this->context->layout = 'login';
+
 $this->title = 'Registar';
 ?>
-
-<section class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-sm bg-white rounded-lg shadow dark:bg-gray-800 p-6">
-
+<section class="min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-md">
       <div class="text-center mb-6">
-          <img src="<?= Yii::getAlias('@web/images/veigestLogo.png') ?>" alt="VeiGest Logo" class="w-16 h-16 mx-auto mb-3">
-          <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">VeiGest</h1>
-          <p class="text-gray-500 dark:text-gray-400 text-sm">Crie a sua conta</p>
+          <img src="<?= Yii::getAlias('@web/images/veigest-logo.png') ?>"alt="VeiGest Logo" class="w-16 h-16 mx-auto mb-3">
+          <h1 class="text-2xl font-semibold text-gray-900">VeiGest</h1>
+          <p class="text-gray-500 text-sm">Crie a sua conta</p>
       </div>
 
-      <?php $form = ActiveForm::begin(['id' => 'form-signup', 'options' => ['class' => 'space-y-4']]); ?>
+      <div class="bg-white rounded-lg shadow-lg p-8">
+          <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
 
-          <?= $form->field($model, 'username')->textInput([
-              'autofocus' => true,
-              'placeholder' => 'Nome de utilizador',
-              'class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white'
-          ])->label(false) ?>
+              <?= $form->field($model, 'username')->textInput([
+                  'autofocus' => true,
+                  'placeholder' => 'Nome de utilizador',
+                  'class' => 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
+              ])->label(false) ?>
 
-          <?= $form->field($model, 'email')->textInput([
-              'placeholder' => 'Email',
-              'class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white'
-          ])->label(false) ?>
+              <?= $form->field($model, 'email')->textInput([
+                  'placeholder' => 'Email',
+                  'class' => 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
+              ])->label(false) ?>
 
-          <?= $form->field($model, 'password')->passwordInput([
-              'placeholder' => 'Palavra-passe',
-              'class' => 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white'
-          ])->label(false) ?>
+              <?= $form->field($model, 'password')->passwordInput([
+                  'placeholder' => 'Palavra-passe',
+                  'class' => 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
+              ])->label(false) ?>
 
-          <?= Html::submitButton('Registar', [
-              'class' => 'w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800',
-              'name' => 'signup-button'
-          ]) ?>
+              <?= Html::submitButton('Registar', [
+                  'class' => 'w-full text-white bg-primary hover:opacity-95 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5',
+                  'style' => 'background-color: #09BC8A;'
+              ]) ?>
 
-      <?php ActiveForm::end(); ?>
+          <?php ActiveForm::end(); ?>
 
-      <p class="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
-          Já tem conta?
-          <?= Html::a('Entrar', ['site/login'], ['class' => 'font-medium text-blue-600 hover:underline']) ?>
-      </p>
+          <p class="text-sm text-gray-500 text-center mt-4">
+              Já tem conta?
+              <?= Html::a('Entrar', ['site/login'], ['class' => 'font-medium text-primary hover:underline', 'style'=>'color:#09BC8A']) ?>
+          </p>
+      </div>
 
+      <div class="mt-6 grid grid-cols-3 gap-4">
+          <div class="text-center">
+              <i class="fas fa-lock text-2xl" style="color:#09BC8A;"></i>
+              <p class="text-xs text-gray-600">Segurança</p>
+          </div>
+          <div class="text-center">
+              <i class="fas fa-mobile-alt text-2xl" style="color:#09BC8A;"></i>
+              <p class="text-xs text-gray-600">Acesso Móvel</p>
+          </div>
+          <div class="text-center">
+              <i class="fas fa-headset text-2xl" style="color:#09BC8A;"></i>
+              <p class="text-xs text-gray-600">Suporte 24/7</p>
+          </div>
+      </div>
   </div>
 </section>
