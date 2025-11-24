@@ -160,7 +160,7 @@ DashboardAsset::register($this);
         <div class="sidebar">
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="info">
-                    <a href="#" class="d-block" style="color: var(--dark-color); font-weight: 600;"><?= Yii::$app->user->identity->nome ?? 'Usuário' ?></a>
+                    <a href="#" class="d-block" style="color: var(--dark-color); font-weight: 600;"><?= Yii::$app->user->identity->name ?? 'Usuário' ?></a>
                     <span style="display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; background-color: #dc3545; color: white;">Admin</span>
                 </div>
             </div>

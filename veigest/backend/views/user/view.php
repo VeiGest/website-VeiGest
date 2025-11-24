@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /** @var common\models\User $model */
 
 // título com o username em vez do id
-$this->title = $model->nome;
+$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Utilizadores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -32,27 +32,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             // campos essenciais
             'username',
-            'nome',
+            'name',
             'email:email',
             'role',
             'estado',
             'company_id',
 
-            // datas (convertendo timestamp para formato legível)
-            [
-                'attribute' => 'created_at',
-                'label' => 'Created At',
-                'value' => function($m) {
-                    return $m->created_at ? date('Y-m-d H:i:s', $m->created_at) : null;
-                },
-            ],
-            [
-                'attribute' => 'updated_at',
-                'label' => 'Updated At',
-                'value' => function($m) {
-                    return $m->updated_at ? date('Y-m-d H:i:s', $m->updated_at) : null;
-                },
-            ],
+            // datas (já formatadas)
+            'created_at',
+            'updated_at',
         ],
     ]) ?>
 

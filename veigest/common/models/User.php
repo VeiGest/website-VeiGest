@@ -12,14 +12,14 @@ use yii\web\IdentityInterface;
  * User model
  *
  * @property integer $id
- * @property string $nome
+ * @property string $name
  * @property string $company_id
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $verification_token
  * @property string $email
  * @property string $auth_key
- * 
+ 
  * @property integer $estado
  * @property integer $created_at
  * @property integer $updated_at
@@ -31,6 +31,7 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     public $password;
+    public $role;
 
 
     /**
@@ -47,7 +48,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors()
     {
         return [
-            TimestampBehavior::class,
+            [
+                'class' => TimestampBehavior::class,
+                'value' => function () {
+                    return date('Y-m-d H:i:s');
+                },
+            ],
         ];
     }
 
@@ -57,10 +63,10 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'nome', 'email', 'company_id'], 'required'],
+            [['username', 'name', 'email', 'company_id'], 'required'],
             ['role', 'required', 'on' => 'adminCreate'],
 
-            ['password', 'required', 'on' => 'create'],
+            ['password', 'required', 'on' => ['create', 'adminCreate']],
 
             ['email', 'email'],
             ['username', 'string', 'max' => 255],
@@ -79,7 +85,18 @@ class User extends ActiveRecord implements IdentityInterface
         // Cenário de criação → password obrigatória
         $scenarios['create'] = [
             'username',
-            'nome',
+            'name',
+            'email',
+            'company_id',
+            'password',
+            'role',
+            'estado'
+        ];
+
+        // Cenário de criação por admin → password obrigatória
+        $scenarios['adminCreate'] = [
+            'username',
+            'name',
             'email',
             'company_id',
             'password',
@@ -90,16 +107,17 @@ class User extends ActiveRecord implements IdentityInterface
         // Cenário de edição → password opcional
         $scenarios['update'] = [
             'username',
-            'nome',
+            'name',
             'email',
             'company_id',
+            'password',
             'role',
             'estado'
         ];
 
         $scenarios['signup'] = [
             'username',
-            'nome',
+            'name',
             'email',
             'company_id',
             'password'
@@ -351,6 +369,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return array_merge(parent::attributes(), [
             'password',
+            'role',
         ]);
     }
 }

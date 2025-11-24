@@ -53,7 +53,7 @@ class SignupForm extends Model
         
         $user = new User(['scenario' => 'signup']);
         $user->username = $this->username;
-        $user->nome = $this->username;
+        $user->name = $this->username;
         $user->email = $this->email;
         $user->company_id = $this->company_id;
         $user->setPassword($this->password);

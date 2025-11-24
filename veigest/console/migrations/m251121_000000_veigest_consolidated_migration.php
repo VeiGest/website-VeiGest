@@ -94,6 +94,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'estado' => "ENUM('ativo','inativo','suspenso') NOT NULL DEFAULT 'ativo'",
             'auth_key' => $this->string(32)->comment('For Yii2 authentication'),
             'password_reset_token' => $this->string(255),
+            'verification_token' => $this->string(255)->comment('For email verification'),
             // Driver fields (only filled if user is a driver)
             'license_number' => $this->string(50),
             'license_expiry' => $this->date(),
@@ -110,6 +111,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         $this->createIndex('idx_estado', '{{%users}}', 'estado');
         $this->createIndex('idx_license_expiry', '{{%users}}', 'license_expiry');
         $this->createIndex('idx_password_reset_token', '{{%users}}', 'password_reset_token');
+        $this->createIndex('idx_verification_token', '{{%users}}', 'verification_token');
         $this->createIndex('idx_roles', '{{%users}}', 'roles');
         $this->addForeignKey('fk_users_company', '{{%users}}', 'company_id', '{{%companies}}', 'id', 'CASCADE');
 

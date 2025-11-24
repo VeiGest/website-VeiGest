@@ -23,7 +23,7 @@ try {
     foreach ($users as $user) {
         echo "👤 ID: {$user['id']}\n";
         echo "   Username: {$user['username']}\n";
-        echo "   Nome: {$user['nome']}\n";
+        echo "   Nome: {$user['name']}\n";
         echo "   Email: {$user['email']}\n";
         echo "   Status: {$user['status']}\n";
         echo "   Company ID: {$user['company_id']}\n";

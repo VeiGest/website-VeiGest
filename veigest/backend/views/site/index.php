@@ -7,7 +7,7 @@ use yii\helpers\Html;
 $this->title = 'Dashboard';
 
 $identity = Yii::$app->user->identity;
-$displayName = !empty($identity->nome) ? $identity->nome : (!empty($identity->username) ? $identity->username : 'Utilizador');
+$displayName = !empty($identity->name) ? $identity->name : (!empty($identity->username) ? $identity->username : 'Utilizador');
 
 ?>
 <div class="content-header">

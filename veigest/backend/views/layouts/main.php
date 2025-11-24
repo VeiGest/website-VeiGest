@@ -11,7 +11,7 @@ $this->title = $this->title ?: 'VeiGest';
 $identity = Yii::$app->user->identity ?? null;
 //nome do utilizador
 $displayName = $identity
-    ? (!empty($identity->nome) ? $identity->nome : (!empty($identity->username) ? $identity->username : 'Utilizador'))
+    ? (!empty($identity->name) ? $identity->name : (!empty($identity->username) ? $identity->username : 'Utilizador'))
     : 'Convidado';
 
 $avatar = Url::to('@web/img/user-placeholder.png');

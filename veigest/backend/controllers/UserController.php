@@ -59,13 +59,18 @@ class UserController extends Controller
         $model = new User(['scenario' => 'adminCreate']);
 
         $roles = [
+            'admin'    => 'Admin',
             'gestor'   => 'Gestor',
             'condutor' => 'Condutor',
         ];
 
         if (Yii::$app->request->isPost) {
+            $post = Yii::$app->request->post();
+            $role = $post['User']['role'] ?? null;
+            unset($post['User']['role']);
+            $model->role = $role;
 
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            if ($model->load($post) && $model->save()) {
 
                 // RBAC: atribuir role 
                 $auth = Yii::$app->authManager;
@@ -74,9 +79,11 @@ class UserController extends Controller
                 $auth->revokeAll($model->id);
 
                 // atribuir nova role
-                $role = $auth->getRole($model->role);
                 if ($role) {
-                    $auth->assign($role, $model->id);
+                    $roleObj = $auth->getRole($role);
+                    if ($roleObj) {
+                        $auth->assign($roleObj, $model->id);
+                    }
                 }
 
                 return $this->redirect(['index']);
@@ -98,25 +105,35 @@ class UserController extends Controller
         $model->scenario = 'update';
 
         $roles = [
+            'admin'    => 'Admin',
             'gestor'   => 'Gestor',
             'condutor' => 'Condutor',
         ];
 
-        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post()) && $model->save()) {
+        if (Yii::$app->request->isPost) {
+            $post = Yii::$app->request->post();
+            $role = $post['User']['role'] ?? null;
+            unset($post['User']['role']);
+            $model->role = $role;
 
-            //RBAC: atualizar role 
-            $auth = Yii::$app->authManager;
+            if ($model->load($post) && $model->save()) {
 
-            // remover roles antigas
-            $auth->revokeAll($model->id);
+                //RBAC: atualizar role 
+                $auth = Yii::$app->authManager;
 
-            // atribuir nova role
-            $role = $auth->getRole($model->role);
-            if ($role) {
-                $auth->assign($role, $model->id);
+                // remover roles antigas
+                $auth->revokeAll($model->id);
+
+                // atribuir nova role
+                if ($role) {
+                    $roleObj = $auth->getRole($role);
+                    if ($roleObj) {
+                        $auth->assign($roleObj, $model->id);
+                    }
+                }
+
+                return $this->redirect(['view', 'id' => $model->id]);
             }
-
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
