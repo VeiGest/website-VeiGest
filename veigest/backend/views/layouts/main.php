@@ -79,6 +79,15 @@ $avatar = Url::to('@web/img/user-placeholder.png');
                 <li class="nav-item d-none d-sm-inline-block">
                     <?= Html::a('Home', ['/site/index'], ['class' => 'nav-link']) ?>
                 </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="<?= Yii::getAlias('@frontendUrl') ?>"
+                        class="nav-link"
+                        target="_blank">
+                        Frontend
+                    </a>
+                </li>
+
+
             </ul>
 
             <ul class="navbar-nav ml-auto">

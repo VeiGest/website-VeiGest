@@ -78,13 +78,23 @@ $this->title = 'Login';
 
                 <!-- Remember & Forgot -->
                 <div class="flex items-center justify-between">
-                    <div>
-                        <?= $form->field($model, 'rememberMe')->checkbox()->label('Lembrar-me') ?>
-                    </div>
-                    <div>
-                        <?= Html::a('Esqueceu a senha?', ['site/request-password-reset'], ['class' => 'text-sm font-medium text-primary-600 hover:underline dark:text-primary-500']) ?>
-                    </div>
+
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox"
+                            name="LoginForm[rememberMe]"
+                            value="1"
+                            <?= $model->rememberMe ? 'checked' : '' ?>
+                            class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                        <span class="text-sm text-gray-700">Lembrar-me</span>
+                    </label>
+
+                    <a href="<?= \yii\helpers\Url::to(['site/request-password-reset']) ?>"
+                        class="text-sm font-medium text-primary hover:underline">
+                        Esqueceu a senha?
+                    </a>
+
                 </div>
+
 
                 <!-- Login Button -->
                 <div>

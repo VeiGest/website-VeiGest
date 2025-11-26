@@ -180,6 +180,8 @@ class SiteController extends Controller
      */
     public function actionRequestPasswordReset()
     {
+
+          $this->layout = 'login';
         $model = new PasswordResetRequestForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail()) {
@@ -205,6 +207,8 @@ class SiteController extends Controller
      */
     public function actionResetPassword($token)
     {
+
+          $this->layout = 'login';
         try {
             $model = new ResetPasswordForm($token);
         } catch (InvalidArgumentException $e) {
