@@ -34,10 +34,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['index', 'logout'],
                         'allow' => true,
-                        'roles' => ['@'], 
-                        'matchCallback' => function () {
-                            return Yii::$app->user->can('acessoBackend');
-                        }
+                        'roles' => ['acessoBackend'], 
                     ],
 
                 ],
