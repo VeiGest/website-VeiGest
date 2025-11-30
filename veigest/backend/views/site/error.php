@@ -7,21 +7,22 @@
 
 use yii\helpers\Html;
 
-$this->title = $name;
+$this->title = "Acesso Negado";
 ?>
-<div class="site-error">
+<div class="text-center" style="margin-top: 120px;">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1 style="font-size: 60px; color: #e3342f; font-weight: bold;">403</h1>
 
-    <div class="alert alert-danger">
-        <?= nl2br(Html::encode($message)) ?>
+    <h2 class="mt-3" style="font-size: 28px;">Acesso Negado</h2>
+
+    <p class="mt-3 text-muted">
+        Não tem permissões para aceder a esta área do sistema.
+    </p>
+
+    <div class="mt-4">
+        <?= Html::a('Voltar ao Início', Yii::getAlias('@frontendUrl'), [
+            'class' => 'btn btn-primary px-4 py-2'
+        ]) ?>
     </div>
-
-    <p>
-        The above error occurred while the Web server was processing your request.
-    </p>
-    <p>
-        Please contact us if you think this is a server error. Thank you.
-    </p>
 
 </div>

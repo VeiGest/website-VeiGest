@@ -11,9 +11,35 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
+
+    'as access' => [
+    'class' => \yii\filters\AccessControl::class,
+    'ruleConfig' => [
+        'class' => \yii\filters\AccessRule::class,
+    ],
+    'except' => ['error', 'login'], 
+    'rules' => [
+
+        [
+            'allow' => true,
+            'actions' => ['login', 'error'], 
+        ],
+
+        [
+            'allow' => true,
+            'roles' => ['acessoBackend'],
+        ],
+    ],
+],
+
+
     'modules' => [
     ],
     'components' => [
+
+        'errorHandler' => [
+            'errorAction' => 'site/error',
+    ],
         'request' => [
             'csrfParam' => '_csrf-backend',
             'cookieValidationKey' => 'Yup8MeyEmKivPSYV944gTuoRjBGqKkVt',
@@ -39,11 +65,6 @@ return [
                     'levels' => ['error', 'warning'],
                 ],
             ],
-        ],
-
-        // action para erros
-        'errorHandler' => [
-            'errorAction' => 'site/error',
         ],
 
         // urlManager para API do backend (exemplos)

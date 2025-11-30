@@ -179,14 +179,6 @@ $avatar = Url::to('@web/img/user-placeholder.png');
                                 ['class' => 'nav-link ' . (Yii::$app->controller->id == 'site' ? 'active' : '')]
                             ) ?>
                         </li>
-
-                        <li class="nav-item has-treeview menu-open">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-car"></i>
-                                <p> Frota <i class="right fas fa-angle-left"></i></p>
-                            </a>
-                        </li>
-
                         <li class="nav-item">
                             <?= Html::a('<i class="nav-icon fas fa-tools"></i><p>Manutenção</p>', ['/maintenance/index'], ['class' => 'nav-link']) ?>
                         </li>

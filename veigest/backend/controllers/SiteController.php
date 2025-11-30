@@ -9,34 +9,26 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 
-/**
- * Site controller
- */
 class SiteController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */ public function behaviors()
+    public function behaviors()
     {
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['login', 'logout', 'index'],
+
                 'rules' => [
 
-                   
                     [
                         'actions' => ['login', 'error'],
                         'allow' => true,
                     ],
 
-                    // Backend - apenas quem tem a permissão RBAC
+                    // permitir backend apenas a quem tem "acessoBackend"
                     [
-                        'actions' => ['index', 'logout'],
                         'allow' => true,
-                        'roles' => ['acessoBackend'], 
+                        'roles' => ['acessoBackend'],
                     ],
-
                 ],
             ],
 
@@ -49,13 +41,6 @@ class SiteController extends Controller
         ];
     }
 
-
-
-
-
-    /**
-     * {@inheritdoc}
-     */
     public function actions()
     {
         return [
@@ -65,21 +50,11 @@ class SiteController extends Controller
         ];
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
         return $this->render('index');
     }
 
-    /**
-     * Login action.
-     *
-     * @return string|Response
-     */
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
@@ -100,16 +75,9 @@ class SiteController extends Controller
         ]);
     }
 
-
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
     public function actionLogout()
     {
-        Yii::$app->user->logout();       
-        Yii::$app->session->destroy();   
+        Yii::$app->user->logout();
 
         return $this->redirect('http://localhost/website-VeiGest/veigest/frontend/web/site/login');
     }

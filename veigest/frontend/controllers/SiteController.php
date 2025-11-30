@@ -45,7 +45,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['ticket'],
                         'allow' => true,
-                        'roles' => ['driver', 'senior-driver', 'maintenance-manager', 'manager', 'admin', 'super-admin'],
+                        'roles' => ['driver', 'senior-driver', 'maintenance-manager', 'manager', 'admin'],
                     ],
                 ],
             ],
@@ -100,10 +100,26 @@ class SiteController extends Controller
         $model = new \common\models\LoginForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+
+            // ADMIN → frontend homepage
+            if (Yii::$app->user->can('admin')) {
+                return $this->redirect(['/site/index']);
+            }
+
+            // GESTOR → frontend homepage
+            if (Yii::$app->user->can('gestor')) {
+                return $this->redirect(['/site/index']);
+            }
+
+            // CONDUTOR → frontend homepage
+            if (Yii::$app->user->can('condutor')) {
+                return $this->redirect(['/site/index']);
+            }
+
+            return $this->goHome();
         }
 
-        $model->password = '12345';
+        $model->password = '1234';
         $model->username = 'veigest_admin';
 
 
@@ -181,7 +197,7 @@ class SiteController extends Controller
     public function actionRequestPasswordReset()
     {
 
-          $this->layout = 'login';
+        $this->layout = 'login';
         $model = new PasswordResetRequestForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail()) {
@@ -208,7 +224,7 @@ class SiteController extends Controller
     public function actionResetPassword($token)
     {
 
-          $this->layout = 'login';
+        $this->layout = 'login';
         try {
             $model = new ResetPasswordForm($token);
         } catch (InvalidArgumentException $e) {
