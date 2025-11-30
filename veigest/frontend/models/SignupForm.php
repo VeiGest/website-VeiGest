@@ -50,7 +50,7 @@ class SignupForm extends Model
         if (!$this->validate()) {
             return null;
         }
-        
+
         $user = new User(['scenario' => 'signup']);
         $user->username = $this->username;
         $user->name = $this->username;
@@ -60,13 +60,16 @@ class SignupForm extends Model
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
 
-        if (!$user->save()) {
-    var_dump($user->errors);
-    exit;
-}
+        if ($user->save()) {
 
-        
-        return $user->save() && $this->sendEmail($user);
+            $auth = Yii::$app->authManager;
+            $role = $auth->getRole('condutor'); // role padrão
+            $auth->assign($role, $user->id);
+
+            return $user;
+        }
+
+        return null;
     }
 
     /**

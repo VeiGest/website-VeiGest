@@ -31,7 +31,6 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     public $password;
-    public $role;
 
 
     /**
@@ -65,6 +64,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             [['username', 'name', 'email', 'company_id'], 'required'],
             ['role', 'required', 'on' => 'adminCreate'],
+            ['role', 'safe'], 
 
             ['password', 'required', 'on' => ['create', 'adminCreate']],
 
@@ -369,7 +369,6 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return array_merge(parent::attributes(), [
             'password',
-            'role',
         ]);
     }
 }

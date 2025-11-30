@@ -30,13 +30,13 @@ use yii\bootstrap5\Html;
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
 
-                
+
                 <?php if (!Yii::$app->user->isGuest): ?>
                     <?= Html::a('Suporte', ['/site/ticket'], [
                         'class' => 'text-gray-700 hover:text-primary transition',
                     ]) ?>
                 <?php endif; ?>
-                
+
             </div>
 
             <!-- AUTENTICAÇÃO -->
@@ -54,18 +54,33 @@ use yii\bootstrap5\Html;
 
                 <?php else: ?>
 
-                    <!-- DASHBOARD -->
-                    <?= Html::a('Dashboard', ['/dashboard/index'], [
-                        'class' => 'px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-green-600 transition mr-2',
-                    ]) ?>
+                    <!-- DASHBOARD gestor e condutor -->
+                    <?php if (!Yii::$app->user->isGuest): ?>
 
-                    <!-- BOTÃO BACKOFFICE SE FOR ADMIN -->
-                    <?php if (Yii::$app->user->can('admin')): ?>
-                        <a href="<?= Yii::getAlias('@backendUrl') ?>"
-                           class="px-4 py-2 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition mr-2">
-                            Admin
-                        </a>
+                        <?php $role = Yii::$app->user->identity->role; ?>
+
+                        <?php if ($role === 'admin'): ?>
+                            <a href="<?= Yii::getAlias('@backendUrl') ?>"
+                                class="btn btn-dark px-4 py-2 mt-3">
+                                Aceder ao Backoffice
+                            </a>
+
+                        <?php elseif ($role === 'gestor'): ?>
+                            <a href="<?= \yii\helpers\Url::to(['/gestor/index']) ?>"
+                                class="btn btn-success px-4 py-2 mt-3">
+                                Aceder ao Dashboard do Gestor
+                            </a>
+
+                        <?php elseif ($role === 'condutor'): ?>
+                            <a href="<?= \yii\helpers\Url::to(['/condutor/index']) ?>"
+                                class="btn btn-primary px-4 py-2 mt-3">
+                                Aceder à Minha Área
+                            </a>
+
+                        <?php endif; ?>
+
                     <?php endif; ?>
+
 
                     <!-- LOGOUT -->
                     <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'inline'])
