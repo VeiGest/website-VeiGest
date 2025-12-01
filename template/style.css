@@ -71,8 +71,7 @@ body {
   display: none;
 }
 
-.btn-admin-only[data-role="admin"],
-.btn-admin-only[data-role="super-admin"] {
+.btn-admin-only[data-role="admin"] {
   display: inline-block;
 }
 
@@ -81,8 +80,7 @@ body {
 }
 
 .btn-gestor-only[data-role="gestor"],
-.btn-gestor-only[data-role="admin"],
-.btn-gestor-only[data-role="super-admin"] {
+.btn-gestor-only[data-role="admin"] {
   display: inline-block;
 }
 
@@ -92,8 +90,7 @@ body {
 
 .btn-condutor-only[data-role="condutor"],
 .btn-condutor-only[data-role="gestor"],
-.btn-condutor-only[data-role="admin"],
-.btn-condutor-only[data-role="super-admin"] {
+.btn-condutor-only[data-role="admin"] {
   display: inline-block;
 }
 

@@ -408,7 +408,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'status' => 'active',
             'estado' => 'ativo',
             'auth_key' => md5('admin@veigest.com' . time()),
-            'roles' => 'super-admin',
+            'roles' => 'admin',
         ]);
 
         // ============================================================================
@@ -418,7 +418,6 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         $this->batchInsert('{{%auth_item}}', 
             ['name', 'type', 'description', 'created_at', 'updated_at'],
             [
-                ['super-admin', 1, 'Super Administrator - Full Access', $time, $time],
                 ['admin', 1, 'Administrator', $time, $time],
                 ['manager', 1, 'Fleet Manager', $time, $time],
                 ['maintenance-manager', 1, 'Maintenance Manager', $time, $time],
@@ -521,7 +520,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         // ============================================================================
 
         // Super Admin: All permissions
-        $this->execute("INSERT INTO auth_item_child (parent, child) SELECT 'super-admin', name FROM auth_item WHERE type = 2");
+        // Removed super-admin role - no top-level privilege role is created now
 
         // Admin: All except critical settings
         $this->execute("INSERT INTO auth_item_child (parent, child) SELECT 'admin', name FROM auth_item WHERE type = 2 AND name NOT IN ('system.config')");
@@ -583,9 +582,9 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             ['driver', 'tickets.view'], ['driver', 'tickets.create'],
         ]);
 
-        // Assign 'super-admin' role to user admin (user_id = 1)
+        // Assign 'admin' role to user admin (user_id = 1)
         $this->insert('{{%auth_assignment}}', [
-            'item_name' => 'super-admin',
+            'item_name' => 'admin',
             'user_id' => '1',
             'created_at' => $time,
         ]);
@@ -596,10 +595,10 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         /*
          * TEST USERS AVAILABLE (all passwords are the same for simplicity):
          *
-         * SUPER ADMIN:
+         * ADMIN:
          * - Username: admin
          * - Password: admin
-         * - Role: super-admin (full access)
+         * - Role: admin (administrator access)
          *
          * MANAGER:
          * - Username: manager

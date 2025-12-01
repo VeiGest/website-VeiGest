@@ -352,7 +352,6 @@ VALUES (
 -- RBAC: ROLES (auth_item com type=1)
 -- ============================================================================
 INSERT INTO auth_item (name, type, description, created_at, updated_at) VALUES
-('super-admin', 1, 'Super Administrador - Acesso Total', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
 ('admin', 1, 'Administrador', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
 ('gestor', 1, 'Gestor de Frota', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
 ('gestor-manutencao', 1, 'Gestor de Manutenção', UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
@@ -434,9 +433,7 @@ INSERT INTO auth_item (name, type, description, created_at, updated_at) VALUES
 -- RBAC: ASSOCIAR PERMISSIONS AOS ROLES
 -- ============================================================================
 
--- Super Admin: Todas as permissões
-INSERT INTO auth_item_child (parent, child)
-SELECT 'super-admin', name FROM auth_item WHERE type = 2;
+-- NOTE: 'super-admin' top-level role removed. Admin is the highest privileged role by default.
 
 -- Admin: Todas exceto configurações críticas
 INSERT INTO auth_item_child (parent, child)
@@ -496,8 +493,8 @@ SELECT 'condutor', name FROM auth_item WHERE type = 2 AND name IN (
     'dashboard.view'
 );
 
--- Atribuir role 'super-admin' ao utilizador admin (user_id = 1)
+-- Assign 'admin' role to user admin (user_id = 1)
 INSERT INTO auth_assignment (item_name, user_id, created_at)
-VALUES ('super-admin', '1', UNIX_TIMESTAMP());
+VALUES ('admin', '1', UNIX_TIMESTAMP());
 
 SET FOREIGN_KEY_CHECKS = 1;

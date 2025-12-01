@@ -66,10 +66,9 @@ As migrações irão:
 ### Utilizador Admin
 - Email: admin@veigest.com
 - Password: admin (hash: $2a$12$/piK/Am/.6Wau7PpIzvO5ergX4AG17Xzk5RicS1Yom6YSsE5sSlgG)
-- Role: super-admin
+- Role: admin
 
 ### Roles RBAC Criados
-- **super-admin**: Acesso total ao sistema
 - **admin**: Administrador (todas as permissões exceto configurações críticas)
 - **gestor**: Gestor de frota (gestão de veículos, utilizadores, relatórios)
 - **gestor-manutencao**: Gestor de manutenção (foco em manutenções e documentos)
