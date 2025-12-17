@@ -17,7 +17,7 @@ return [
     'ruleConfig' => [
         'class' => \yii\filters\AccessRule::class,
     ],
-    'except' => ['error', 'login'], 
+    'except' => ['error', 'login', 'api/*'], // Excluir todas as rotas da API
     'rules' => [
 
         [
@@ -34,6 +34,9 @@ return [
 
 
     'modules' => [
+        'api' => [
+            'class' => 'backend\modules\api\Module',
+        ],
     ],
     'components' => [
 
@@ -43,6 +46,9 @@ return [
         'request' => [
             'csrfParam' => '_csrf-backend',
             'cookieValidationKey' => 'Yup8MeyEmKivPSYV944gTuoRjBGqKkVt',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ],
         ],
 
        //usa a mesma sessao do front
@@ -67,29 +73,21 @@ return [
             ],
         ],
 
-        // urlManager para API do backend (exemplos)
+        // urlManager para API do backend
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
-                // Rotas REST (AINDA NAO TERMINADO)
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/company'], 'pluralize' => false,
-                    'extraPatterns' => [
-                        'GET {id}/vehicles' => 'vehicles',
-                        'GET {id}/users' => 'users',
-                        'GET {id}/stats' => 'stats',
-                    ]
-                ],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/vehicle'], 'pluralize' => false,
-                    'extraPatterns' => [
-                        'GET {id}/maintenances' => 'maintenances',
-                        'GET {id}/fuel-logs' => 'fuel-logs',
-                        'GET {id}/stats' => 'stats',
-                        'GET company/{company_id}' => 'by-company',
-                        'GET status/{status}' => 'by-status',
-                    ]
-                ],
+                // Authentication endpoints
+                'POST api/auth/login' => 'api/auth/login',
+                'POST api/auth/logout' => 'api/auth/logout',
+                'GET api/auth/me' => 'api/auth/me',
+                'POST api/auth/refresh' => 'api/auth/refresh',
+                
+                // REST API routes
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/vehicle'], 'pluralize' => false],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/user'], 'pluralize' => false],
             ],
         ],
     ],
