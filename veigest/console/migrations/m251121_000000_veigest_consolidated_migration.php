@@ -412,7 +412,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'name' => 'Administrator',
             'username' => 'admin',
             'email' => 'admin@veigest.com',
-            'password_hash' => '$2a$12$/piK/Am/.6Wau7PpIzvO5ergX4AG17Xzk5RicS1Yom6YSsE5sSlgG', // password: admin
+            'password_hash' => '$2a$12$bPmFsaXUVmV/gKqrgvxPe.OqO6TbCova1ImNRAj9xV/l1qx4/.sVi', // password: admin
             'status' => 'active',
             'estado' => 'ativo',
             'auth_key' => md5('admin@veigest.com' . time()),

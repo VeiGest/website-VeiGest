@@ -6,8 +6,13 @@
   "scripts": {
     "test": "node run-all-tests.js",
     "test:auth": "node tests/test-auth.js",
+    "test:companies": "node tests/test-companies.js",
     "test:vehicles": "node tests/test-vehicles.js",
-    "test:users": "node tests/test-users.js"
+    "test:users": "node tests/test-users.js",
+    "test:maintenance": "node tests/test-maintenance.js",
+    "test:fuel-logs": "node tests/test-fuel-logs.js",
+    "connectivity": "node test-connectivity-complete.js",
+    "connectivity:basic": "node test-connection.js"
   },
   "keywords": [
     "veigest",

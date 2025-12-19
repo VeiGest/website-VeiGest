@@ -79,6 +79,11 @@ node run-all-tests.js
 node tests/test-auth.js
 ```
 
+**Testes de Empresas:**
+```bash
+node tests/test-companies.js
+```
+
 **Testes de Veículos:**
 ```bash
 node tests/test-vehicles.js
@@ -87,6 +92,16 @@ node tests/test-vehicles.js
 **Testes de Usuários:**
 ```bash
 node tests/test-users.js
+```
+
+**Testes de Manutenções:**
+```bash
+node tests/test-maintenance.js
+```
+
+**Testes de Abastecimentos:**
+```bash
+node tests/test-fuel-logs.js
 ```
 
 ## 📊 Entendendo os Resultados

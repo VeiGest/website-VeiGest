@@ -6,6 +6,9 @@
 const { runAuthTests } = require('./tests/test-auth.js');
 const { runVehicleTests } = require('./tests/test-vehicles.js');
 const { runUserTests } = require('./tests/test-users.js');
+const { runCompanyTests } = require('./tests/test-companies.js');
+const { runMaintenanceTests } = require('./tests/test-maintenance.js');
+const { runFuelLogTests } = require('./tests/test-fuel-logs.js');
 const { apiRequest } = require('./utils/http-client.js');
 
 /**
@@ -35,7 +38,7 @@ async function runAllTests() {
         // ========================================
         // 1. TESTES DE AUTENTICAÇÃO
         // ========================================
-        console.log('\n📦 SUITE 1/3: AUTENTICAÇÃO');
+        console.log('\n📦 SUITE 1/6: AUTENTICAÇÃO');
         console.log('─'.repeat(80));
         
         const authResults = await runAuthTests();
@@ -51,8 +54,8 @@ async function runAllTests() {
         console.log('\n🔑 Obtendo token para testes subsequentes...');
         const loginResult = await apiRequest('POST', '/auth/login', {
             body: {
-                username: 'manager',
-                password: 'manager123'
+                username: 'apiadmin',
+                password: 'password'
             }
         });
 
@@ -65,9 +68,24 @@ async function runAllTests() {
         }
 
         // ========================================
-        // 2. TESTES DE VEÍCULOS
+        // 2. TESTES DE EMPRESAS
         // ========================================
-        console.log('\n\n📦 SUITE 2/3: VEÍCULOS');
+        console.log('\n\n📦 SUITE 2/6: EMPRESAS');
+        console.log('─'.repeat(80));
+        
+        const companyResults = await runCompanyTests(globalToken, globalCompanyId);
+        allResults.suites.push({
+            name: 'Empresas',
+            ...companyResults
+        });
+        allResults.total += companyResults.total;
+        allResults.success += companyResults.success;
+        allResults.failed += companyResults.failed;
+
+        // ========================================
+        // 3. TESTES DE VEÍCULOS
+        // ========================================
+        console.log('\n\n📦 SUITE 3/6: VEÍCULOS');
         console.log('─'.repeat(80));
         
         const vehicleResults = await runVehicleTests(globalToken, globalCompanyId);
@@ -80,9 +98,9 @@ async function runAllTests() {
         allResults.failed += vehicleResults.failed;
 
         // ========================================
-        // 3. TESTES DE USUÁRIOS
+        // 4. TESTES DE USUÁRIOS
         // ========================================
-        console.log('\n\n📦 SUITE 3/3: USUÁRIOS');
+        console.log('\n\n📦 SUITE 4/6: USUÁRIOS');
         console.log('─'.repeat(80));
         
         const userResults = await runUserTests(globalToken, globalCompanyId);
@@ -93,6 +111,36 @@ async function runAllTests() {
         allResults.total += userResults.total;
         allResults.success += userResults.success;
         allResults.failed += userResults.failed;
+
+        // ========================================
+        // 5. TESTES DE MANUTENÇÕES
+        // ========================================
+        console.log('\n\n📦 SUITE 5/6: MANUTENÇÕES');
+        console.log('─'.repeat(80));
+        
+        const maintenanceResults = await runMaintenanceTests(globalToken, globalCompanyId);
+        allResults.suites.push({
+            name: 'Manutenções',
+            ...maintenanceResults
+        });
+        allResults.total += maintenanceResults.total;
+        allResults.success += maintenanceResults.success;
+        allResults.failed += maintenanceResults.failed;
+
+        // ========================================
+        // 6. TESTES DE ABASTECIMENTOS
+        // ========================================
+        console.log('\n\n📦 SUITE 6/6: ABASTECIMENTOS');
+        console.log('─'.repeat(80));
+        
+        const fuelLogResults = await runFuelLogTests(globalToken, globalCompanyId);
+        allResults.suites.push({
+            name: 'Abastecimentos',
+            ...fuelLogResults
+        });
+        allResults.total += fuelLogResults.total;
+        allResults.success += fuelLogResults.success;
+        allResults.failed += fuelLogResults.failed;
 
     } catch (error) {
         console.error('\n❌ ERRO CRÍTICO ao executar testes:', error.message);

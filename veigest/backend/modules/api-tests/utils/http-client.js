@@ -3,7 +3,7 @@
  * Fornece funções para fazer requisições HTTP e formatar respostas
  */
 
-const API_BASE_URL = 'http://localhost:21080/api';
+const API_BASE_URL = 'http://localhost:8002/api';
 
 /**
  * Faz uma requisição HTTP para a API
