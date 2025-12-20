@@ -17,7 +17,7 @@ return [
     'ruleConfig' => [
         'class' => \yii\filters\AccessRule::class,
     ],
-    'except' => ['error', 'login'], 
+    'except' => ['error', 'login',], 
     'rules' => [
 
         [

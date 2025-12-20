@@ -1,242 +1,117 @@
 <?php
 
-/** @var yii\web\View $this */
+use yii\helpers\Html;
+use yii\grid\GridView;
+use frontend\models\Driver;
+use yii\widgets\Pjax;
 
-$this->title = 'My Yii Application';
+/** @var yii\web\View $this */
+/** @var yii\data\ActiveDataProvider $dataProvider */
+
+$this->title = 'Condutores';
+$this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['dashboard/index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Condutores - VeiGest</title>
+<div class="content-header">
+    <div class="row justify-content-center mb-2">
+        <div class="col-12 col-xl-11 col-xxl-10 d-flex align-items-center justify-content-between flex-wrap">
+            <h1 class="m-0"><?= Html::encode($this->title) ?></h1>
+            <?php if (Yii::$app->user->can('drivers.create')): ?>
+                <?= Html::a('Novo Condutor', ['driver/create'], ['class' => 'btn btn-primary btn-sm']) ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
 
-    <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/css/adminlte.min.css">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.0/font/bootstrap-icons.min.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --primary-color: #09BC8A;
-            --dark-color: #3C3C3C;
-            --light-turquoise: #75DDDD;
-            --lavender-gray: #C8BFC7;
-            --lavender-blush: #FFEAEE;
-        }
-
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .navbar-light .navbar-brand {
-            color: white !important;
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-
-        .main-sidebar .nav-link.active {
-            background-color: var(--primary-color) !important;
-            color: white !important;
-        }
-
-        .nav-link {
-            color: #666 !important;
-        }
-
-        .nav-link:hover {
-            background-color: rgba(9, 188, 138, 0.1) !important;
-            color: var(--primary-color) !important;
-        }
-
-        .brand-link {
-            background-color: var(--primary-color) !important;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        .btn-primary:hover {
-            background-color: #088570 !important;
-        }
-
-        .badge-success {
-            background-color: var(--primary-color) !important;
-        }
-
-        .card {
-            border-top: 3px solid var(--primary-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .driver-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease;
-        }
-
-        .driver-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .status-badge-ativo {
-            background-color: #D1FAE5;
-            color: #065F46;
-        }
-
-        .status-badge-inativo {
-            background-color: #FEE2E2;
-            color: #991B1B;
-        }
-
-        .rbac-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .rbac-admin {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .rbac-gestor {
-            background-color: #ffc107;
-            color: #333;
-        }
-
-        .rbac-condutor {
-            background-color: #17a2b8;
-            color: white;
-        }
-
-        .rbac-convidado {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .driver-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
-    </style>
-</head>
-<!-- Content -->
-<div class="content-wrapper">
-    <!-- Content Header -->
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0" style="color: var(--dark-color); font-weight: 700;">Condutores</h1>
+<div class="content">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11 col-xxl-10">
+            <div class="card w-100" style="max-width: 1200px; margin: 0 auto;">
+                <div class="card-header">
+                    <h3 class="card-title">Lista de Condutores</h3>
+                    <!-- Botão duplicado removido; já existe no header -->
                 </div>
-                <div class="col-sm-6 text-right">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus mr-2"></i>Novo Condutor
-                    </button>
+                <div class="card-body p-0">
+                    <?php Pjax::begin(); ?>
+                    <?= GridView::widget([
+                        'dataProvider' => $dataProvider,
+                        'summary' => '<div class="pl-3 pt-2">Mostrando <strong>{begin}-{end}</strong> de <strong>{totalCount}</strong> itens.</div>',
+                        'tableOptions' => ['class' => 'table table-hover align-middle mb-0'],
+                        'headerRowOptions' => ['style' => 'background:#f7f9fb;'],
+                        'columns' => [
+                            [
+                                'attribute' => 'id',
+                                'contentOptions' => ['style' => 'width:60px; font-weight:600;']
+                            ],
+                            [
+                                'attribute' => 'name',
+                                'label' => 'Nome',
+                                'contentOptions' => ['style' => 'min-width:160px;']
+                            ],
+                            [
+                                'attribute' => 'email',
+                                'format' => 'email',
+                                'contentOptions' => ['style' => 'min-width:200px;']
+                            ],
+                            [
+                                'attribute' => 'phone',
+                                'label' => 'Telefone',
+                                'contentOptions' => ['style' => 'min-width:140px;']
+                            ],
+                            [
+                                'attribute' => 'license_number',
+                                'label' => 'Número da Carta',
+                                'contentOptions' => ['style' => 'min-width:150px;']
+                            ],
+                            [
+                                'attribute' => 'status',
+                                'label' => 'Estado',
+                                'value' => function($model) {
+                                    $isActive = $model->status === 'active';
+                                    $status = $isActive ? 'Ativo' : 'Inativo';
+                                    $badgeClass = $isActive ? 'badge-success' : 'badge-secondary';
+                                    return '<span class="badge ' . $badgeClass . '">' . $status . '</span>';
+                                },
+                                'format' => 'html',
+                                'contentOptions' => ['style' => 'width:110px;']
+                            ],
+                            [
+                                'class' => 'yii\grid\ActionColumn',
+                                'controller' => 'driver',
+                                'header' => 'Ações',
+                                'headerOptions' => ['style' => 'width:200px; text-align:center;'],
+                                'contentOptions' => ['style' => 'text-align:center; white-space:nowrap;'],
+                                'template' => '{view} {update} {delete}',
+                                'buttons' => [
+                                    'view' => function ($url, $model, $key) {
+                                        return Yii::$app->user->can('drivers.view')
+                                            ? Html::a('Ver', $url, ['class' => 'btn btn-outline-info btn-sm me-1'])
+                                            : '';
+                                    },
+                                    'update' => function ($url, $model, $key) {
+                                        return Yii::$app->user->can('drivers.update')
+                                            ? Html::a('Editar', $url, ['class' => 'btn btn-outline-warning btn-sm me-1'])
+                                            : '';
+                                    },
+                                    'delete' => function ($url, $model, $key) {
+                                        return Yii::$app->user->can('drivers.delete')
+                                            ? Html::a('Apagar', $url, [
+                                                'class' => 'btn btn-outline-danger btn-sm',
+                                                'data' => [
+                                                    'confirm' => 'Tem a certeza que deseja apagar este condutor?',
+                                                    'method' => 'post',
+                                                ],
+                                            ])
+                                            : '';
+                                    },
+                                ],
+                            ],
+                        ],
+                    ]) ?>
+                    <?php Pjax::end(); ?>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <!-- Filters -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" placeholder="Procurar nome ou NIF...">
-                        </div>
-                        <div class="col-md-4">
-                            <select class="form-control">
-                                <option>Todos os Estados</option>
-                                <option>Ativo</option>
-                                <option>Inativo</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-secondary"><i class="fas fa-filter mr-2"></i>Filtrar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Drivers Grid -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Condutores do Sistema</h3>
-                    <div class="card-tools">
-                        <span class="badge badge-primary">24 Condutores</span>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>NIF</th>
-                                <th>Carta</th>
-                                <th>Válida até</th>
-                                <th>Veículo</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>João Silva</td>
-                                <td>123456789</td>
-                                <td>123-AB-45</td>
-                                <td>15/05/2028</td>
-                                <td>ABC-1234</td>
-                                <td><span class="badge badge-success">Ativo</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-info" title="Editar"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Maria Oliveira</td>
-                                <td>987654321</td>
-                                <td>456-CD-78</td>
-                                <td>22/11/2029</td>
-                                <td>DEF-5678</td>
-                                <td><span class="badge badge-success">Ativo</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-info" title="Editar"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Carlos Pereira</td>
-                                <td>456789123</td>
-                                <td>789-EF-01</td>
-                                <td>10/02/2026</td>
-                                <td>GHI-9012</td>
-                                <td><span class="badge badge-warning">Próximo Vencimento</span></td>
-                                <td>
-                                    <button class="btn btn-sm btn-info" title="Editar"><i class="fas fa-edit"></i></button>
-                                    <button class="btn btn-sm btn-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </section>
 </div>
-
-</html>

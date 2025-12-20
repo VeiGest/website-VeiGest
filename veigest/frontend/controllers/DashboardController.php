@@ -3,8 +3,11 @@
 namespace frontend\controllers;
 
 use Yii;
+use frontend\models\Vehicle;
+use frontend\models\Driver;
 use yii\web\Controller;
 use yii\filters\AccessControl;
+use yii\data\ActiveDataProvider;
 
 /**
  * Dashboard controller
@@ -47,7 +50,7 @@ class DashboardController extends Controller
     {
         // Aqui você pode adicionar lógica para buscar dados do dashboard
         // Por exemplo: estatísticas, alertas recentes, etc.
-        
+
         return $this->render('index');
     }
 
@@ -78,7 +81,21 @@ class DashboardController extends Controller
      */
     public function actionDrivers()
     {
-        return $this->render('drivers');
+        $dataProvider = new ActiveDataProvider([
+            'query' => Driver::find()
+                ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
+                ->where([
+                    'auth_assignment.item_name' => 'driver',
+                    'users.company_id' => Yii::$app->user->identity->company_id
+                ]),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+
+        return $this->render('drivers', [
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**
@@ -108,6 +125,19 @@ class DashboardController extends Controller
      */
     public function actionVehicles()
     {
-        return $this->render('vehicles');
+        $dataProvider = new ActiveDataProvider([
+            'query' => Vehicle::find()
+                ->where(['company_id' => Yii::$app->user->identity->company_id]),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+            'sort' => [
+                'defaultOrder' => ['created_at' => SORT_DESC],
+            ],
+        ]);
+
+        return $this->render('vehicles', [
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }

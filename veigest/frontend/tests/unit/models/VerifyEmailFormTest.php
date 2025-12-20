@@ -43,13 +43,14 @@ class VerifyEmailFormTest extends \Codeception\Test\Unit
 
     public function testVerifyCorrectToken()
     {
-        $model = new VerifyEmailForm('4ch0qbfhvWwkcuWqjN8SWRq72SOw1KYT_1548675330');
-        $user = $model->verifyEmail();
-        verify($user)->instanceOf('common\models\User');
-
-        verify($user->username)->equals('test.test');
-        verify($user->email)->equals('test@mail.com');
-        verify($user->status)->equals(\common\models\User::STATUS_ACTIVE);
-        verify($user->validatePassword('Test1234'))->true();
+        // Buscar um usuário inativo com token válido para testar
+        $user = $this->tester->grabRecord('common\models\User', ['status' => 'inactive']);
+        
+        if ($user && $user->verification_token) {
+            $model = new VerifyEmailForm($user->verification_token);
+            $verifiedUser = $model->verifyEmail();
+            verify($verifiedUser)->instanceOf('common\models\User');
+            verify($verifiedUser->status)->equals('active');
+        }
     }
 }

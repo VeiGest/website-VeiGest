@@ -640,7 +640,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             [7, 1, 'Sofia Almeida', 'driver3', 'driver3@veigest.com', '$2a$12$juAwSVZA1AlkwtKr4owi/.o6GTYIBv2Abl.jL8Qgj0NSknBqbt5XC', '+351967890123', 'active', 'ativo', 'PT789123456', '2025-12-15', null, 'driver', date('Y-m-d H:i:s')],
         ]);
 
-        // Assign roles to users (RBAC assignments)
+        // Assign roles to users s(RBAC assignments)
         $this->batchInsert('{{%auth_assignment}}', ['item_name', 'user_id', 'created_at'], [
             ['admin', 2, $time],
             ['maintenance-manager', 3, $time],
