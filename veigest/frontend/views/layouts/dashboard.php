@@ -278,6 +278,9 @@ DashboardAsset::register($this);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
 
     <?php $this->endBody() ?>
+    
+    <!-- Yii Framework JS for POST method handling - MUST be last after all other scripts -->
+    <script src="<?= \yii\helpers\Url::to('@web/assets/9140a366/yii.js') ?>"></script>
 </body>
 
 </html>

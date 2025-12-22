@@ -56,7 +56,7 @@ class LoginForm extends Model
     protected function getUser()
     {
         if ($this->_user === null) {
-            // Aqui procura no campo `username` da tabela users
+            // Login apenas por username
             $this->_user = User::findByUsername($this->username);
         }
 

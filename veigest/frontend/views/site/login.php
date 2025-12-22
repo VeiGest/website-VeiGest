@@ -64,7 +64,7 @@ $this->title = 'Login';
                     <?= $form->field($model, 'username')->textInput([
                         'autofocus' => true,
                         'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
-                        'placeholder' => 'Nome de Utilizador ou Email',
+                        'placeholder' => 'Nome de Utilizador',
                     ])->label('Nome de Utilizador', ['class' => 'text-sm font-medium text-gray-900']) ?>
                 </div>
 

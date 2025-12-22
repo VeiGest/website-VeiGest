@@ -62,18 +62,19 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username', 'name', 'email', 'company_id'], 'required'],
+            [['username', 'nome', 'email', 'company_id'], 'required'],
             ['role', 'required', 'on' => 'adminCreate'],
             ['role', 'safe'], 
 
             ['password', 'required', 'on' => ['create', 'adminCreate']],
 
             ['email', 'email'],
-            ['username', 'string', 'max' => 255],
-            ['username', 'unique'],
+            ['username', 'string', 'max' => 64],
+            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9._-]{3,64}$/'],
+            ['username', 'unique', 'targetAttribute' => ['username', 'company_id']],
 
             ['role', 'in', 'range' => ['admin', 'gestor', 'condutor']],
-            ['status', 'in', 'range' => ['active', 'inactive', 'suspended']],
+            ['estado', 'in', 'range' => ['ativo', 'inativo']],
         ];
     }
 
@@ -85,39 +86,39 @@ class User extends ActiveRecord implements IdentityInterface
         // Cenário de criação → password obrigatória
         $scenarios['create'] = [
             'username',
-            'name',
+            'nome',
             'email',
             'company_id',
             'password',
             'role',
-            'status'
+            'estado'
         ];
 
         // Cenário de criação por admin → password obrigatória
         $scenarios['adminCreate'] = [
             'username',
-            'name',
+            'nome',
             'email',
             'company_id',
             'password',
             'role',
-            'status'
+            'estado'
         ];
 
         // Cenário de edição → password opcional
         $scenarios['update'] = [
             'username',
-            'name',
+            'nome',
             'email',
             'company_id',
             'password',
             'role',
-            'status'
+            'estado'
         ];
 
         $scenarios['signup'] = [
             'username',
-            'name',
+            'nome',
             'email',
             'company_id',
             'password'
@@ -134,7 +135,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'status' => 'active']);
+        return static::findOne(['id' => $id, 'estado' => 'ativo']);
     }
 
     /**
@@ -147,7 +148,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // assume token is stored in auth_key (simple bearer token)
-        return static::findOne(['auth_key' => $token, 'status' => 'active']);
+        return static::findOne(['auth_key' => $token, 'estado' => 'ativo']);
     }
 
     /**
@@ -158,7 +159,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'status' => 'active']);
+        return static::findOne(['username' => $username, 'estado' => 'ativo']);
     }
 
     /**
@@ -169,7 +170,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByEmail($email)
     {
-        return static::findOne(['email' => $email, 'status' => 'active']);
+        return static::findOne(['email' => $email, 'estado' => 'ativo']);
     }
 
     /**
@@ -186,7 +187,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'status' => 'active',
+            'estado' => 'ativo',
 
         ]);
     }
@@ -201,7 +202,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return static::findOne([
             'verification_token' => $token,
-            'status' => 'inactive',
+            'estado' => 'inativo',
 
         ]);
     }

@@ -12,6 +12,8 @@ use yii\filters\VerbFilter;
 
 class DriverController extends Controller
 {
+    public $layout = 'dashboard';
+
     public function behaviors()
     {
         return [
@@ -75,8 +77,7 @@ class DriverController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Driver::find()
-                ->where(['company_id' => Yii::$app->user->identity->company_id]),
+            'query' => Driver::find()->where(['company_id' => $this->getCompanyId()]),
             'pagination' => [
                 'pageSize' => 10,
             ],
@@ -84,7 +85,6 @@ class DriverController extends Controller
                 'defaultOrder' => ['created_at' => SORT_DESC],
             ],
         ]);
-
         return $this->render('/dashboard/drivers', [
             'dataProvider' => $dataProvider,
         ]);
@@ -96,15 +96,41 @@ class DriverController extends Controller
     public function actionCreate()
     {
         $model = new Driver();
-        $model->company_id = Yii::$app->user->identity->company_id;
-        $model->status = Driver::STATUS_ACTIVE;
+        $model->company_id = $this->getCompanyId();
+        $model->estado = Driver::STATUS_ACTIVE;
 
         if (Yii::$app->request->isPost) {
             if ($model->load(Yii::$app->request->post())) {
                 if (!empty($model->password)) {
                     $model->setPassword($model->password);
                 }
+                // Auto-gerar username se não existir
+                if (empty($model->username)) {
+                    $base = !empty($model->email) ? strstr($model->email, '@', true) : null;
+                    if (!$base) {
+                        $base = !empty($model->nome) ? strtolower(preg_replace('/[^a-z0-9]+/i', '-', $model->nome)) : 'condutor';
+                    }
+                    $username = $base;
+                    $suffix = 1;
+                    while (\common\models\User::find()->where(['username' => $username, 'company_id' => $model->company_id])->exists()) {
+                        $username = $base . '-' . $suffix++;
+                    }
+                    $model->username = $username;
+                }
+                // auth_key para sessão/remember-me
+                if (empty($model->auth_key)) {
+                    $model->auth_key = Yii::$app->security->generateRandomString();
+                }
+                // Role espelhada
+                $model->role = 'condutor';
+
                 if ($model->save()) {
+                    // Atribuir RBAC 'condutor'
+                    $auth = Yii::$app->authManager;
+                    $role = $auth->getRole('condutor');
+                    if ($role && !$auth->getAssignment('condutor', $model->id)) {
+                        $auth->assign($role, $model->id);
+                    }
                     Yii::$app->session->setFlash('success', 'Condutor criado com sucesso.');
                     return $this->redirect(['dashboard/drivers']);
                 } else {
@@ -145,6 +171,17 @@ class DriverController extends Controller
                     $model->setPassword($model->password);
                 }
                 if ($model->save()) {
+                    // Garantir role 'condutor' na coluna
+                    if ($model->role !== 'condutor') {
+                        $model->role = 'condutor';
+                        $model->save(false, ['role']);
+                    }
+                    // Garantir atribuição RBAC
+                    $auth = Yii::$app->authManager;
+                    if (!$auth->getAssignment('condutor', $model->id)) {
+                        $role = $auth->getRole('condutor');
+                        if ($role) { $auth->assign($role, $model->id); }
+                    }
                     Yii::$app->session->setFlash('success', 'Condutor atualizado com sucesso.');
                     return $this->redirect(['dashboard/drivers']);
                 }
@@ -171,7 +208,7 @@ class DriverController extends Controller
     {
         $model = Driver::findOne([
             'id' => $id,
-            'company_id' => Yii::$app->user->identity->company_id,
+            'company_id' => $this->getCompanyId(),
         ]);
 
         if ($model !== null) {
@@ -179,5 +216,14 @@ class DriverController extends Controller
         }
 
         throw new NotFoundHttpException('Condutor não encontrado.');
+    }
+
+    private function getCompanyId()
+    {
+        $identity = Yii::$app->user->identity;
+        if ($identity instanceof \common\models\User) {
+            return $identity->getAttribute('company_id');
+        }
+        return null;
     }
 }

@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use frontend\models\Vehicle;
 use frontend\models\Driver;
+use frontend\models\Maintenance;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\data\ActiveDataProvider;
@@ -103,9 +104,72 @@ class DashboardController extends Controller
      *
      * @return string
      */
-    public function actionMaintenance()
+    public function actionMaintenance($status = 'scheduled')
     {
-        return $this->render('maintenance');
+        $companyId = Yii::$app->user->identity->company_id;
+        
+        // Build query based on status filter
+        $query = Maintenance::find()
+            ->where(['company_id' => $companyId]);
+        
+        if ($status === 'scheduled') {
+            // Agendadas: status='scheduled' E data futura
+            $query->andWhere(['status' => 'scheduled'])
+                ->andWhere(['>=', 'data', date('Y-m-d')])
+                ->orderBy(['data' => SORT_ASC]);
+        } elseif ($status === 'completed') {
+            // Concluídas
+            $query->andWhere(['status' => 'completed'])
+                ->orderBy(['data' => SORT_DESC]);
+        } elseif ($status === 'overdue') {
+            // Atrasadas: status='scheduled' MAS data já passou
+            $query->andWhere(['status' => 'scheduled'])
+                ->andWhere(['<', 'data', date('Y-m-d')])
+                ->orderBy(['data' => SORT_ASC]);
+        }
+        
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
+        // Calculate stats
+        $allMaintenances = Maintenance::find()
+            ->where(['company_id' => $companyId])
+            ->all();
+
+        $stats = [
+            'scheduled' => 0,
+            'completed' => 0,
+            'overdue' => 0,
+            'totalCost' => 0,
+        ];
+
+        foreach ($allMaintenances as $maintenance) {
+            if ($maintenance->status === 'scheduled') {
+                if ($maintenance->data && strtotime($maintenance->data) < strtotime(date('Y-m-d'))) {
+                    $stats['overdue']++;
+                } else {
+                    $stats['scheduled']++;
+                }
+            } elseif ($maintenance->status === 'completed') {
+                $stats['completed']++;
+            }
+        }
+        
+        // Calculate total cost only for the filtered status
+        $filteredMaintenances = $dataProvider->query->all();
+        foreach ($filteredMaintenances as $maintenance) {
+            $stats['totalCost'] += (float)$maintenance->custo;
+        }
+
+        return $this->render('maintenance', [
+            'dataProvider' => $dataProvider,
+            'stats' => $stats,
+            'status' => $status,
+        ]);
     }
 
     /**

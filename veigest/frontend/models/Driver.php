@@ -10,21 +10,21 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property int $company_id
- * @property string $name
+ * @property string $nome
  * @property string $email
  * @property string $password_hash
- * @property string|null $phone
- * @property string|null $license_number
- * @property string|null $license_expiry
+ * @property string|null $telefone
+ * @property string|null $numero_carta
+ * @property string|null $validade_carta
  * @property string|null $photo
- * @property string $status
+ * @property string $estado
  * @property string $created_at
  * @property string|null $updated_at
  */
 class Driver extends ActiveRecord
 {
-    const STATUS_ACTIVE = 'active';
-    const STATUS_INACTIVE = 'inactive';
+    const STATUS_ACTIVE = 'ativo';
+    const STATUS_INACTIVE = 'inativo';
 
     public $password; // Campo temporário para password
 
@@ -42,15 +42,15 @@ class Driver extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'email'], 'required'],
+            [['nome', 'email'], 'required'],
             [['email'], 'email'],
             [['email'], 'string', 'max' => 150],
-            [['name'], 'string', 'max' => 150],
-            [['phone'], 'string', 'max' => 20],
-            [['license_number'], 'string', 'max' => 50],
-            [['license_expiry'], 'safe'],
+            [['nome'], 'string', 'max' => 150],
+            [['telefone'], 'string', 'max' => 20],
+            [['numero_carta'], 'string', 'max' => 50],
+            [['validade_carta'], 'safe'],
             [['photo'], 'string'],
-            [['status'], 'in', 'range' => ['active', 'inactive', 'suspended']],
+            [['estado'], 'in', 'range' => ['ativo', 'inativo']],
             // Verificar unicidade do email por empresa
             [
                 ['email'],
@@ -71,15 +71,15 @@ class Driver extends ActiveRecord
         return [
             'id' => 'ID',
             'company_id' => 'Empresa',
-            'name' => 'Nome',
+            'nome' => 'Nome',
             'email' => 'Email',
             'password' => 'Palavra-passe',
             'password_hash' => 'Palavra-passe (Hash)',
-            'phone' => 'Telefone',
-            'license_number' => 'Número da Carta',
-            'license_expiry' => 'Validade da Carta',
+            'telefone' => 'Telefone',
+            'numero_carta' => 'Número da Carta',
+            'validade_carta' => 'Validade da Carta',
             'photo' => 'Foto',
-            'status' => 'Estado',
+            'estado' => 'Estado',
             'created_at' => 'Criado em',
             'updated_at' => 'Atualizado em',
         ];
@@ -101,9 +101,8 @@ class Driver extends ActiveRecord
     public static function optsStatus()
     {
         return [
-            'active' => 'Ativo',
-            'inactive' => 'Inativo',
-            'suspended' => 'Suspenso',
+            'ativo' => 'Ativo',
+            'inativo' => 'Inativo',
         ];
     }
 
@@ -112,14 +111,21 @@ class Driver extends ActiveRecord
      */
     public function displayStatus()
     {
-        return self::optsStatus()[$this->status] ?? '-';
+        return self::optsStatus()[$this->estado] ?? '-';
     }
 
     /**
      * Relation to auth_assignment (para RBAC)
      */
-    public function getAuthAssignments()
-    {
-        return $this->hasMany('yii\\rbac\\Assignment', ['user_id' => 'id']);
-    }
+    // Alias getters for legacy fields
+    public function getName() { return $this->nome; }
+    public function setName($v) { $this->nome = $v; }
+    public function getPhone() { return $this->telefone; }
+    public function setPhone($v) { $this->telefone = $v; }
+    public function getLicense_number() { return $this->numero_carta; }
+    public function setLicense_number($v) { $this->numero_carta = $v; }
+    public function getLicense_expiry() { return $this->validade_carta; }
+    public function setLicense_expiry($v) { $this->validade_carta = $v; }
+    public function getStatus() { return $this->estado; }
+    public function setStatus($v) { $this->estado = $v; }
 }

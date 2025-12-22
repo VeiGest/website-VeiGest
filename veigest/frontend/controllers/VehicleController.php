@@ -12,6 +12,8 @@ use yii\filters\VerbFilter;
 
 class VehicleController extends Controller
 {
+    public $layout = 'dashboard';
+
     public function behaviors()
     {
         return [
