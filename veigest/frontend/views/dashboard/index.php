@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-md-3">
         <div class="small-box bg-info">
             <div class="inner">
-                <h3>245</h3>
+                <h3><?= isset($totalVehicles) ? $totalVehicles : 0 ?></h3>
                 <p>Total Veículos</p>
             </div>
             <div class="icon">
@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-md-3">
         <div class="small-box bg-success">
             <div class="inner">
-                <h3>182</h3>
+                <h3><?= isset($totalDrivers) ? $totalDrivers : 0 ?></h3>
                 <p>Condutores Ativos</p>
             </div>
             <div class="icon">
@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-md-3">
         <div class="small-box bg-warning">
             <div class="inner">
-                <h3 style="color: white;">12</h3>
+                <h3 style="color: white;"><?= isset($activeAlerts) ? $activeAlerts : 0 ?></h3>
                 <p style="color: white;">Alertas Pendentes</p>
             </div>
             <div class="icon">
@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-md-3">
         <div class="small-box bg-danger">
             <div class="inner">
-                <h3 style="color: white;">€45K</h3>
+                <h3 style="color: white;">€<?= number_format(isset($monthlyCost) ? $monthlyCost : 0, 2, ',', '.') ?></h3>
                 <p style="color: white;">Custo Mensal</p>
             </div>
             <div class="icon">
@@ -95,16 +95,22 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="card-body p-0">
                 <div class="list-group list-group-flush">
-                    <div class="list-group-item">
-                        <i class="fas fa-calendar-times text-danger mr-2"></i>
-                        <strong>Documento Vencido</strong>
-                        <p class="text-muted mb-0">Seguro do veículo ABC-1234</p>
-                    </div>
-                    <div class="list-group-item">
-                        <i class="fas fa-wrench text-warning mr-2"></i>
-                        <strong>Manutenção Programada</strong>
-                        <p class="text-muted mb-0">Revisão vence em 5 dias</p>
-                    </div>
+                    <?php if (!empty($recentAlerts)): ?>
+                        <?php foreach ($recentAlerts as $alert): ?>
+                            <div class="list-group-item">
+                                <?php
+                                    $icon = 'fas fa-info-circle text-info mr-2';
+                                    if ($alert->type === \common\models\Alert::TYPE_DOCUMENT) $icon = 'fas fa-calendar-times text-danger mr-2';
+                                    if ($alert->type === \common\models\Alert::TYPE_MAINTENANCE) $icon = 'fas fa-wrench text-warning mr-2';
+                                ?>
+                                <i class="<?= $icon ?>"></i>
+                                <strong><?= \yii\helpers\Html::encode($alert->title) ?></strong>
+                                <p class="text-muted mb-0"><?= \yii\helpers\Html::encode($alert->description) ?></p>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="list-group-item text-muted">Sem alertas recentes.</div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -145,10 +151,10 @@ const ctxConsumo = document.getElementById('consumptionChart').getContext('2d');
 new Chart(ctxConsumo, {
     type: 'line',
     data: {
-        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        labels: <?= json_encode(array_column($fuelMonthly ?? [], 'month_label')) ?>,
         datasets: [{
             label: 'Consumo (L)',
-            data: [12500, 13200, 12800, 13500, 14200, 13800, 14500, 15000, 14300, 13900, 14600, 15200],
+            data: <?= json_encode(array_map('floatval', array_column($fuelMonthly ?? [], 'total_liters'))) ?>,
             borderColor: '#09BC8A',
             backgroundColor: 'rgba(9, 188, 138, 0.1)',
             fill: true,
@@ -165,7 +171,7 @@ new Chart(ctxState, {
     data: {
         labels: ['Ativo', 'Manutenção', 'Inativo'],
         datasets: [{
-            data: [200, 35, 10],
+            data: [<?= (int)($fleetState['active'] ?? 0) ?>, <?= (int)($fleetState['maintenance'] ?? 0) ?>, <?= (int)($fleetState['inactive'] ?? 0) ?>],
             backgroundColor: ['#09BC8A', '#F59E0B', '#EF4444']
         }]
     },

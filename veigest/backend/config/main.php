@@ -91,6 +91,12 @@ return [
                 ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/company'], 'pluralize' => false],
                 ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/maintenance'], 'pluralize' => false],
                 ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/fuel-log'], 'pluralize' => false],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/file'], 'pluralize' => false],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/document'], 'pluralize' => false],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/alert'], 'pluralize' => false],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/activity-log'], 'pluralize' => false],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/route'], 'pluralize' => false],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/ticket'], 'pluralize' => false],
                 
                 // Custom endpoints for companies
                 'GET api/companies/<id:\d+>/vehicles' => 'api/company/vehicles',
@@ -122,6 +128,54 @@ return [
                 'GET api/users/profile' => 'api/user/profile',
                 'GET api/users/by-company/<company_id:\d+>' => 'api/user/by-company',
                 'POST api/users/<id:\d+>/update-photo' => 'api/user/update-photo',
+                
+                // Custom endpoints for files
+                'POST api/files/upload' => 'api/file/upload',
+                'GET api/files/stats' => 'api/file/stats',
+                
+                // Custom endpoints for documents
+                'GET api/documents/by-vehicle/<vehicle_id:\d+>' => 'api/document/by-vehicle',
+                'GET api/documents/by-driver/<driver_id:\d+>' => 'api/document/by-driver',
+                'GET api/documents/expiring' => 'api/document/expiring',
+                'GET api/documents/expired' => 'api/document/expired',
+                'GET api/documents/stats' => 'api/document/stats',
+                'GET api/documents/types' => 'api/document/types',
+                
+                // Custom endpoints for alerts
+                'POST api/alerts/<id:\d+>/resolve' => 'api/alert/resolve',
+                'POST api/alerts/<id:\d+>/ignore' => 'api/alert/ignore',
+                'GET api/alerts/by-type/<type:\w+>' => 'api/alert/by-type',
+                'GET api/alerts/by-priority/<priority:\w+>' => 'api/alert/by-priority',
+                'GET api/alerts/count' => 'api/alert/count',
+                'GET api/alerts/stats' => 'api/alert/stats',
+                'POST api/alerts/bulk-resolve' => 'api/alert/bulk-resolve',
+                
+                // Custom endpoints for activity logs
+                'GET api/activity-logs/by-user/<user_id:\d+>' => 'api/activity-log/by-user',
+                'GET api/activity-logs/by-entity/<entity:\w+>/<entity_id:\d+>' => 'api/activity-log/by-entity',
+                'GET api/activity-logs/recent' => 'api/activity-log/recent',
+                'GET api/activity-logs/stats' => 'api/activity-log/stats',
+                'GET api/activity-logs/actions' => 'api/activity-log/actions',
+                'GET api/activity-logs/entities' => 'api/activity-log/entities',
+                
+                // Custom endpoints for routes
+                'POST api/routes/<id:\d+>/complete' => 'api/route/complete',
+                'GET api/routes/by-vehicle/<vehicle_id:\d+>' => 'api/route/by-vehicle',
+                'GET api/routes/by-driver/<driver_id:\d+>' => 'api/route/by-driver',
+                'GET api/routes/active' => 'api/route/active',
+                'GET api/routes/scheduled' => 'api/route/scheduled',
+                'GET api/routes/stats' => 'api/route/stats',
+                'GET api/routes/<id:\d+>/tickets' => 'api/route/tickets',
+                
+                // Custom endpoints for tickets
+                'POST api/tickets/<id:\d+>/cancel' => 'api/ticket/cancel',
+                'POST api/tickets/<id:\d+>/complete' => 'api/ticket/complete',
+                'GET api/tickets/by-route/<route_id:\d+>' => 'api/ticket/by-route',
+                'GET api/tickets/by-status/<status:\w+>' => 'api/ticket/by-status',
+                'GET api/tickets/stats' => 'api/ticket/stats',
+                'GET api/tickets/statuses' => 'api/ticket/statuses',
+                'POST api/tickets/bulk-cancel' => 'api/ticket/bulk-cancel',
+                'POST api/tickets/bulk-complete' => 'api/ticket/bulk-complete',
             ],
         ],
     ],

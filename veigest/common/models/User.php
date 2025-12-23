@@ -12,17 +12,23 @@ use yii\web\IdentityInterface;
  * User model
  *
  * @property integer $id
+ * @property string $username
  * @property string $name
- * @property string $company_id
+ * @property integer $company_id
+ * @property string $email
  * @property string $password_hash
+ * @property string $phone
+ * @property string $status
+ * @property string $estado
+ * @property string $auth_key
  * @property string $password_reset_token
  * @property string $verification_token
- * @property string $email
- * @property string $auth_key
- 
- * @property integer $estado
- * @property integer $created_at
- * @property integer $updated_at
+ * @property string $license_number
+ * @property string $license_expiry
+ * @property string $photo
+ * @property string $roles
+ * @property string $created_at
+ * @property string $updated_at
  * @property string $password write-only password
  */
 

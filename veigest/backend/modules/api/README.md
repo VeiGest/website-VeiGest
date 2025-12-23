@@ -26,24 +26,41 @@ backend/modules/api/
 
 ### Controladores Principais
 
-- **BaseApiController** — Controlador base que implementa:
   - Configurações CORS automáticas
   - Autenticação Bearer Token
   - Respostas padronizadas (success/error)
   - Verificações de multi-tenancy
   - Content negotiation (JSON/XML)
 
-- **AuthController** — Gerenciamento de autenticação:
   - `POST /api/auth/login` — Login com username/password
   - `GET /api/auth/me` — Informações do usuário autenticado
   - `POST /api/auth/refresh` — Renovação de token
   - `POST /api/auth/logout` — Logout
   - `GET /api/auth/info` — Informações da API
 
-- **VehicleController** — Gestão de veículos:
   - CRUD completo com filtragem por empresa
   - Endpoints personalizados para manutenções e abastecimentos
   - Estatísticas de consumo e custos
+
+### Novos Módulos / Endpoints (resumo)
+
+- **MaintenanceController** — CRUD de manutenções e endpoints de relatórios:
+  - `GET /api/maintenance`, `POST /api/maintenance`, `PUT /api/maintenance/{id}`, `DELETE /api/maintenance/{id}`
+  - `GET /api/maintenance/by-vehicle/{vehicle_id}`
+  - `GET /api/maintenance/by-status/{estado}`
+  - `POST /api/maintenance/{id}/schedule`
+  - Relatórios: `GET /api/maintenance/reports/monthly`, `GET /api/maintenance/reports/costs`
+
+- **FuelLogController** — Gestão de abastecimentos, estatísticas e relatórios de eficiência:
+  - `GET /api/fuel-log`, `POST /api/fuel-log`, `PUT /api/fuel-log/{id}`
+  - `GET /api/fuel-log/stats`, `GET /api/fuel-log/efficiency-report`, `GET /api/fuel-log/alerts`
+
+- **CompanyController** — Endpoints avançados de empresa e estatísticas por empresa:
+  - `GET /api/company/{id}/vehicles`, `GET /api/company/{id}/users`, `GET /api/company/{id}/stats`
+
+- **DocumentController / FileController** — Upload, listagem e download de ficheiros/documentos com multi-tenancy.
+
+Consulte `API_ENDPOINTS_COMPLETE.md` para a lista completa e exemplos de requests/response.
 
 - **UserController** — Gestão de usuários:
   - CRUD com controle de permissões RBAC

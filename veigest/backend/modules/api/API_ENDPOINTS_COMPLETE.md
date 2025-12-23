@@ -47,6 +47,91 @@ GET    /api/companies/{id}/users          # Usuários da empresa
 GET    /api/companies/{id}/stats          # Estatísticas da empresa
 ```
 
+## 🔧 Manutenções (Maintenance)
+
+### Endpoints principais
+```
+GET    /api/maintenance                     # Listar manutenções (filtros: vehicle_id, tipo, estado, date range)
+GET    /api/maintenance/{id}                # Ver detalhe da manutenção
+POST   /api/maintenance                     # Criar nova manutenção
+PUT    /api/maintenance/{id}                # Atualizar manutenção
+DELETE /api/maintenance/{id}                # Remover manutenção
+```
+
+### Endpoints adicionais
+```
+GET    /api/maintenance/by-vehicle/{vehicle_id}   # Manutenções de um veículo
+GET    /api/maintenance/by-status/{estado}        # Filtrar por estado (ex: scheduled, completed)
+POST   /api/maintenance/{id}/schedule             # Agendar/atualizar agendamento de manutenção
+GET    /api/maintenance/reports/monthly           # Relatório mensal de manutenções
+GET    /api/maintenance/reports/costs             # Relatório de custos por tipo/veículo
+```
+
+## ⛽ Abastecimentos (FuelLog)
+
+### Endpoints principais
+```
+GET    /api/fuel-log                  # Listar abastecimentos (filtros: vehicle_id, date range)
+GET    /api/fuel-log/{id}             # Detalhe de um abastecimento
+POST   /api/fuel-log                  # Criar registro de abastecimento
+PUT    /api/fuel-log/{id}             # Atualizar abastecimento
+DELETE /api/fuel-log/{id}             # Remover registro
+```
+
+### Relatórios e utilitários
+```
+GET    /api/fuel-log/by-vehicle/{vehicle_id}     # Abastecimentos por veículo
+GET    /api/fuel-log/stats                        # Estatísticas/consumo por período
+GET    /api/fuel-log/alerts                       # Alertas relacionados a consumo/eficiência
+GET    /api/fuel-log/efficiency-report            # Relatório de eficiência (km/l, custo por km)
+```
+
+## 🚗 Veículos (Vehicle) — Endpoints Avançados
+
+```
+GET    /api/vehicles                   # Listar veículos (filtros e paginação)
+GET    /api/vehicles/{id}              # Detalhe do veículo
+POST   /api/vehicles                   # Criar veículo
+PUT    /api/vehicles/{id}              # Atualizar veículo
+DELETE /api/vehicles/{id}              # Remover veículo
+GET    /api/vehicles/{id}/maintenances # Manutenções do veículo
+GET    /api/vehicles/{id}/fuel-logs    # Abastecimentos do veículo
+GET    /api/vehicles/{id}/stats        # Estatísticas por veículo (consumo, custos, manutenção)
+GET    /api/vehicles/by-status/{status}# Filtrar por status (active, maintenance, inactive)
+```
+
+## 📄 Documentos e Ficheiros (Document / File)
+
+```
+GET    /api/documents                   # Listar documentos (filtros: vehicle_id, driver_id, status)
+POST   /api/documents                   # Criar/associar documento (com upload de ficheiro)
+GET    /api/files                       # Listar ficheiros
+POST   /api/files                       # Upload de ficheiros
+GET    /api/files/{id}/download         # Download de ficheiro
+```
+
+## 🧭 Rotas, Tickets e Outros
+
+```
+GET    /api/routes                      # Listar rotas
+POST   /api/routes                      # Criar rota
+GET    /api/tickets                     # Listar tickets
+POST   /api/tickets                     # Criar ticket
+POST   /api/tickets/{id}/cancel         # Cancelar bilhete
+POST   /api/tickets/{id}/complete       # Marcar bilhete como completo
+```
+
+## 🔐 Autenticação / Token
+A API continua a devolver um token Base64 com `user_id`, `company_code` e `expires_at`. Incluir no header:
+
+```
+Authorization: Bearer {token}
+```
+
+---
+Observação: Muitos controllers implementam filtragem automática por `company_id` e validação RBAC; consulte as controllers específicas em `backend/modules/api/controllers/` para parâmetros de query e exemplos de payload.
+
+
 **Exemplo - Estatísticas da Empresa:**
 ```bash
 curl -X GET http://localhost:21080/api/companies/1/stats \
