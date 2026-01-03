@@ -111,7 +111,7 @@ $this->title = 'Plano de Manutenção';
                                 'attribute' => 'vehicle_id',
                                 'label' => 'Veículo',
                                 'value' => function($model) {
-                                    return $model->vehicle ? $model->vehicle->modelo . ' (' . $model->vehicle->matricula . ')' : '-';
+                                    return $model->vehicle ? $model->vehicle->model . ' (' . $model->vehicle->license_plate . ')' : '-';
                                 },
                             ],
                             [

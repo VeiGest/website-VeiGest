@@ -50,32 +50,37 @@ class VehicleController extends ActiveController
             ],
         ];
 
-        // Authentication - temporarily disabled for testing
-        // $behaviors['authenticator'] = [
-        //     'class' => HttpBearerAuth::class,
-        // ];
+        // Authentication
+        $behaviors['authenticator'] = [
+            'class' => HttpBearerAuth::class,
+        ];
 
         return $behaviors;
     }
 
     /**
+     * Override default ActiveController actions so custom implementations run.
+     */
+    public function actions()
+    {
+        $actions = parent::actions();
+        unset($actions['index'], $actions['create']);
+        return $actions;
+    }
+
+    /**
      * Lists all vehicles with company information
      * 
-     * @return ActiveDataProvider
+     * @return array
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Vehicle::find()->with(['company']),
-            'pagination' => [
-                'pageSize' => 20,
-            ],
-            'sort' => [
-                'defaultOrder' => ['id' => SORT_DESC]
-            ],
-        ]);
+        $vehicles = Vehicle::find()->with(['company'])->asArray()->all();
 
-        return $dataProvider;
+        return [
+            'success' => true,
+            'data' => $vehicles,
+        ];
     }
 
     /**
@@ -96,6 +101,38 @@ class VehicleController extends ActiveController
         }
 
         return $vehicle;
+    }
+
+    /**
+     * Create a vehicle from simplified payload.
+     */
+    public function actionCreate()
+    {
+        $body = \Yii::$app->request->bodyParams;
+        $model = new Vehicle();
+        $model->company_id = $body['company_id'] ?? null;
+        $model->license_plate = $body['plate'] ?? $body['matricula'] ?? null;
+        $model->model = $body['model'] ?? $body['modelo'] ?? null;
+        // Use provided brand or reuse model for required brand field
+        $model->brand = $body['brand'] ?? $body['marca'] ?? ($model->model ?? '');
+        $model->year = $body['year'] ?? $body['ano'] ?? null;
+        $model->status = 'active';
+
+        if (!$model->save()) {
+            \Yii::$app->response->statusCode = 422;
+            return [
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $model->errors,
+            ];
+        }
+
+        \Yii::$app->response->statusCode = 201;
+        return [
+            'success' => true,
+            'message' => 'Vehicle created successfully',
+            'data' => $model,
+        ];
     }
 
     /**

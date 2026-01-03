@@ -10,21 +10,22 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property int $company_id
- * @property string $nome
+ * @property string $name
  * @property string $email
  * @property string $password_hash
- * @property string|null $telefone
- * @property string|null $numero_carta
- * @property string|null $validade_carta
+ * @property string|null $phone
+ * @property string|null $license_number
+ * @property string|null $license_expiry
  * @property string|null $photo
- * @property string $estado
+ * @property string $status
  * @property string $created_at
  * @property string|null $updated_at
  */
 class Driver extends ActiveRecord
 {
-    const STATUS_ACTIVE = 'ativo';
-    const STATUS_INACTIVE = 'inativo';
+    const STATUS_ACTIVE = 10;
+    const STATUS_INACTIVE = 9;
+    const STATUS_DELETED = 0;
 
     public $password; // Campo temporário para password
 
@@ -42,15 +43,15 @@ class Driver extends ActiveRecord
     public function rules()
     {
         return [
-            [['nome', 'email'], 'required'],
+            [['name', 'email'], 'required'],
             [['email'], 'email'],
             [['email'], 'string', 'max' => 150],
-            [['nome'], 'string', 'max' => 150],
-            [['telefone'], 'string', 'max' => 20],
-            [['numero_carta'], 'string', 'max' => 50],
-            [['validade_carta'], 'safe'],
-            [['photo'], 'string'],
-            [['estado'], 'in', 'range' => ['ativo', 'inativo']],
+            [['name'], 'string', 'max' => 150],
+            [['phone'], 'string', 'max' => 20],
+            [['license_number'], 'string', 'max' => 50],
+            [['license_expiry'], 'safe'],
+            [['status'], 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+            [['nome', 'telefone', 'numero_carta', 'validade_carta'], 'safe'],
             // Verificar unicidade do email por empresa
             [
                 ['email'],
@@ -71,15 +72,15 @@ class Driver extends ActiveRecord
         return [
             'id' => 'ID',
             'company_id' => 'Empresa',
-            'nome' => 'Nome',
+            'name' => 'Nome',
             'email' => 'Email',
             'password' => 'Palavra-passe',
             'password_hash' => 'Palavra-passe (Hash)',
-            'telefone' => 'Telefone',
-            'numero_carta' => 'Número da Carta',
-            'validade_carta' => 'Validade da Carta',
+            'phone' => 'Telefone',
+            'license_number' => 'Número da Carta',
+            'license_expiry' => 'Validade da Carta',
             'photo' => 'Foto',
-            'estado' => 'Estado',
+            'status' => 'Estado',
             'created_at' => 'Criado em',
             'updated_at' => 'Atualizado em',
         ];
@@ -101,8 +102,8 @@ class Driver extends ActiveRecord
     public static function optsStatus()
     {
         return [
-            'ativo' => 'Ativo',
-            'inativo' => 'Inativo',
+            self::STATUS_ACTIVE => 'Ativo',
+            self::STATUS_INACTIVE => 'Inativo',
         ];
     }
 
@@ -111,21 +112,21 @@ class Driver extends ActiveRecord
      */
     public function displayStatus()
     {
-        return self::optsStatus()[$this->estado] ?? '-';
+        return self::optsStatus()[$this->status] ?? '-';
     }
 
     /**
      * Relation to auth_assignment (para RBAC)
      */
     // Alias getters for legacy fields
-    public function getName() { return $this->nome; }
-    public function setName($v) { $this->nome = $v; }
-    public function getPhone() { return $this->telefone; }
-    public function setPhone($v) { $this->telefone = $v; }
-    public function getLicense_number() { return $this->numero_carta; }
-    public function setLicense_number($v) { $this->numero_carta = $v; }
-    public function getLicense_expiry() { return $this->validade_carta; }
-    public function setLicense_expiry($v) { $this->validade_carta = $v; }
-    public function getStatus() { return $this->estado; }
-    public function setStatus($v) { $this->estado = $v; }
+    public function getNome() { return $this->name; }
+    public function setNome($v) { $this->name = $v; }
+    public function getTelefone() { return $this->phone; }
+    public function setTelefone($v) { $this->phone = $v; }
+    public function getNumero_carta() { return $this->license_number; }
+    public function setNumero_carta($v) { $this->license_number = $v; }
+    public function getValidade_carta() { return $this->license_expiry; }
+    public function setValidade_carta($v) { $this->license_expiry = $v; }
+    public function getStatus() { return $this->status; }
+    public function setStatus($v) { $this->status = $v; }
 }

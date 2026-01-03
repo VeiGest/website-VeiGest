@@ -17,7 +17,7 @@ return [
     'ruleConfig' => [
         'class' => \yii\filters\AccessRule::class,
     ],
-    'except' => ['error', 'login',], 
+    'only' => ['site/*', 'user/*', 'rbac/*'],
     'rules' => [
 
         [
@@ -34,6 +34,14 @@ return [
 
 
     'modules' => [
+        'api' => [
+            'class' => 'backend\modules\api\Module',
+            'modules' => [
+                'v1' => [
+                    'class' => 'backend\modules\api\v1\Module',
+                ],
+            ],
+        ],
     ],
     'components' => [
 
@@ -43,6 +51,9 @@ return [
         'request' => [
             'csrfParam' => '_csrf-backend',
             'cookieValidationKey' => 'Yup8MeyEmKivPSYV944gTuoRjBGqKkVt',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ],
         ],
 
        //usa a mesma sessao do front
@@ -74,14 +85,14 @@ return [
             'enableStrictParsing' => false,
             'rules' => [
                 // Rotas REST (AINDA NAO TERMINADO)
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/company'], 'pluralize' => false,
+                ['class' => 'yii\rest\UrlRule', 'controller' => ['api/v1/company'],
                     'extraPatterns' => [
                         'GET {id}/vehicles' => 'vehicles',
                         'GET {id}/users' => 'users',
                         'GET {id}/stats' => 'stats',
                     ]
                 ],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/v1/vehicle'], 'pluralize' => false,
+                ['class' => 'yii\rest\UrlRule', 'controller' => ['api/v1/vehicle'],
                     'extraPatterns' => [
                         'GET {id}/maintenances' => 'maintenances',
                         'GET {id}/fuel-logs' => 'fuel-logs',

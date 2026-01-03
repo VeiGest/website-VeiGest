@@ -55,27 +55,27 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'vehicle_id',
                                 'label' => 'Veículo',
                                 'value' => function($model) {
-                                    return $model->vehicle ? $model->vehicle->modelo . ' (' . $model->vehicle->matricula . ')' : '-';
+                                    return $model->vehicle ? $model->vehicle->model . ' (' . $model->vehicle->license_plate . ')' : '-';
                                 },
                             ],
                             [
-                                'attribute' => 'tipo',
+                                'attribute' => 'type',
                                 'label' => 'Tipo',
                             ],
                             [
-                                'attribute' => 'data',
+                                'attribute' => 'date',
                                 'label' => 'Data',
                                 'format' => ['date', 'php:d/m/Y'],
                             ],
                             [
-                                'attribute' => 'custo',
+                                'attribute' => 'cost',
                                 'label' => 'Custo',
                                 'value' => function($model) {
-                                    return $model->custo !== null ? number_format($model->custo, 2, ',', '.') . ' €' : '-';
+                                    return $model->cost !== null ? number_format($model->cost, 2, ',', '.') . ' €' : '-';
                                 },
                             ],
                             [
-                                'attribute' => 'oficina',
+                                'attribute' => 'workshop',
                                 'label' => 'Oficina',
                             ],
                             [

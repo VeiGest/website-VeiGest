@@ -40,14 +40,18 @@ class Maintenance extends ActiveRecord
     public function rules()
     {
         return [
-            [['company_id', 'vehicle_id', 'tipo', 'data'], 'required'],
-            [['company_id', 'vehicle_id', 'km_registro'], 'integer'],
-            [['descricao'], 'string'],
-            [['data'], 'date', 'format' => 'php:Y-m-d'],
-            [['custo'], 'number'],
-            [['tipo', 'oficina'], 'string', 'max' => 200],
+            // Campos canónicos (BD)
+            [['company_id', 'vehicle_id', 'type', 'date'], 'required'],
+            [['company_id', 'vehicle_id', 'mileage_record'], 'integer'],
+            [['description'], 'string'],
+            [['date'], 'date', 'format' => 'php:Y-m-d'],
+            [['cost'], 'number'],
+            [['type', 'workshop'], 'string', 'max' => 200],
             [['status'], 'in', 'range' => ['scheduled', 'completed', 'overdue']],
             [['vehicle_id'], 'exist', 'skipOnError' => true, 'targetClass' => Vehicle::class, 'targetAttribute' => ['vehicle_id' => 'id']],
+
+            // Aliases PT (permitir load/validation)
+            [['tipo', 'descricao', 'data', 'custo', 'km_registro', 'oficina'], 'safe'],
         ];
     }
 
@@ -60,10 +64,17 @@ class Maintenance extends ActiveRecord
             'id' => 'ID',
             'company_id' => 'Empresa',
             'vehicle_id' => 'Veículo',
+            'type' => 'Tipo de Manutenção',
+            'description' => 'Descrição',
+            'date' => 'Data',
+            'status' => 'Estado',
+            'cost' => 'Custo (€)',
+            'mileage_record' => 'Quilometragem',
+            'workshop' => 'Oficina',
+            // Aliases PT
             'tipo' => 'Tipo de Manutenção',
             'descricao' => 'Descrição',
             'data' => 'Data',
-            'status' => 'Estado',
             'custo' => 'Custo (€)',
             'km_registro' => 'Quilometragem',
             'oficina' => 'Oficina',
@@ -116,4 +127,25 @@ class Maintenance extends ActiveRecord
             'Outro' => 'Outro',
         ];
     }
+
+    /* =========================
+     * Aliases PT -> colunas canónicas
+     * ========================= */
+    public function getTipo() { return $this->type; }
+    public function setTipo($value) { $this->type = $value; }
+
+    public function getDescricao() { return $this->description; }
+    public function setDescricao($value) { $this->description = $value; }
+
+    public function getData() { return $this->date; }
+    public function setData($value) { $this->date = $value; }
+
+    public function getCusto() { return $this->cost; }
+    public function setCusto($value) { $this->cost = $value; }
+
+    public function getKm_registro() { return $this->mileage_record; }
+    public function setKm_registro($value) { $this->mileage_record = $value; }
+
+    public function getOficina() { return $this->workshop; }
+    public function setOficina($value) { $this->workshop = $value; }
 }

@@ -15,7 +15,7 @@ use frontend\models\Driver;
 
     <div class="form-group row">
         <div class="col-md-6">
-            <?= $form->field($model, 'nome')->textInput(['maxlength' => true, 'placeholder' => 'Ex: João Silva', 'class' => 'form-control']) ?>
+            <?= $form->field($model, 'name')->textInput(['maxlength' => true, 'placeholder' => 'Ex: João Silva', 'class' => 'form-control'])->label('Nome') ?>
         </div>
         <div class="col-md-6">
             <?= $form->field($model, 'email')->textInput(['maxlength' => true, 'placeholder' => 'Ex: joao@email.com', 'class' => 'form-control']) ?>
@@ -24,19 +24,19 @@ use frontend\models\Driver;
 
     <div class="form-group row">
         <div class="col-md-6">
-            <?= $form->field($model, 'telefone')->textInput(['maxlength' => true, 'placeholder' => 'Ex: +351 91 1234567', 'class' => 'form-control']) ?>
+            <?= $form->field($model, 'phone')->textInput(['maxlength' => true, 'placeholder' => 'Ex: +351 91 1234567', 'class' => 'form-control'])->label('Telefone') ?>
         </div>
         <div class="col-md-6">
-            <?= $form->field($model, 'numero_carta')->textInput(['maxlength' => true, 'placeholder' => 'Ex: 123456789', 'class' => 'form-control']) ?>
+            <?= $form->field($model, 'license_number')->textInput(['maxlength' => true, 'placeholder' => 'Ex: 123456789', 'class' => 'form-control'])->label('Número da Carta') ?>
         </div>
     </div>
 
     <div class="form-group row">
         <div class="col-md-6">
-            <?= $form->field($model, 'validade_carta')->textInput(['type' => 'date', 'class' => 'form-control']) ?>
+            <?= $form->field($model, 'license_expiry')->textInput(['type' => 'date', 'class' => 'form-control'])->label('Validade da Carta') ?>
         </div>
         <div class="col-md-6">
-            <?= $form->field($model, 'estado')->dropDownList(
+            <?= $form->field($model, 'status')->dropDownList(
                 Driver::optsStatus(),
                 ['prompt' => 'Selecione o estado...', 'class' => 'form-control']
             ) ?>

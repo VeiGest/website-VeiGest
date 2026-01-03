@@ -9,15 +9,11 @@ use yii\helpers\ArrayHelper;
  * Company API model
  *
  * @property integer $id
- * @property string $nome
+ * @property string $name
  * @property string $email
- * @property string $telefone
- * @property string $nif
- * @property string $morada
- * @property string $cidade
- * @property string $codigo_postal
- * @property string $pais
- * @property string $estado
+ * @property string $phone
+ * @property string $tax_id
+ * @property string $status
  * @property string $created_at
  * @property string $updated_at
  */
@@ -37,16 +33,13 @@ class Company extends ActiveRecord
     public function rules()
     {
         return [
-            [['nome', 'email'], 'required'],
-            [['nome'], 'string', 'max' => 150],
+            [['name'], 'required'],
+            [['name'], 'string', 'max' => 200],
             [['email'], 'email'],
-            [['telefone'], 'string', 'max' => 20],
-            [['nif'], 'string', 'max' => 50],
-            [['morada', 'cidade'], 'string', 'max' => 200],
-            [['codigo_postal'], 'string', 'max' => 20],
-            [['pais'], 'string', 'max' => 100],
-            [['estado'], 'in', 'range' => ['ativo', 'inativo']],
-            [['estado'], 'default', 'value' => 'ativo'],
+            [['phone'], 'string', 'max' => 20],
+            [['tax_id'], 'string', 'max' => 20],
+            [['status'], 'in', 'range' => ['active', 'suspended', 'inactive']],
+            [['status'], 'default', 'value' => 'active'],
         ];
     }
 
@@ -57,17 +50,13 @@ class Company extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'nome' => 'Nome',
+            'name' => 'Name',
             'email' => 'Email',
-            'telefone' => 'Telefone',
-            'nif' => 'NIF',
-            'morada' => 'Morada',
-            'cidade' => 'Cidade',
-            'codigo_postal' => 'Código Postal',
-            'pais' => 'País',
-            'estado' => 'Estado',
-            'created_at' => 'Criado em',
-            'updated_at' => 'Atualizado em',
+            'phone' => 'Phone',
+            'tax_id' => 'Tax ID',
+            'status' => 'Status',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
         ];
     }
 
@@ -78,15 +67,11 @@ class Company extends ActiveRecord
     {
         return [
             'id',
-            'nome',
+            'name',
             'email',
-            'telefone',
-            'nif',
-            'morada',
-            'cidade',
-            'codigo_postal',
-            'pais',
-            'estado',
+            'phone',
+            'tax_id',
+            'status',
             'created_at',
             'updated_at',
         ];

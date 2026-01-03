@@ -128,16 +128,12 @@ DashboardAsset::register($this);
 
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="#">
+                    <a class="nav-link" data-toggle="dropdown" href="#" id="notificationToggle">
                         <i class="fas fa-bell"></i>
-                        <span class="badge badge-danger navbar-badge">3</span>
+                        <span class="badge badge-danger navbar-badge" id="notificationBadge" style="display: none;">0</span>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <span class="dropdown-header">3 Notificações</span>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-warning text-warning mr-2"></i> Manutenção programada
-                        </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notificationMenu">
+                        <span class="dropdown-header">Carregando...</span>
                     </div>
                 </li>
 
@@ -216,6 +212,12 @@ DashboardAsset::register($this);
                                         <p>Condutores</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="<?= Yii::$app->urlManager->createUrl(['route/index']) ?>" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Rotas</p>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
 
@@ -276,6 +278,77 @@ DashboardAsset::register($this);
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.2.0/js/adminlte.min.js"></script>
+
+    <script>
+        // Carregar notificações ao iniciar
+        $(function() {
+            loadNotifications();
+            // Recarregar a cada 30 segundos
+            setInterval(loadNotifications, 30000);
+        });
+
+        function loadNotifications() {
+            $.ajax({
+                url: '<?= \yii\helpers\Url::to(['alert/notifications']) ?>',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    updateNotificationUI(response);
+                },
+                error: function() {
+                    console.log('Erro ao carregar notificações');
+                }
+            });
+        }
+
+        function updateNotificationUI(response) {
+            const count = response.count;
+            const items = response.items;
+            const badge = $('#notificationBadge');
+            const menu = $('#notificationMenu');
+
+            // Atualizar badge
+            if (count > 0) {
+                badge.text(count).show();
+            } else {
+                badge.hide();
+            }
+
+            // Construir menu
+            let html = '<span class="dropdown-header">' + count + ' Notificação' + (count !== 1 ? 's' : '') + '</span>';
+            html += '<div class="dropdown-divider"></div>';
+
+            if (count === 0) {
+                html += '<a href="#" class="dropdown-item text-muted">Nenhuma notificação no momento</a>';
+            } else {
+                items.forEach(function(item) {
+                    let icon = 'fa-bell text-info';
+                    
+                    // Críticos = vermelho
+                    if (item.type === 'doc_expired' || item.type === 'maint_late') {
+                        icon = 'fa-exclamation-circle text-danger';
+                    } 
+                    // Próximos = amarelo/laranja
+                    else if (item.type === 'doc_near' || item.type === 'maint_near') {
+                        icon = 'fa-clock text-warning';
+                    }
+                    
+                    html += '<a href="' + item.url + '" class="dropdown-item">';
+                    html += '<i class="fas ' + icon + ' mr-2"></i> ';
+                    html += '<strong>' + item.title + '</strong><br>';
+                    html += '<small class="text-muted">' + item.message + '</small>';
+                    html += '</a>';
+                    html += '<div class="dropdown-divider"></div>';
+                });
+
+                html += '<a href="<?= \yii\helpers\Url::to(['alert/index']) ?>" class="dropdown-item dropdown-footer">';
+                html += '<i class="fas fa-eye mr-2"></i> Ver todos os alertas';
+                html += '</a>';
+            }
+
+            menu.html(html);
+        }
+    </script>
 
     <?php $this->endBody() ?>
     

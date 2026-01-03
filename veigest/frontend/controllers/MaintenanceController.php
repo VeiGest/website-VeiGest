@@ -91,13 +91,13 @@ class MaintenanceController extends Controller
 
         // Ordering: sempre por data
         if ($status === 'completed') {
-            $orderBy = ['data' => SORT_DESC]; // Mais recentes primeiro
+            $orderBy = ['date' => SORT_DESC]; // Mais recentes primeiro
         } else { // scheduled ou overdue
-            $orderBy = ['data' => SORT_ASC]; // Mais próximas primeiro
+            $orderBy = ['date' => SORT_ASC]; // Mais próximas primeiro
             
             // Para overdue, filtrar datas passadas
             if ($status === 'overdue') {
-                $query->andWhere(['<', 'data', date('Y-m-d')]);
+                $query->andWhere(['<', 'date', date('Y-m-d')]);
             }
         }
 
@@ -151,12 +151,13 @@ class MaintenanceController extends Controller
             
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', 'Manutenção criada com sucesso.');
-                return $this->redirect(['index']);
+                return $this->redirect(['dashboard/maintenance']);
             }
         }
 
         $vehicles = Vehicle::find()
             ->where(['company_id' => Yii::$app->user->identity->company_id])
+            ->select(['id', 'model AS modelo', 'license_plate AS matricula'])
             ->asArray()
             ->all();
 
@@ -185,6 +186,7 @@ class MaintenanceController extends Controller
 
         $vehicles = Vehicle::find()
             ->where(['company_id' => Yii::$app->user->identity->company_id])
+            ->select(['id', 'model AS modelo', 'license_plate AS matricula'])
             ->asArray()
             ->all();
 
@@ -223,7 +225,7 @@ class MaintenanceController extends Controller
 
         if ($model->status !== 'scheduled') {
             Yii::$app->session->setFlash('warning', 'Esta manutenção já foi concluída ou não está agendada.');
-            return $this->redirect(['index']);
+            return $this->redirect(['dashboard/maintenance']);
         }
 
         // Simply mark as completed
@@ -231,11 +233,11 @@ class MaintenanceController extends Controller
 
         if ($model->save(false)) {
             Yii::$app->session->setFlash('success', 'Manutenção concluída com sucesso!');
-            return $this->redirect(['index']);
+            return $this->redirect(['dashboard/maintenance']);
         }
 
         Yii::$app->session->setFlash('error', 'Erro ao concluir manutenção.');
-        return $this->redirect(['index']);
+        return $this->redirect(['dashboard/maintenance']);
     }
 
     /**

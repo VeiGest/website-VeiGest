@@ -9,6 +9,14 @@ use frontend\models\Driver;
 
 $this->title = 'Condutores';
 $this->params['breadcrumbs'][] = $this->title;
+
+// Mantém links clicáveis sem cor azul e mostra setas de ordenação
+$this->registerCss('
+.grid-view a { color: inherit; text-decoration: none; }
+.grid-view a:hover { color: inherit; text-decoration: underline; }
+.grid-view th a.asc:after { content: " \25B2"; font-size: 11px; }
+.grid-view th a.desc:after { content: " \25BC"; font-size: 11px; }
+');
 ?>
 
 <div class="driver-index">
@@ -25,16 +33,36 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'columns' => [
-                    'id',
-                    'nome',
-                    'email:email',
-                    'telefone',
-                    'numero_carta',
                     [
-                        'attribute' => 'estado',
+                        'attribute' => 'id',
+                        'format' => 'text',
+                    ],
+                    [
+                        'attribute' => 'name',
+                        'format' => 'text',
+                        'label' => 'Nome',
+                    ],
+                    [
+                        'attribute' => 'email',
+                        'format' => 'text',
+                    ],
+                    [
+                        'attribute' => 'phone',
+                        'label' => 'Telefone',
+                        'format' => 'text',
+                    ],
+                    [
+                        'attribute' => 'license_number',
+                        'label' => 'Número da Carta',
+                        'format' => 'text',
+                    ],
+                    [
+                        'attribute' => 'status',
+                        'label' => 'Estado',
                         'value' => function($model) {
-                            $status = $model->estado === Driver::STATUS_ACTIVE ? 'Ativo' : 'Inativo';
-                            $badgeClass = $model->estado === Driver::STATUS_ACTIVE ? 'badge-success' : 'badge-secondary';
+                            $isActive = $model->status === Driver::STATUS_ACTIVE;
+                            $status = $isActive ? 'Ativo' : 'Inativo';
+                            $badgeClass = $isActive ? 'badge-success' : 'badge-secondary';
                             return '<span class="badge ' . $badgeClass . '">' . $status . '</span>';
                         },
                         'format' => 'html',

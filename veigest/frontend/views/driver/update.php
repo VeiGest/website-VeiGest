@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var frontend\models\Driver $model */
 
-$this->title = 'Editar Condutor: ' . $model->nome;
+$this->title = 'Editar Condutor: ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['dashboard/index']];
 $this->params['breadcrumbs'][] = ['label' => 'Condutores', 'url' => ['dashboard/drivers']];
-$this->params['breadcrumbs'][] = ['label' => $model->nome, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Editar';
 ?>
 

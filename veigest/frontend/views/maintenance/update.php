@@ -6,10 +6,10 @@ use yii\helpers\Html;
 /** @var frontend\models\Maintenance $model */
 /** @var array $vehicles */
 
-$this->title = 'Editar Manutenção: ' . $model->vehicle->modelo;
+$this->title = 'Editar Manutenção: ' . $model->vehicle->model;
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['dashboard/index']];
 $this->params['breadcrumbs'][] = ['label' => 'Manutenções', 'url' => ['maintenance/index']];
-$this->params['breadcrumbs'][] = ['label' => $model->vehicle->modelo, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->vehicle->model, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Editar';
 ?>
 

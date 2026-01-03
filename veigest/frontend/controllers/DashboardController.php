@@ -58,11 +58,11 @@ class DashboardController extends Controller
     /**
      * Displays alerts page.
      *
-     * @return string
+     * @return \yii\web\Response
      */
     public function actionAlerts()
     {
-        return $this->render('alerts');
+        return $this->redirect(['alert/index']);
     }
 
     /**
@@ -87,10 +87,14 @@ class DashboardController extends Controller
                 ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
                 ->where([
                     'auth_assignment.item_name' => 'driver',
-                    'users.company_id' => Yii::$app->user->identity->company_id
+                    'users.company_id' => Yii::$app->user->identity->company_id,
+                    'users.status' => Driver::STATUS_ACTIVE
                 ]),
             'pagination' => [
                 'pageSize' => 10,
+            ],
+            'sort' => [
+                'defaultOrder' => ['created_at' => SORT_DESC],
             ],
         ]);
 
@@ -113,19 +117,19 @@ class DashboardController extends Controller
             ->where(['company_id' => $companyId]);
         
         if ($status === 'scheduled') {
-            // Agendadas: status='scheduled' E data futura
+            // Agendadas: status='scheduled' E data futura (exclui atrasadas)
             $query->andWhere(['status' => 'scheduled'])
-                ->andWhere(['>=', 'data', date('Y-m-d')])
-                ->orderBy(['data' => SORT_ASC]);
+                ->andWhere(['>', 'date', date('Y-m-d')])
+                ->orderBy(['date' => SORT_ASC]);
         } elseif ($status === 'completed') {
             // Concluídas
             $query->andWhere(['status' => 'completed'])
-                ->orderBy(['data' => SORT_DESC]);
+                ->orderBy(['date' => SORT_DESC]);
         } elseif ($status === 'overdue') {
             // Atrasadas: status='scheduled' MAS data já passou
             $query->andWhere(['status' => 'scheduled'])
-                ->andWhere(['<', 'data', date('Y-m-d')])
-                ->orderBy(['data' => SORT_ASC]);
+                ->andWhere(['<', 'date', date('Y-m-d')])
+                ->orderBy(['date' => SORT_ASC]);
         }
         
         $dataProvider = new ActiveDataProvider([
@@ -149,7 +153,7 @@ class DashboardController extends Controller
 
         foreach ($allMaintenances as $maintenance) {
             if ($maintenance->status === 'scheduled') {
-                if ($maintenance->data && strtotime($maintenance->data) < strtotime(date('Y-m-d'))) {
+                if ($maintenance->date && strtotime($maintenance->date) < strtotime(date('Y-m-d'))) {
                     $stats['overdue']++;
                 } else {
                     $stats['scheduled']++;
@@ -162,7 +166,7 @@ class DashboardController extends Controller
         // Calculate total cost only for the filtered status
         $filteredMaintenances = $dataProvider->query->all();
         foreach ($filteredMaintenances as $maintenance) {
-            $stats['totalCost'] += (float)$maintenance->custo;
+            $stats['totalCost'] += (float)$maintenance->cost;
         }
 
         return $this->render('maintenance', [

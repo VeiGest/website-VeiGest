@@ -48,10 +48,10 @@ class CompanyController extends ActiveController
             ],
         ];
 
-        // Authentication - temporarily disabled for testing
-        // $behaviors['authenticator'] = [
-        //     'class' => HttpBearerAuth::class,
-        // ];
+        // Simple Bearer authentication with custom 401 JSON
+        $behaviors['authenticator'] = [
+            'class' => HttpBearerAuth::class,
+        ];
 
         return $behaviors;
     }
@@ -63,11 +63,7 @@ class CompanyController extends ActiveController
     {
         $actions = parent::actions();
 
-        // Customize the data provider for the index action
-        $actions['index']['dataFilter'] = [
-            'class' => 'yii\data\ActiveDataFilter',
-            'searchModel' => 'backend\modules\api\v1\models\Company',
-        ];
+        unset($actions['index'], $actions['create']);
 
         return $actions;
     }
@@ -75,21 +71,30 @@ class CompanyController extends ActiveController
     /**
      * Lists all companies with their vehicle count
      * 
-     * @return ActiveDataProvider
+     * @return array
      */
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Company::find()->with(['vehicles']),
-            'pagination' => [
-                'pageSize' => 20,
-            ],
-            'sort' => [
-                'defaultOrder' => ['id' => SORT_ASC]
-            ],
-        ]);
+        // Require valid bearer token
+        $auth = \Yii::$app->request->headers->get('Authorization');
+        if (!$auth || !preg_match('/^Bearer\s+(.*?)$/', $auth, $m)) {
+            \Yii::$app->response->statusCode = 401;
+            return ['success' => false, 'message' => 'Authentication required'];
+        }
+        $token = $m[1];
+        $user = \common\models\User::findIdentityByAccessToken($token);
+        if (!$user) {
+            \Yii::$app->response->statusCode = 401;
+            return ['success' => false, 'message' => 'Authentication required'];
+        }
 
-        return $dataProvider;
+        $companies = Company::find()->with(['vehicles'])->asArray()->all();
+
+        return [
+            'success' => true,
+            'message' => 'Companies fetched successfully',
+            'data' => $companies,
+        ];
     }
 
     /**
@@ -104,6 +109,49 @@ class CompanyController extends ActiveController
             ->with(['vehicles', 'users'])
             ->where(['id' => $id])
             ->one();
+    }
+
+    /**
+     * Create company with simplified payload
+     */
+    public function actionCreate()
+    {
+        // Require auth (ActiveController create bypasses auth otherwise)
+        $auth = \Yii::$app->request->headers->get('Authorization');
+        if (!$auth || !preg_match('/^Bearer\s+(.*?)$/', $auth, $m)) {
+            \Yii::$app->response->statusCode = 401;
+            return ['success' => false, 'message' => 'Authentication required'];
+        }
+        $token = $m[1];
+        $user = \common\models\User::findIdentityByAccessToken($token);
+        if (!$user) {
+            \Yii::$app->response->statusCode = 401;
+            return ['success' => false, 'message' => 'Authentication required'];
+        }
+
+        $body = \Yii::$app->request->bodyParams;
+        $model = new Company();
+        $model->name = $body['name'] ?? $body['nome'] ?? null;
+        $model->email = $body['email'] ?? null;
+        $model->phone = $body['phone'] ?? ($body['telefone'] ?? null);
+        $model->tax_id = $body['cnpj'] ?? ($body['nif'] ?? null);
+        $model->status = 'active';
+
+        if (!$model->save()) {
+            \Yii::$app->response->statusCode = 422;
+            return [
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $model->errors,
+            ];
+        }
+
+        \Yii::$app->response->statusCode = 201;
+        return [
+            'success' => true,
+            'message' => 'Company created successfully',
+            'data' => $model,
+        ];
     }
 
     /**
@@ -165,8 +213,8 @@ class CompanyController extends ActiveController
             'company' => $company,
             'vehicles_count' => $company->getVehicles()->count(),
             'users_count' => $company->getUsers()->count(),
-            'active_vehicles' => $company->getVehicles()->where(['estado' => 'ativo'])->count(),
-            'vehicles_in_maintenance' => $company->getVehicles()->where(['estado' => 'manutencao'])->count(),
+            'active_vehicles' => $company->getVehicles()->where(['status' => 'active'])->count(),
+            'vehicles_in_maintenance' => $company->getVehicles()->where(['status' => 'maintenance'])->count(),
         ];
     }
 }

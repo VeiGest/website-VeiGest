@@ -22,6 +22,14 @@ use frontend\models\TicketForm;
  */
 class SiteController extends Controller
 {
+    public function beforeAction($action)
+    {
+        if ($action->id === 'error') {
+            $this->layout = 'login';
+        }
+        return parent::beforeAction($action);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -99,29 +107,44 @@ class SiteController extends Controller
 
         $model = new \common\models\LoginForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::info('Login form loaded: username=' . $model->username, 'login');
+            
+            try {
+                $loginResult = $model->login();
+                Yii::info('Login result: ' . ($loginResult ? 'true' : 'false'), 'login');
+                
+                if ($loginResult) {
+                    Yii::info('Login successful for user: ' . Yii::$app->user->id, 'login');
 
-            // ADMIN → frontend homepage
-            if (Yii::$app->user->can('admin')) {
-                return $this->redirect(['/site/index']);
+                    // ADMIN → frontend homepage
+                    if (Yii::$app->user->can('admin')) {
+                        Yii::info('User can admin - redirecting to /site/index', 'login');
+                        return $this->redirect(['/site/index']);
+                    }
+
+                    // MANAGER → frontend homepage
+                    if (Yii::$app->user->can('manager')) {
+                        Yii::info('User can manager - redirecting to /site/index', 'login');
+                        return $this->redirect(['/site/index']);
+                    }
+
+                    // DRIVER → frontend homepage
+                    if (Yii::$app->user->can('driver')) {
+                        Yii::info('User can driver - redirecting to /site/index', 'login');
+                        return $this->redirect(['/site/index']);
+                    }
+
+                    Yii::info('User has no role - using goHome()', 'login');
+                    return $this->goHome();
+                } else {
+                    Yii::warning('Login failed - validation errors: ' . json_encode($model->errors), 'login');
+                }
+            } catch (\Exception $e) {
+                Yii::error('Login threw exception: ' . $e->getMessage() . ' | ' . $e->getTraceAsString(), 'login');
+                throw $e;
             }
-
-            // GESTOR → frontend homepage
-            if (Yii::$app->user->can('gestor')) {
-                return $this->redirect(['/site/index']);
-            }
-
-            // CONDUTOR → frontend homepage
-            if (Yii::$app->user->can('condutor')) {
-                return $this->redirect(['/site/index']);
-            }
-
-            return $this->goHome();
         }
-
-        $model->password = '1234';
-        $model->username = 'veigest_admin';
-
 
         return $this->render('login', ['model' => $model]);
     }
@@ -247,21 +270,25 @@ class SiteController extends Controller
      *
      * @param string $token
      * @throws BadRequestHttpException
-     * @return yii\web\Response
+     * @return mixed
      */
     public function actionVerifyEmail($token)
     {
+        \Yii::info(['route' => 'verify-email', 'token' => $token], __METHOD__);
         try {
             $model = new VerifyEmailForm($token);
         } catch (InvalidArgumentException $e) {
+            \Yii::warning(['verify-email' => 'invalid', 'reason' => $e->getMessage(), 'token' => $token], __METHOD__);
             throw new BadRequestHttpException($e->getMessage());
         }
         if ($model->verifyEmail()) {
             Yii::$app->session->setFlash('success', 'Your email has been confirmed!');
-            return $this->goHome();
+            \Yii::info(['verify-email' => 'success', 'token' => $token], __METHOD__);
+            return $this->render('verifyEmailSuccess');
         }
 
         Yii::$app->session->setFlash('error', 'Sorry, we are unable to verify your account with provided token.');
+        \Yii::warning(['verify-email' => 'failed-to-save', 'token' => $token], __METHOD__);
         return $this->goHome();
     }
 

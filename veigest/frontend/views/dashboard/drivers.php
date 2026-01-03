@@ -11,6 +11,15 @@ use yii\widgets\Pjax;
 $this->title = 'Condutores';
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['dashboard/index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+// Mantém links clicáveis sem cor azul e mostra setas de ordenação
+$this->registerCss('
+.grid-view a { color: inherit; text-decoration: none; }
+.grid-view a:hover { color: inherit; text-decoration: underline; }
+.grid-view th a.asc:after { content: " \25B2"; font-size: 11px; }
+.grid-view th a.desc:after { content: " \25BC"; font-size: 11px; }
+');
+
 ?>
 
 <div class="content-header">
@@ -42,16 +51,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         'columns' => [
                             [
                                 'attribute' => 'id',
-                                'contentOptions' => ['style' => 'width:60px; font-weight:600;']
-                            ],
-                            [
-                                'attribute' => 'name',
                                 'label' => 'Nome',
+                                'format' => 'text',
                                 'contentOptions' => ['style' => 'min-width:160px;']
                             ],
                             [
                                 'attribute' => 'email',
-                                'format' => 'email',
+                                'format' => 'text',
                                 'contentOptions' => ['style' => 'min-width:200px;']
                             ],
                             [
@@ -68,7 +74,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'attribute' => 'status',
                                 'label' => 'Estado',
                                 'value' => function($model) {
-                                    $isActive = $model->status === 'active';
+                                    $isActive = $model->status === 10;
                                     $status = $isActive ? 'Ativo' : 'Inativo';
                                     $badgeClass = $isActive ? 'badge-success' : 'badge-secondary';
                                     return '<span class="badge ' . $badgeClass . '">' . $status . '</span>';

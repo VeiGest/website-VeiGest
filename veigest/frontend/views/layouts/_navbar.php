@@ -17,6 +17,9 @@ use yii\bootstrap5\Html;
                 <?= Html::a('Início', ['/site/index'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
+                <?= Html::a('About', ['/site/about'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
                 <?= Html::a('Serviços', ['/site/services'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>

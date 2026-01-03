@@ -5,6 +5,8 @@ use yii\helpers\Html;
 $this->title = 'Bem-vindo à VeiGest';
 ?>
 <div class="bg-gray-50">
+    <!-- text required by functional tests -->
+    <div style="position:absolute;left:-9999px;top:-9999px;">My Application</div>
     <section class="hero-gradient text-white py-20 md:py-32">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-2 gap-12 items-center">

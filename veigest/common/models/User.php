@@ -30,8 +30,12 @@ use yii\web\IdentityInterface;
 
 class User extends ActiveRecord implements IdentityInterface
 {
-    public $password;
+    public const STATUS_DELETED = 0;
+    public const STATUS_INACTIVE = 9;
+    public const STATUS_ACTIVE = 10;
 
+    // Virtual attribute for password - only used during create/update
+    public $password;
 
     /**
      * {@inheritdoc}
@@ -57,12 +61,25 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Aliases for legacy `nome` usage (maps to `name` column).
+     */
+    public function getNome()
+    {
+        return $this->name;
+    }
+
+    public function setNome($value)
+    {
+        $this->name = $value;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['username', 'nome', 'email', 'company_id'], 'required'],
+            [['username', 'name', 'email', 'company_id'], 'required'],
             ['role', 'required', 'on' => 'adminCreate'],
             ['role', 'safe'], 
 
@@ -73,8 +90,10 @@ class User extends ActiveRecord implements IdentityInterface
             ['username', 'match', 'pattern' => '/^[a-zA-Z0-9._-]{3,64}$/'],
             ['username', 'unique', 'targetAttribute' => ['username', 'company_id']],
 
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+
             ['role', 'in', 'range' => ['admin', 'gestor', 'condutor']],
-            ['estado', 'in', 'range' => ['ativo', 'inativo']],
         ];
     }
 
@@ -86,42 +105,43 @@ class User extends ActiveRecord implements IdentityInterface
         // Cenário de criação → password obrigatória
         $scenarios['create'] = [
             'username',
-            'nome',
+            'name',
             'email',
             'company_id',
             'password',
             'role',
-            'estado'
+            'status'
         ];
 
         // Cenário de criação por admin → password obrigatória
         $scenarios['adminCreate'] = [
             'username',
-            'nome',
+            'name',
             'email',
             'company_id',
             'password',
             'role',
-            'estado'
+            'status'
         ];
 
         // Cenário de edição → password opcional
         $scenarios['update'] = [
             'username',
-            'nome',
+            'name',
             'email',
             'company_id',
             'password',
             'role',
-            'estado'
+            'status'
         ];
 
         $scenarios['signup'] = [
             'username',
-            'nome',
+            'name',
             'email',
             'company_id',
-            'password'
+            'password',
+            'status'
         ];
 
         return $scenarios;
@@ -135,7 +155,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'estado' => 'ativo']);
+        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
     }
 
     /**
@@ -148,7 +168,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // assume token is stored in auth_key (simple bearer token)
-        return static::findOne(['auth_key' => $token, 'estado' => 'ativo']);
+        return static::findOne(['auth_key' => $token, 'status' => self::STATUS_ACTIVE]);
     }
 
     /**
@@ -159,7 +179,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'estado' => 'ativo']);
+        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
     }
 
     /**
@@ -170,7 +190,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByEmail($email)
     {
-        return static::findOne(['email' => $email, 'estado' => 'ativo']);
+        return static::findOne(['email' => $email, 'status' => self::STATUS_ACTIVE]);
     }
 
     /**
@@ -187,7 +207,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'estado' => 'ativo',
+            'status' => self::STATUS_ACTIVE,
 
         ]);
     }
@@ -202,8 +222,6 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return static::findOne([
             'verification_token' => $token,
-            'estado' => 'inativo',
-
         ]);
     }
 
@@ -262,6 +280,10 @@ class User extends ActiveRecord implements IdentityInterface
         // Gerar auth_key apenas na criação
         if ($insert) {
             $this->generateAuthKey();
+        }
+
+        if ($this->status === null) {
+            $this->status = self::STATUS_ACTIVE;
         }
 
         // Criar hash da password se for preenchida
@@ -339,20 +361,23 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
 
-        // Retorna a primeira role encontrada (ou a mais importante)
+        // Retorna a role principal mapeada para categorias de UI
         $roleNames = array_keys($roles);
 
-        // Prioridade: admin > gestor > condutor
-        if (in_array('admin', $roleNames)) {
+        // Prioridade: admin > manager/maintenance-manager > senior-driver/driver
+        if (in_array('admin', $roleNames, true)) {
             return 'admin';
         }
-        if (in_array('gestor', $roleNames)) {
+        if (in_array('manager', $roleNames, true) || in_array('maintenance-manager', $roleNames, true)) {
+            // Mapear para 'gestor' para compatibilidade com UI existente
             return 'gestor';
         }
-        if (in_array('condutor', $roleNames)) {
+        if (in_array('senior-driver', $roleNames, true) || in_array('driver', $roleNames, true)) {
+            // Mapear para 'condutor' para compatibilidade com UI existente
             return 'condutor';
         }
 
+        // Fallback: primeira role
         return $roleNames[0] ?? null;
     }
 

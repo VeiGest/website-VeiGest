@@ -66,7 +66,10 @@ $this->params['breadcrumbs'][] = $this->title;
                                     'model',
                                     'year',
                                     'fuel_type',
-                                    'mileage',
+                                    [
+                                        'attribute' => 'mileage',
+                                        'label' => 'Quilometragem',
+                                    ],
                                     [
                                         'attribute' => 'status',
                                         'value' => function($model) {

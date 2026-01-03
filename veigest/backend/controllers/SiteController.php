@@ -24,10 +24,10 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
 
-                    // permitir backend apenas a quem tem "acessoBackend"
+                    // permitir backend apenas a administradores
                     [
                         'allow' => true,
-                        'roles' => ['acessoBackend'],
+                        'roles' => ['admin'],
                     ],
                 ],
             ],

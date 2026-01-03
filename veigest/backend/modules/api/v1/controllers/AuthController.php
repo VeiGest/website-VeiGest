@@ -68,40 +68,27 @@ class AuthController extends Controller
     public function actionLogin()
     {
         $body = Yii::$app->request->bodyParams;
-        $username = $body['username'] ?? $body['nome'] ?? null;
+        $username = $body['username'] ?? null;
         $password = $body['password'] ?? null;
 
         if (!$username || !$password) {
             Yii::$app->response->statusCode = 400;
             return [
                 'success' => false,
-                'message' => 'Username and password are required',
+                'message' => 'username and password are required',
                 'error_code' => 'MISSING_CREDENTIALS'
             ];
         }
 
-        // Try to find user by username or nome field
+        // Find active user by username
         $user = User::findByUsername($username);
-        if (!$user) {
-            $user = User::findOne(['nome' => $username, 'estado' => 'ativo']);
-        }
 
-        if (!$user || !$user->validatePassword($password)) {
+        if (!$user || (int)$user->status !== User::STATUS_ACTIVE || !$user->validatePassword($password)) {
             Yii::$app->response->statusCode = 401;
             return [
                 'success' => false,
                 'message' => 'Invalid credentials',
                 'error_code' => 'INVALID_CREDENTIALS'
-            ];
-        }
-
-        // Check if user is active
-        if ($user->estado !== 'ativo') {
-            Yii::$app->response->statusCode = 403;
-            return [
-                'success' => false,
-                'message' => 'User account is inactive',
-                'error_code' => 'USER_INACTIVE'
             ];
         }
 
@@ -122,7 +109,7 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
                 'user' => [
                     'id' => $user->id,
-                    'username' => $user->username ?? $user->nome,
+                    'username' => $user->username,
                     'nome' => $user->nome,
                     'email' => $user->email,
                     'company_id' => $user->company_id ?? 1,
@@ -130,7 +117,7 @@ class AuthController extends Controller
                         'id' => $company->id,
                         'nome' => $company->nome,
                     ] : null,
-                    'estado' => $user->estado ?? 'ativo',
+                    'estado' => (int)$user->status === User::STATUS_ACTIVE ? 'ativo' : 'inativo',
                 ],
             ]
         ];
@@ -149,8 +136,7 @@ class AuthController extends Controller
             Yii::$app->response->statusCode = 401;
             return [
                 'success' => false,
-                'message' => 'Authorization header missing or invalid',
-                'error_code' => 'MISSING_TOKEN'
+                'message' => 'Authentication required'
             ];
         }
 
@@ -161,8 +147,7 @@ class AuthController extends Controller
             Yii::$app->response->statusCode = 401;
             return [
                 'success' => false,
-                'message' => 'Invalid token',
-                'error_code' => 'INVALID_TOKEN'
+                'message' => 'Authentication required'
             ];
         }
 
@@ -195,8 +180,7 @@ class AuthController extends Controller
             Yii::$app->response->statusCode = 401;
             return [
                 'success' => false,
-                'message' => 'Authorization header missing or invalid',
-                'error_code' => 'MISSING_TOKEN'
+                'message' => 'Authentication required'
             ];
         }
 
@@ -211,7 +195,7 @@ class AuthController extends Controller
 
         return [
             'success' => true,
-            'message' => 'Logout successful'
+            'message' => 'Logged out successfully'
         ];
     }
 
@@ -223,20 +207,16 @@ class AuthController extends Controller
     public function actionInfo()
     {
         return [
-            'success' => true,
-            'data' => [
-                'api_name' => 'VeiGest API',
-                'version' => '1.0.0',
-                'description' => 'RESTful API for VeiGest vehicle management system',
-                'endpoints' => [
-                    'auth' => '/api/v1/auth',
-                    'companies' => '/api/v1/company',
-                    'vehicles' => '/api/v1/vehicle',
-                    'users' => '/api/v1/user',
-                    'maintenances' => '/api/v1/maintenance',
-                ],
-                'documentation' => 'https://veigest.local/api/docs',
-            ]
+            'name' => 'VeiGest API',
+            'version' => '1.0.0',
+            'description' => 'RESTful API for VeiGest vehicle management system',
+            'endpoints' => [
+                'auth' => '/api/v1/auth',
+                'companies' => '/api/v1/company',
+                'vehicles' => '/api/v1/vehicle',
+                'users' => '/api/v1/user',
+                'maintenances' => '/api/v1/maintenance',
+            ],
         ];
     }
 }

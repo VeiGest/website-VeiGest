@@ -25,16 +25,16 @@ use yii\db\ActiveRecord;
 class Vehicle extends ActiveRecord
 {
     // Tipos de combustível (Português, conforme BD)
-    const FUEL_TYPE_GASOLINA  = 'gasolina';
+    const FUEL_TYPE_GASOLINA  = 'gasoline';
     const FUEL_TYPE_DIESEL    = 'diesel';
-    const FUEL_TYPE_ELETRICO  = 'eletrico';
-    const FUEL_TYPE_HIBRIDO   = 'hibrido';
-    const FUEL_TYPE_OUTRO     = 'outro';
+    const FUEL_TYPE_ELETRICO  = 'electric';
+    const FUEL_TYPE_HIBRIDO   = 'hybrid';
+    const FUEL_TYPE_OUTRO     = 'other';
 
-    // Estado (Português, conforme BD)
-    const STATUS_ATIVO        = 'ativo';
-    const STATUS_MANUTENCAO   = 'manutencao';
-    const STATUS_INATIVO      = 'inativo';
+    // Estado (mantém labels PT, valores alinhados à BD)
+    const STATUS_ATIVO        = 'active';
+    const STATUS_MANUTENCAO   = 'maintenance';
+    const STATUS_INATIVO      = 'inactive';
 
     /**
      * {@inheritdoc}
@@ -50,20 +50,23 @@ class Vehicle extends ActiveRecord
     public function rules()
     {
         return [
-            [['matricula', 'marca', 'modelo', 'estado'], 'required'],
-            [['ano', 'quilometragem', 'company_id'], 'integer'],
-            [['matricula'], 'string', 'max' => 20],
-            [['marca', 'modelo'], 'string', 'max' => 100],
-            [['estado'], 'in', 'range' => [self::STATUS_ATIVO, self::STATUS_MANUTENCAO, self::STATUS_INATIVO]],
-            [['tipo_combustivel'], 'in', 'range' => [self::FUEL_TYPE_GASOLINA, self::FUEL_TYPE_DIESEL, self::FUEL_TYPE_ELETRICO, self::FUEL_TYPE_HIBRIDO, self::FUEL_TYPE_OUTRO]],
-            [['foto'], 'string'],
-            // Verificar unicidade da matrícula por empresa
+            // Campos canónicos (BD)
+            [['license_plate', 'brand', 'model', 'status'], 'required'],
+            [['company_id', 'year', 'mileage', 'driver_id'], 'integer'],
+            [['license_plate'], 'string', 'max' => 20],
+            [['brand', 'model'], 'string', 'max' => 100],
+            [['photo'], 'string'],
+            [['status'], 'in', 'range' => [self::STATUS_ATIVO, self::STATUS_MANUTENCAO, self::STATUS_INATIVO]],
+            [['fuel_type'], 'in', 'range' => [self::FUEL_TYPE_GASOLINA, self::FUEL_TYPE_DIESEL, self::FUEL_TYPE_ELETRICO, self::FUEL_TYPE_HIBRIDO, self::FUEL_TYPE_OUTRO]],
             [
-                ['matricula', 'company_id'],
+                ['license_plate', 'company_id'],
                 'unique',
-                'targetAttribute' => ['matricula', 'company_id'],
+                'targetAttribute' => ['license_plate', 'company_id'],
                 'message' => 'Esta matrícula já está registada na sua empresa.'
             ],
+
+            // Aliases PT (permitir load/validation)
+            [['matricula', 'marca', 'modelo', 'ano', 'tipo_combustivel', 'quilometragem', 'estado', 'condutor_id', 'foto'], 'safe'],
         ];
     }
 
@@ -74,18 +77,6 @@ class Vehicle extends ActiveRecord
     {
         return [
             'id'               => 'ID',
-            'company_id'       => 'Empresa',
-            // Português (BD)
-            'matricula'        => 'Matrícula',
-            'marca'            => 'Marca',
-            'modelo'           => 'Modelo',
-            'ano'              => 'Ano',
-            'tipo_combustivel' => 'Tipo de Combustível',
-            'quilometragem'    => 'Quilometragem',
-            'estado'           => 'Estado',
-            'condutor_id'      => 'Condutor',
-            'foto'             => 'Foto',
-            // Aliases para compatibilidade (views antigas)
             'license_plate'    => 'Matrícula',
             'brand'            => 'Marca',
             'model'            => 'Modelo',
@@ -95,8 +86,19 @@ class Vehicle extends ActiveRecord
             'status'           => 'Estado',
             'driver_id'        => 'Condutor',
             'photo'            => 'Foto',
+            'company_id'       => 'Empresa',
             'created_at'       => 'Criado em',
             'updated_at'       => 'Atualizado em',
+            // Aliases PT
+            'matricula'        => 'Matrícula',
+            'marca'            => 'Marca',
+            'modelo'           => 'Modelo',
+            'ano'              => 'Ano',
+            'tipo_combustivel' => 'Tipo de Combustível',
+            'quilometragem'    => 'Quilometragem',
+            'estado'           => 'Estado',
+            'condutor_id'      => 'Condutor',
+            'foto'             => 'Foto',
         ];
     }
 
@@ -126,41 +128,42 @@ class Vehicle extends ActiveRecord
 
     public function displayFuelType()
     {
-        return self::optsFuelType()[$this->tipo_combustivel] ?? '-';
+        return self::optsFuelType()[$this->fuel_type] ?? '-';
     }
 
     public function displayStatus()
     {
-        return self::optsStatus()[$this->estado] ?? '-';
+        return self::optsStatus()[$this->status] ?? '-';
     }
 
     /* =========================
      * Aliases getters/setters (compat)
      * ========================= */
-    public function getLicense_plate() { return $this->matricula; }
-    public function setLicense_plate($value) { $this->matricula = $value; }
+    // Aliases PT -> colunas canónicas
+    public function getMatricula() { return $this->license_plate; }
+    public function setMatricula($value) { $this->license_plate = $value; }
 
-    public function getBrand() { return $this->marca; }
-    public function setBrand($value) { $this->marca = $value; }
+    public function getMarca() { return $this->brand; }
+    public function setMarca($value) { $this->brand = $value; }
 
-    public function getModel() { return $this->modelo; }
-    public function setModel($value) { $this->modelo = $value; }
+    public function getModelo() { return $this->model; }
+    public function setModelo($value) { $this->model = $value; }
 
-    public function getYear() { return $this->ano; }
-    public function setYear($value) { $this->ano = (int)$value; }
+    public function getAno() { return $this->year; }
+    public function setAno($value) { $this->year = (int)$value; }
 
-    public function getFuel_type() { return $this->tipo_combustivel; }
-    public function setFuel_type($value) { $this->tipo_combustivel = $value; }
+    public function getTipo_combustivel() { return $this->fuel_type; }
+    public function setTipo_combustivel($value) { $this->fuel_type = $value; }
 
-    public function getMileage() { return $this->quilometragem; }
-    public function setMileage($value) { $this->quilometragem = (int)$value; }
+    public function getQuilometragem() { return $this->mileage; }
+    public function setQuilometragem($value) { $this->mileage = (int)$value; }
 
-    public function getStatus() { return $this->estado; }
-    public function setStatus($value) { $this->estado = $value; }
+    public function getEstado() { return $this->status; }
+    public function setEstado($value) { $this->status = $value; }
 
-    public function getDriver_id() { return $this->condutor_id; }
-    public function setDriver_id($value) { $this->condutor_id = (int)$value; }
+    public function getCondutor_id() { return $this->driver_id; }
+    public function setCondutor_id($value) { $this->driver_id = (int)$value; }
 
-    public function getPhoto() { return $this->foto; }
-    public function setPhoto($value) { $this->foto = $value; }
+    public function getFoto() { return $this->photo; }
+    public function setFoto($value) { $this->photo = $value; }
 }

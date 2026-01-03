@@ -121,7 +121,7 @@ $avatar = Url::to('@web/img/user-placeholder.png');
                             <?= Html::a('<i class="fas fa-user mr-2"></i> Perfil', ['/user/view', 'id' => $identity->id], ['class' => 'dropdown-item']) ?>
                             <div class="dropdown-divider"></div>
                             <?= Html::beginForm(['/site/logout'], 'post')
-                                . Html::submitButton('<i class="fas fa-sign-out-alt mr-2"></i> Sair', ['class' => 'dropdown-item'])
+                                . Html::submitButton('<i class="fas fa-sign-out-alt mr-2"></i> Logout (' . Html::encode($identity->username) . ')', ['class' => 'dropdown-item'])
                                 . Html::endForm() ?>
                         </div>
                     <?php endif; ?>

@@ -9,15 +9,15 @@ use yii\db\ActiveRecord;
  *
  * @property integer $id
  * @property integer $company_id
- * @property string $matricula
- * @property string $marca
- * @property string $modelo
- * @property integer $ano
- * @property string $combustivel
- * @property integer $quilometragem
- * @property string $cor
- * @property string $numero_chassis
- * @property string $estado
+ * @property string $license_plate
+ * @property string $brand
+ * @property string $model
+ * @property integer $year
+ * @property string $fuel_type
+ * @property integer $mileage
+ * @property string $color
+ * @property string $chassis_number
+ * @property string $status
  * @property string $created_at
  * @property string $updated_at
  */
@@ -37,16 +37,16 @@ class Vehicle extends ActiveRecord
     public function rules()
     {
         return [
-            [['company_id', 'matricula', 'marca', 'modelo'], 'required'],
-            [['company_id', 'ano', 'quilometragem'], 'integer'],
-            [['matricula'], 'string', 'max' => 20],
-            [['marca', 'modelo'], 'string', 'max' => 100],
-            [['combustivel'], 'in', 'range' => ['gasolina', 'diesel', 'eletrico', 'hibrido', 'gas']],
-            [['cor'], 'string', 'max' => 50],
-            [['numero_chassis'], 'string', 'max' => 50],
-            [['estado'], 'in', 'range' => ['ativo', 'inativo', 'manutencao']],
-            [['estado'], 'default', 'value' => 'ativo'],
-            [['matricula'], 'unique'],
+            [['company_id', 'license_plate', 'brand', 'model'], 'required'],
+            [['company_id', 'year', 'mileage'], 'integer'],
+            [['license_plate'], 'string', 'max' => 20],
+            [['brand', 'model'], 'string', 'max' => 100],
+            [['fuel_type'], 'in', 'range' => ['gasoline','diesel','electric','hybrid','other']],
+            [['color'], 'string', 'max' => 50],
+            [['chassis_number'], 'string', 'max' => 50],
+            [['status'], 'in', 'range' => ['active', 'inactive', 'maintenance']],
+            [['status'], 'default', 'value' => 'active'],
+            [['license_plate'], 'unique'],
         ];
     }
 
@@ -58,15 +58,15 @@ class Vehicle extends ActiveRecord
         return [
             'id' => 'ID',
             'company_id' => 'Empresa',
-            'matricula' => 'Matrícula',
-            'marca' => 'Marca',
-            'modelo' => 'Modelo',
-            'ano' => 'Ano',
-            'combustivel' => 'Combustível',
-            'quilometragem' => 'Quilometragem',
-            'cor' => 'Cor',
-            'numero_chassis' => 'Número do Chassis',
-            'estado' => 'Estado',
+            'license_plate' => 'Matrícula',
+            'brand' => 'Marca',
+            'model' => 'Modelo',
+            'year' => 'Ano',
+            'fuel_type' => 'Combustível',
+            'mileage' => 'Quilometragem',
+            'color' => 'Cor',
+            'chassis_number' => 'Número do Chassis',
+            'status' => 'Estado',
             'created_at' => 'Criado em',
             'updated_at' => 'Atualizado em',
         ];
@@ -80,19 +80,39 @@ class Vehicle extends ActiveRecord
         return [
             'id',
             'company_id',
-            'matricula',
-            'marca',
-            'modelo',
-            'ano',
-            'combustivel',
-            'quilometragem',
-            'cor',
-            'numero_chassis',
-            'estado',
+            'license_plate',
+            'brand',
+            'model',
+            'year',
+            'fuel_type',
+            'mileage',
+            'color',
+            'chassis_number',
+            'status',
             'created_at',
             'updated_at',
         ];
     }
+
+    // Portuguese alias getters/setters for backward compatibility
+    public function getMatricula() { return $this->license_plate; }
+    public function setMatricula($v) { $this->license_plate = $v; }
+    public function getMarca() { return $this->brand; }
+    public function setMarca($v) { $this->brand = $v; }
+    public function getModelo() { return $this->model; }
+    public function setModelo($v) { $this->model = $v; }
+    public function getAno() { return $this->year; }
+    public function setAno($v) { $this->year = (int)$v; }
+    public function getCombustivel() { return $this->fuel_type; }
+    public function setCombustivel($v) { $map = ['gasolina'=>'gasoline','diesel'=>'diesel','eletrico'=>'electric','hibrido'=>'hybrid']; $this->fuel_type = $map[$v] ?? $v; }
+    public function getQuilometragem() { return $this->mileage; }
+    public function setQuilometragem($v) { $this->mileage = (int)$v; }
+    public function getCor() { return $this->color; }
+    public function setCor($v) { $this->color = $v; }
+    public function getNumero_chassis() { return $this->chassis_number; }
+    public function setNumero_chassis($v) { $this->chassis_number = $v; }
+    public function getEstado() { return $this->status; }
+    public function setEstado($v) { $map = ['ativo'=>'active','inativo'=>'inactive','manutencao'=>'maintenance']; $this->status = $map[$v] ?? $v; }
 
     /**
      * Get company relationship

@@ -77,7 +77,7 @@ class DriverController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Driver::find()->where(['company_id' => $this->getCompanyId()]),
+            'query' => Driver::find()->where(['company_id' => $this->getCompanyId(), 'role' => 'condutor', 'status' => Driver::STATUS_ACTIVE]),
             'pagination' => [
                 'pageSize' => 10,
             ],
@@ -97,10 +97,13 @@ class DriverController extends Controller
     {
         $model = new Driver();
         $model->company_id = $this->getCompanyId();
-        $model->estado = Driver::STATUS_ACTIVE;
+        $model->status = Driver::STATUS_ACTIVE;
 
         if (Yii::$app->request->isPost) {
             if ($model->load(Yii::$app->request->post())) {
+                // Converter status para inteiro
+                $model->status = (int)$model->status;
+                
                 if (!empty($model->password)) {
                     $model->setPassword($model->password);
                 }
@@ -108,7 +111,7 @@ class DriverController extends Controller
                 if (empty($model->username)) {
                     $base = !empty($model->email) ? strstr($model->email, '@', true) : null;
                     if (!$base) {
-                        $base = !empty($model->nome) ? strtolower(preg_replace('/[^a-z0-9]+/i', '-', $model->nome)) : 'condutor';
+                        $base = !empty($model->name) ? strtolower(preg_replace('/[^a-z0-9]+/i', '-', $model->name)) : 'condutor';
                     }
                     $username = $base;
                     $suffix = 1;
@@ -121,14 +124,12 @@ class DriverController extends Controller
                 if (empty($model->auth_key)) {
                     $model->auth_key = Yii::$app->security->generateRandomString();
                 }
-                // Role espelhada
-                $model->role = 'condutor';
 
                 if ($model->save()) {
-                    // Atribuir RBAC 'condutor'
+                    // Atribuir RBAC 'driver'
                     $auth = Yii::$app->authManager;
-                    $role = $auth->getRole('condutor');
-                    if ($role && !$auth->getAssignment('condutor', $model->id)) {
+                    $role = $auth->getRole('driver');
+                    if ($role && !$auth->getAssignment('driver', $model->id)) {
                         $auth->assign($role, $model->id);
                     }
                     Yii::$app->session->setFlash('success', 'Condutor criado com sucesso.');
@@ -171,15 +172,10 @@ class DriverController extends Controller
                     $model->setPassword($model->password);
                 }
                 if ($model->save()) {
-                    // Garantir role 'condutor' na coluna
-                    if ($model->role !== 'condutor') {
-                        $model->role = 'condutor';
-                        $model->save(false, ['role']);
-                    }
                     // Garantir atribuição RBAC
                     $auth = Yii::$app->authManager;
-                    if (!$auth->getAssignment('condutor', $model->id)) {
-                        $role = $auth->getRole('condutor');
+                    if (!$auth->getAssignment('driver', $model->id)) {
+                        $role = $auth->getRole('driver');
                         if ($role) { $auth->assign($role, $model->id); }
                     }
                     Yii::$app->session->setFlash('success', 'Condutor atualizado com sucesso.');

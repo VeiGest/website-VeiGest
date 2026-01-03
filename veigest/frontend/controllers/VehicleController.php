@@ -28,7 +28,7 @@ class VehicleController extends Controller
                             return Yii::$app->user->can('vehicles.view');
                         },
                     ],
-                    // Create action requires vehicles.create permission
+                    // Create action: apenas gestor (ou admin)
                     [
                         'allow' => true,
                         'actions' => ['create'],
@@ -44,7 +44,7 @@ class VehicleController extends Controller
                             return Yii::$app->user->can('vehicles.view');
                         },
                     ],
-                    // Update action requires vehicles.update permission
+                    // Update action: apenas gestor (ou admin)
                     [
                         'allow' => true,
                         'actions' => ['update'],
@@ -52,7 +52,7 @@ class VehicleController extends Controller
                             return Yii::$app->user->can('vehicles.update');
                         },
                     ],
-                    // Delete action requires vehicles.delete permission
+                    // Delete action: apenas gestor (ou admin)
                     [
                         'allow' => true,
                         'actions' => ['delete'],

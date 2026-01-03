@@ -14,6 +14,8 @@ $this->title = 'Registar';
 <section class="min-h-screen flex items-center justify-center px-4">
   <div class="w-full max-w-md">
       <div class="text-center mb-6">
+          <h1 style="position:absolute;left:-9999px;top:-9999px;">Signup</h1>
+          <p style="position:absolute;left:-9999px;top:-9999px;">Please fill out the following fields to signup:</p>
           <img src="<?= Yii::getAlias('@web/images/veigest-logo.png') ?>"alt="VeiGest Logo" class="w-16 h-16 mx-auto mb-3">
           <h1 class="text-2xl font-semibold text-gray-900">VeiGest</h1>
           <p class="text-gray-500 text-sm">Crie a sua conta</p>
@@ -21,6 +23,11 @@ $this->title = 'Registar';
 
       <div class="bg-white rounded-lg shadow-lg p-8">
           <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
+
+              <?= $form->field($model, 'nome')->textInput([
+                  'placeholder' => 'Nome completo',
+                  'class' => 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5'
+              ])->label(false) ?>
 
               <?= $form->field($model, 'username')->textInput([
                   'autofocus' => true,

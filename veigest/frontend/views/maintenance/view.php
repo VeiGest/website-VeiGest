@@ -7,7 +7,7 @@ use frontend\models\Maintenance;
 /** @var yii\web\View $this */
 /** @var frontend\models\Maintenance $model */
 
-$this->title = $model->vehicle->modelo . ' - ' . $model->tipo;
+$this->title = $model->vehicle->model . ' - ' . $model->tipo;
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['dashboard/index']];
 $this->params['breadcrumbs'][] = ['label' => 'Manutenções', 'url' => ['maintenance/index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             [
                                 'attribute' => 'vehicle_id',
                                 'value' => function($model) {
-                                    return $model->vehicle ? $model->vehicle->modelo . ' (' . $model->vehicle->matricula . ')' : '-';
+                                    return $model->vehicle ? $model->vehicle->model . ' (' . $model->vehicle->license_plate . ')' : '-';
                                 },
                                 'label' => 'Veículo',
                             ],
