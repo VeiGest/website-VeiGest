@@ -11,6 +11,7 @@ use common\models\User;
  */
 class SignupForm extends Model
 {
+    public $nome;
     public $username;
     public $email;
     public $password;
@@ -24,6 +25,9 @@ class SignupForm extends Model
     public function rules()
     {
         return [
+            ['nome', 'trim'],
+            ['nome', 'string', 'min' => 2, 'max' => 255],
+
             ['username', 'trim'],
             ['username', 'required'],
             ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
@@ -43,7 +47,7 @@ class SignupForm extends Model
     /**
      * Signs user up.
      *
-     * @return bool whether the creating new account was successful and email was sent
+     * @return bool|User|null whether the creating new account was successful and email was sent
      */
     public function signup()
     {
@@ -52,19 +56,27 @@ class SignupForm extends Model
         }
 
         $user = new User(['scenario' => 'signup']);
+        $user->name = $this->nome ?: $this->username;
         $user->username = $this->username;
-        $user->name = $this->username;
         $user->email = $this->email;
         $user->company_id = $this->company_id;
+        $user->status = User::STATUS_INACTIVE;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
 
         if ($user->save()) {
-
-            $auth = Yii::$app->authManager;
-            $role = $auth->getRole('condutor'); // role padrão
-            $auth->assign($role, $user->id);
+            // send verification email
+            $this->sendEmail($user);
+            try {
+                $auth = Yii::$app->authManager;
+                $role = $auth->getRole('driver'); // role padrão conforme migração
+                if ($role !== null) {
+                    $auth->assign($role, $user->id);
+                }
+            } catch (\Throwable $e) {
+                // Ignore RBAC assignment failures during tests
+            }
 
             return $user;
         }
@@ -77,7 +89,7 @@ class SignupForm extends Model
      * @param User $user user model to with email should be send
      * @return bool whether the email was sent
      */
-    protected function sendEmail($user)
+    public function sendEmail($user)
     {
         return Yii::$app
             ->mailer

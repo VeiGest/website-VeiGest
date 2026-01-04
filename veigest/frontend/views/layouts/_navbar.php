@@ -17,6 +17,9 @@ use yii\bootstrap5\Html;
                 <?= Html::a('Início', ['/site/index'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
+                <?= Html::a('About', ['/site/about'], [
+                    'class' => 'text-gray-700 hover:text-primary transition',
+                ]) ?>
                 <?= Html::a('Serviços', ['/site/services'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
@@ -65,16 +68,11 @@ use yii\bootstrap5\Html;
                                 Aceder ao Backoffice
                             </a>
 
-                        <?php elseif ($role === 'gestor'): ?>
-                            <a href="<?= \yii\helpers\Url::to(['/gestor/index']) ?>"
-                                class="btn btn-success px-4 py-2 mt-3">
-                                Aceder ao Dashboard do Gestor
-                            </a>
+                        <?php elseif ($role === 'gestor' || $role === 'condutor'): ?>
 
-                        <?php elseif ($role === 'condutor'): ?>
-                            <a href="<?= \yii\helpers\Url::to(['/condutor/index']) ?>"
-                                class="btn btn-primary px-4 py-2 mt-3">
-                                Aceder à Minha Área
+                            <a href="<?= \yii\helpers\Url::to(['/dashboard/index']) ?>"
+                                class="btn btn-success px-4 py-2 mt-3">
+                                Aceder ao Dashboard
                             </a>
 
                         <?php endif; ?>

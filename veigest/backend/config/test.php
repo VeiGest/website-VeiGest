@@ -10,6 +10,12 @@ return [
         ],
         'request' => [
             'cookieValidationKey' => 'test',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ],
+        ],
+        'db' => [
+            'dsn' => 'mysql:host=localhost;dbname=veigest',
         ],
     ],
 ];

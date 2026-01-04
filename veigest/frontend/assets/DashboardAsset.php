@@ -14,11 +14,9 @@ class DashboardAsset extends AssetBundle
     public $css = [
         // CSS files will be included in the layout
     ];
-    public $js = [
-        // JS files will be included in the layout
-    ];
+    public $js = [];
     public $depends = [
-        'yii\web\YiiAsset',
+        'yii\web\YiiAsset',  // This automatically loads yii.js
         'yii\bootstrap5\BootstrapAsset',
     ];
 }

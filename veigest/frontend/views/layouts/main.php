@@ -75,8 +75,11 @@ AppAsset::register($this);
     <?php include '_navbar.php'; ?>
 
     <?php $this->beginBody() ?>
-    
-    <?= $content ?>
+
+    <main>
+        <?= \common\widgets\Alert::widget() ?>
+        <?= $content ?>
+    </main>
 
     <?php $this->endBody() ?>
 

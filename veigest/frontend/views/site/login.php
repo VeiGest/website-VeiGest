@@ -9,142 +9,129 @@ use yii\bootstrap5\ActiveForm;
 
 $this->title = 'Login';
 ?>
-<!DOCTYPE html>
-<html lang="pt-PT">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - VeiGest</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --color-primary: #09BC8A;
-            --color-onyx: #3C3C3C;
-            --color-turquoise: #75DDDD;
-        }
+<style>
+    :root {
+        --color-primary: #09BC8A;
+        --color-onyx: #3C3C3C;
+        --color-turquoise: #75DDDD;
+    }
 
-        .bg-primary {
-            background-color: var(--color-primary);
-        }
+    .bg-primary {
+        background-color: var(--color-primary);
+    }
 
-        .text-primary {
-            color: var(--color-primary);
-        }
+    .text-primary {
+        color: var(--color-primary);
+    }
 
-        .input-focus:focus {
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(9, 188, 138, 0.1);
-        }
-    </style>
-</head>
+    .input-focus:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(9, 188, 138, 0.1);
+    }
+</style>
 
-<body class="bg-white">
-    <div class="min-h-screen flex items-center justify-center px-4 pt-10 pb-10">
-        <div class="w-full max-w-md">
-            <!-- Logo -->
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center space-x-2 mb-4">
-                    <img src="./images/veigest-logo.png" alt="VeiGest" class="h-12 w-12">
-                    <span class="text-2xl font-bold text-primary">VeiGest</span>
-                </div>
-                <h1 class="text-3xl font-bold text-gray-900">Aceder ao Sistema</h1>
-                <p class="text-gray-600 mt-2">Gestão Inteligente de Frotas</p>
+<div class="bg-gray-50 min-h-screen flex items-center justify-center px-4 pt-10 pb-10">
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center space-x-2 mb-4">
+                <img src="./images/veigest-logo.png" alt="VeiGest" class="h-12 w-12">
+                <span class="text-2xl font-bold text-primary">VeiGest</span>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900">Aceder ao Sistema</h1>
+            <p class="text-gray-600 mt-2">Gestão Inteligente de Frotas</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <?php $form = ActiveForm::begin([
+                'id' => 'login-form',
+                'options' => ['class' => 'space-y-6']
+            ]); ?>
+            <!-- Username -->
+            <div>
+                <?= $form->field($model, 'username')->textInput([
+                    'autofocus' => true,
+                    'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
+                    'placeholder' => 'Nome de Utilizador',
+                ])->label('Nome de Utilizador', ['class' => 'text-sm font-medium text-gray-900']) ?>
             </div>
 
-            <!-- Login Form -->
-            <div class="bg-white rounded-lg shadow-lg p-8">
-                <?php $form = ActiveForm::begin([
-                    'id' => 'login-form',
-                    'options' => ['class' => 'space-y-6']
-                ]); ?>
-                <!-- Email -->
-                <div>
-                    <?= $form->field($model, 'username')->textInput([
-                        'autofocus' => true,
-                        'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
-                        'placeholder' => 'Nome de Utilizador ou Email',
-                    ])->label('Nome de Utilizador', ['class' => 'text-sm font-medium text-gray-900']) ?>
-                </div>
+            <!-- Password -->
+            <div>
+                <?= $form->field($model, 'password')->passwordInput([
+                    'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
+                    'placeholder' => '••••••••',
+                ])->label('Palavra-passe', ['class' => 'text-sm font-medium text-gray-900']) ?>
+            </div>
 
-                <!-- Password -->
-                <div>
-                    <?= $form->field($model, 'password')->passwordInput([
-                        'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
-                        'placeholder' => '••••••••',
-                    ])->label('Palavra-passe', ['class' => 'text-sm font-medium text-gray-900']) ?>
-                </div>
+            <!-- Remember & Forgot -->
+            <div class="flex items-center justify-between">
 
-                <!-- Remember & Forgot -->
-                <div class="flex items-center justify-between">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox"
+                        name="LoginForm[rememberMe]"
+                        value="1"
+                        <?= $model->rememberMe ? 'checked' : '' ?>
+                        class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
+                    <span class="text-sm text-gray-700">Lembrar-me</span>
+                </label>
 
-                    <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox"
-                            name="LoginForm[rememberMe]"
-                            value="1"
-                            <?= $model->rememberMe ? 'checked' : '' ?>
-                            class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
-                        <span class="text-sm text-gray-700">Lembrar-me</span>
-                    </label>
-
-                    <a href="<?= \yii\helpers\Url::to(['site/request-password-reset']) ?>"
-                        class="text-sm font-medium text-primary hover:underline">
-                        Esqueceu a senha?
-                    </a>
-
-                </div>
-
-
-                <!-- Login Button -->
-                <div>
-                    <?= Html::submitButton('Entrar', [
-                        'class' => '
-                    w-full text-white font-semibold text-sm py-3 rounded-lg
-                    bg-gradient-to-r from-emerald-500 to-teal-500
-                    hover:from-emerald-600 hover:to-teal-600
-                    transition-all duration-300
-                    shadow-md hover:shadow-xl hover:scale-[1.02]',
-                    ]) ?>
-                </div>
-                <?php ActiveForm::end(); ?>
-
-                <div class="relative my-6">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-gray-500">Não tem conta?</span>
-                    </div>
-                </div>
-
-                <!-- Sign Up -->
-                <a href="#" class="block w-full text-center border-2 border-primary text-primary py-3 rounded-lg font-bold hover:bg-primary hover:bg-opacity-5 transition">
-                    Criar Conta
+                <a href="<?= \yii\helpers\Url::to(['site/request-password-reset']) ?>"
+                    class="text-sm font-medium text-primary hover:underline">
+                    Esqueceu a senha?
                 </a>
+
             </div>
 
-            <div class="mt-8 grid grid-cols-3 gap-4">
-                <div class="bg-white rounded-lg p-4 text-center">
-                    <i class="fas fa-lock text-2xl text-primary mb-2"></i>
-                    <p class="text-xs text-gray-600">Segurança em Primeiro Lugar</p>
+
+            <!-- Login Button -->
+            <div>
+                <?= Html::submitButton('Entrar', [
+                    'class' => '
+                w-full text-white font-semibold text-sm py-3 rounded-lg
+                bg-gradient-to-r from-emerald-500 to-teal-500
+                hover:from-emerald-600 hover:to-teal-600
+                transition-all duration-300
+                shadow-md hover:shadow-xl hover:scale-[1.02]',
+                ]) ?>
+            </div>
+            <?php ActiveForm::end(); ?>
+
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
                 </div>
-                <div class="bg-white rounded-lg p-4 text-center">
-                    <i class="fas fa-mobile-alt text-2xl text-primary mb-2"></i>
-                    <p class="text-xs text-gray-600">Acesso Móvel</p>
-                </div>
-                <div class="bg-white rounded-lg p-4 text-center">
-                    <i class="fas fa-headset text-2xl text-primary mb-2"></i>
-                    <p class="text-xs text-gray-600">Suporte 24/7</p>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-white text-gray-500">Não tem conta?</span>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="text-center mt-8 text-sm text-gray-600">
-                <p>Problemas ao aceder? <a href="#" class="text-primary hover:underline">Contacte o suporte</a></p>
+            <!-- Sign Up -->
+            <a href="<?= \yii\helpers\Url::to(['site/signup']) ?>" class="block w-full text-center border-2 border-primary text-primary py-3 rounded-lg font-bold hover:bg-primary hover:bg-opacity-5 transition">
+                Criar Conta
+            </a>
+        </div>
+
+        <div class="mt-8 grid grid-cols-3 gap-4">
+            <div class="bg-white rounded-lg p-4 text-center">
+                <i class="fas fa-lock text-2xl text-primary mb-2"></i>
+                <p class="text-xs text-gray-600">Segurança em Primeiro Lugar</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 text-center">
+                <i class="fas fa-mobile-alt text-2xl text-primary mb-2"></i>
+                <p class="text-xs text-gray-600">Acesso Móvel</p>
+            </div>
+            <div class="bg-white rounded-lg p-4 text-center">
+                <i class="fas fa-headset text-2xl text-primary mb-2"></i>
+                <p class="text-xs text-gray-600">Suporte 24/7</p>
             </div>
         </div>
-    </div>
-</body>
 
-</html>
+        <!-- Footer -->
+        <div class="text-center mt-8 text-sm text-gray-600">
+            <p>Problemas ao aceder? <a href="<?= \yii\helpers\Url::to(['site/contact']) ?>" class="text-primary hover:underline">Contacte o suporte</a></p>
+        </div>
+    </div>
+</div>

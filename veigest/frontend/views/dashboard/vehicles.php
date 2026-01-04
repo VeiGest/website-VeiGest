@@ -1,131 +1,107 @@
 <?php
 
-/** @var yii\web\View $this */
+use yii\helpers\Html;
+use yii\grid\GridView;
+use yii\widgets\Pjax;
 
-$this->title = 'My Yii Application';
+/** @var yii\web\View $this */
+/** @var yii\data\ActiveDataProvider $dataProvider */
+
+$this->title = 'Gestão de Frota';
+$this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['dashboard/index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
-
-
-    
-    <div class="content-wrapper">
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="m-0" style="color: var(--dark-color); font-weight: 700;">Gestão de Frota</h1>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <button class="btn btn-primary" data-toggle="modal" data-target="#addVehicleModal">
-                            <i class="fas fa-plus mr-2"></i>Novo Veículo
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <section class="content">
-            <div class="container-fluid">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Veículos Registados</h3>
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Matrícula</th>
-                                    <th>Marca/Modelo</th>
-                                    <th>Condutor Atual</th>
-                                    <th>Manutenção</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>A-123-AB</td>
-                                    <td>Mercedes C-Class</td>
-                                    <td>João Carlos</td>
-                                    <td><span class="badge badge-success">Em Dia</span></td>
-                                    <td><span class="badge badge-success">Ativo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
-                                        <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>B-456-BC</td>
-                                    <td>BMW 3 Series</td>
-                                    <td>Maria Silva</td>
-                                    <td><span class="badge badge-warning">Próximo: 30 dias</span></td>
-                                    <td><span class="badge badge-success">Ativo</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
-                                        <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-    
-    <!-- Modal -->
-    <div class="modal fade" id="addVehicleModal">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: var(--primary-color); color: white;">
-                    <h4 class="modal-title">Novo Veículo</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Matrícula</label>
-                                    <input type="text" class="form-control" placeholder="Ex: XX-XX-XX">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>VIN</label>
-                                    <input type="text" class="form-control" placeholder="Número de chassis">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Marca</label>
-                                    <input type="text" class="form-control" placeholder="Mercedes, BMW, etc">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Modelo</label>
-                                    <input type="text" class="form-control" placeholder="Modelo do veículo">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Adicionar Veículo</button>
-                    </div>
-                </form>
-            </div>
+<div class="content-header">
+    <div class="row justify-content-center mb-2">
+        <div class="col-12 col-xl-11 col-xxl-10 d-flex align-items-center justify-content-between flex-wrap">
+            <h1 class="m-0"><?= Html::encode($this->title) ?></h1>
         </div>
     </div>
-    
-
 </div>
+
+<div class="content">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11 col-xxl-10">
+            <div class="card w-100" style="max-width: 1200px; margin: 0 auto;">
+                <div class="card-header">
+                    <?php if (Yii::$app->user->can('vehicles.create')): ?>
+                        <div class="card-tools">
+                            <?= Html::a('<i class="fas fa-plus mr-1"></i>Novo Veículo', ['vehicle/create'], ['class' => 'btn btn-primary btn-sm']) ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="card-body p-0">
+                    <?php Pjax::begin(); ?>
+                    <?= GridView::widget([
+                        'dataProvider' => $dataProvider,
+                        'summary' => '<div class="pl-3 pt-2">Mostrando <strong>{begin}-{end}</strong> de <strong>{totalCount}</strong> itens.</div>',
+                        'tableOptions' => ['class' => 'table table-hover align-middle mb-0'],
+                        'headerRowOptions' => ['style' => 'background:#f7f9fb;'],
+                        'columns' => [
+                            [
+                                'attribute' => 'license_plate',
+                                'label' => 'Matrícula',
+                                'contentOptions' => ['style' => 'min-width:140px; font-weight:600;']
+                            ],
+                            [
+                                'label' => 'Marca / Modelo',
+                                'value' => function($v){ return trim(($v->brand ?? '') . ' ' . ($v->model ?? '')); },
+                                'contentOptions' => ['style' => 'min-width:200px;']
+                            ],
+                            [
+                                'attribute' => 'status',
+                                'label' => 'Estado',
+                                'value' => function($v){
+                                    $map = [
+                                        'ativo' => ['Ativo', 'badge-success'],
+                                        'inativo' => ['Inativo', 'badge-secondary'],
+                                        'manutencao' => ['Manutenção', 'badge-warning'],
+                                    ];
+                                    [$text, $badge] = $map[$v->status] ?? [ucfirst($v->status), 'badge-secondary'];
+                                    return '<span class="badge ' . $badge . '">' . $text . '</span>';
+                                },
+                                'format' => 'html',
+                                'contentOptions' => ['style' => 'width:130px;']
+                            ],
+                            [
+                                'class' => 'yii\grid\ActionColumn',
+                                'controller' => 'vehicle',
+                                'header' => 'Ações',
+                                'headerOptions' => ['style' => 'width:200px; text-align:center;'],
+                                'contentOptions' => ['style' => 'text-align:center; white-space:nowrap;'],
+                                'template' => '{view} {update} {delete}',
+                                'buttons' => [
+                                    'view' => function($url, $v){
+                                        return Yii::$app->user->can('vehicles.view')
+                                            ? Html::a('Ver', $url, ['class' => 'btn btn-outline-info btn-sm me-1'])
+                                            : '';
+                                    },
+                                    'update' => function($url, $v){
+                                        return Yii::$app->user->can('vehicles.update')
+                                            ? Html::a('Editar', $url, ['class' => 'btn btn-outline-warning btn-sm me-1'])
+                                            : '';
+                                    },
+                                    'delete' => function($url, $v){
+                                        return Yii::$app->user->can('vehicles.delete')
+                                            ? Html::a('Apagar', $url, [
+                                                'class' => 'btn btn-outline-danger btn-sm',
+                                                'data' => [
+                                                    'confirm' => 'Remover este veículo?',
+                                                    'method' => 'post',
+                                                ],
+                                            ])
+                                            : '';
+                                    },
+                                ],
+                            ],
+                        ],
+                    ]) ?>
+                    <?php Pjax::end(); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,160 +1,218 @@
 <?php
 
-/** @var yii\web\View $this */
+use yii\helpers\Html;
+use yii\grid\GridView;
+use frontend\models\Maintenance;
 
-$this->title = 'My Yii Application';
+/** @var yii\web\View $this */
+/** @var yii\data\ActiveDataProvider $dataProvider */
+/** @var string $status */
+
+$this->title = 'Plano de Manutenção';
 ?>
 
-<div>
-    <div class="content-wrapper">
-        <div class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="m-0" style="color: var(--dark-color); font-weight: 700;">Plano de Manutenção</h1>
-                    </div>
-                    <div class="col-sm-6 text-right">
-                        <button class="btn btn-primary" data-toggle="modal" data-target="#addMaintenanceModal">
-                            <i class="fas fa-plus mr-2"></i>Agendar Manutenção
-                        </button>
-                    </div>
+<div class="content-header">
+    <div class="row justify-content-center mb-2">
+        <div class="col-12 col-xl-11 col-xxl-10 d-flex align-items-center justify-content-between flex-wrap">
+            <h1 class="m-0"><?= Html::encode($this->title) ?></h1>
+            <?php if (Yii::$app->user->can('maintenances.create')): ?>
+                <div>
+                    <?= Html::a('<i class="fas fa-plus mr-2"></i>Agendar Manutenção', ['maintenance/create'], ['class' => 'btn btn-primary']) ?>
                 </div>
-            </div>
+            <?php endif; ?>
         </div>
+    </div>
+</div>
 
-        <section class="content">
-            <div class="container-fluid">
-                <!-- Stats -->
-                <div class="row mb-4">
-                    <div class="col-md-3 col-sm-6">
-                        <div class="small-box" style="background-color: #17a2b8;">
+<div class="content">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-11 col-xxl-10">
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <?= Html::a(
+                        '<div class="small-box" style="background-color: #17a2b8;">
                             <div class="inner text-white">
-                                <h3>12</h3>
+                                <h3>' . ($stats['scheduled'] ?? 0) . '</h3>
                                 <p>Agendadas</p>
                             </div>
                             <div class="icon"><i class="fas fa-calendar"></i></div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="small-box" style="background-color: var(--primary-color);">
+                        </div>',
+                        ['maintenance/index'],
+                        ['style' => 'text-decoration: none; color: inherit;']
+                    ) ?>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <?= Html::a(
+                        '<div class="small-box" style="background-color: var(--primary-color);">
                             <div class="inner">
-                                <h3>8</h3>
-                                <p>Em Progresso</p>
-                            </div>
-                            <div class="icon"><i class="fas fa-spinner"></i></div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="small-box" style="background-color: #28a745;">
-                            <div class="inner text-white">
-                                <h3>95</h3>
+                                <h3>' . ($stats['completed'] ?? 0) . '</h3>
                                 <p>Concluídas</p>
                             </div>
                             <div class="icon"><i class="fas fa-check-circle"></i></div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="small-box" style="background-color: #ffc107;">
-                            <div class="inner">
-                                <h3>3</h3>
-                                <p>Atrasos</p>
+                        </div>',
+                        ['dashboard/maintenance', 'status' => 'completed'],
+                        ['style' => 'text-decoration: none; color: inherit;']
+                    ) ?>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <?= Html::a(
+                        '<div class="small-box" style="background-color: #28a745;">
+                            <div class="inner text-white">
+                                <h3>' . ($stats['overdue'] ?? 0) . '</h3>
+                                <p>Atrasadas</p>
                             </div>
                             <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
-                        </div>
-                    </div>
+                        </div>',
+                        ['dashboard/maintenance', 'status' => 'overdue'],
+                        ['style' => 'text-decoration: none; color: inherit;']
+                    ) ?>
                 </div>
-
-                <!-- Maintenance Table -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Histórico de Manutenção</h3>
-                    </div>
-                    <div class="card-body p-0">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Veículo</th>
-                                    <th>Tipo</th>
-                                    <th>Data Programada</th>
-                                    <th>Custo Estimado</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>A-123-AB</td>
-                                    <td>Troca de óleo</td>
-                                    <td>25/11/2024</td>
-                                    <td>€150.00</td>
-                                    <td><span class="badge badge-info">Agendada</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
-                                        <button class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>B-456-BC</td>
-                                    <td>Revisão completa</td>
-                                    <td>20/11/2024</td>
-                                    <td>€500.00</td>
-                                    <td><span class="badge badge-success">Concluída</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="col-md-3 col-sm-6">
+                    <div class="small-box" style="background-color: #ffc107;">
+                        <div class="inner">
+                            <h3><?= number_format($stats['totalCost'] ?? 0, 2, ',', '.') ?> €</h3>
+                            <p>Custo Total</p>
+                        </div>
+                        <div class="icon"><i class="fas fa-euro-sign"></i></div>
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="addMaintenanceModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: var(--primary-color); color: white;">
-                    <h4 class="modal-title">Agendar Manutenção</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+            <!-- Maintenance Table -->
+            <div class="card">
+                <!-- Navigation Tabs -->
+                <div class="card-header p-0 border-bottom-0">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <?= Html::a('Agendadas (' . $stats['scheduled'] . ')', ['dashboard/maintenance', 'status' => 'scheduled'], [
+                                'class' => 'nav-link' . ($status === 'scheduled' ? ' active' : ''),
+                            ]) ?>
+                        </li>
+                        <li class="nav-item">
+                            <?= Html::a('Concluídas (' . $stats['completed'] . ')', ['dashboard/maintenance', 'status' => 'completed'], [
+                                'class' => 'nav-link' . ($status === 'completed' ? ' active' : ''),
+                            ]) ?>
+                        </li>
+                        <li class="nav-item">
+                            <?= Html::a('Atrasadas (' . $stats['overdue'] . ')', ['dashboard/maintenance', 'status' => 'overdue'], [
+                                'class' => 'nav-link' . ($status === 'overdue' ? ' active' : ''),
+                            ]) ?>
+                        </li>
+                    </ul>
                 </div>
-                <form>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Veículo</label>
-                            <select class="form-control">
-                                <option>Selecione um veículo...</option>
-                                <option>A-123-AB</option>
-                                <option>B-456-BC</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Tipo de Manutenção</label>
-                            <select class="form-control">
-                                <option>Selecione...</option>
-                                <option>Troca de óleo</option>
-                                <option>Revisão completa</option>
-                                <option>Pneus</option>
-                                <option>Freios</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Data</label>
-                            <input type="date" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label>Custo Estimado</label>
-                            <input type="number" class="form-control" placeholder="0.00" step="0.01">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Agendar</button>
-                    </div>
-                </form>
+
+                <div class="card-body p-0">
+                    <?= GridView::widget([
+                        'dataProvider' => $dataProvider,
+                        'columns' => [
+                            'id',
+                            [
+                                'attribute' => 'vehicle_id',
+                                'label' => 'Veículo',
+                                'value' => function($model) {
+                                    return $model->vehicle ? $model->vehicle->model . ' (' . $model->vehicle->license_plate . ')' : '-';
+                                },
+                            ],
+                            [
+                                'attribute' => 'tipo',
+                                'label' => 'Tipo',
+                            ],
+                            [
+                                'attribute' => 'data',
+                                'label' => 'Data',
+                                'format' => ['date', 'php:d/m/Y'],
+                            ],
+                            [
+                                'attribute' => 'custo',
+                                'label' => 'Custo',
+                                'value' => function($model) {
+                                    return $model->custo !== null ? number_format($model->custo, 2, ',', '.') . ' €' : '-';
+                                },
+                            ],
+                            [
+                                'attribute' => 'oficina',
+                                'label' => 'Oficina',
+                            ],
+                            [
+                                'class' => 'yii\grid\ActionColumn',
+                                'header' => 'Ações',
+                                'headerOptions' => ['style' => 'width:180px; text-align:center'],
+                                'contentOptions' => ['style' => 'text-align:center; white-space:nowrap'],
+                                'template' => $status === 'completed' ? '{view} {delete}' : '{view} {complete} {update} {delete}',
+                                'buttons' => [
+                                    'view' => function($url, $model, $key) {
+                                        if (!Yii::$app->user->can('maintenances.view')) {
+                                            return '';
+                                        }
+                                        return Html::a('<i class="fas fa-eye"></i>', ['maintenance/view', 'id' => $model->id], [
+                                            'class' => 'btn btn-sm btn-info',
+                                            'title' => 'Ver',
+                                        ]);
+                                    },
+                                    'complete' => function($url, $model, $key) {
+                                        if (!Yii::$app->user->can('maintenances.update')) {
+                                            return '';
+                                        }
+                                        // Only show complete button if scheduled
+                                        if ($model->status !== 'scheduled') {
+                                            return '';
+                                        }
+                                        $csrfToken = Yii::$app->request->getCsrfToken();
+                                        return Html::button('<i class="fas fa-check"></i>', [
+                                            'class' => 'btn btn-sm btn-success',
+                                            'title' => 'Concluir',
+                                            'onclick' => "if (confirm('Tem a certeza que pretende marcar esta manutenção como concluída?')) { "
+                                                . "var form = document.createElement('form'); "
+                                                . "form.method = 'POST'; "
+                                                . "form.action = '" . Yii::$app->urlManager->createUrl(['maintenance/complete', 'id' => $model->id]) . "'; "
+                                                . "var input = document.createElement('input'); "
+                                                . "input.type = 'hidden'; "
+                                                . "input.name = '" . Yii::$app->request->csrfParam . "'; "
+                                                . "input.value = '" . $csrfToken . "'; "
+                                                . "form.appendChild(input); "
+                                                . "document.body.appendChild(form); "
+                                                . "form.submit(); "
+                                                . "} return false;",
+                                        ]);
+                                    },
+                                    'update' => function($url, $model, $key) {
+                                        if (!Yii::$app->user->can('maintenances.update')) {
+                                            return '';
+                                        }
+                                        return Html::a('<i class="fas fa-edit"></i>', ['maintenance/update', 'id' => $model->id], [
+                                            'class' => 'btn btn-sm btn-warning',
+                                            'title' => 'Editar',
+                                        ]);
+                                    },
+                                    'delete' => function($url, $model, $key) {
+                                        if (!Yii::$app->user->can('maintenances.delete')) {
+                                            return '';
+                                        }
+                                        $csrfToken = Yii::$app->request->getCsrfToken();
+                                        return Html::button('<i class="fas fa-trash"></i>', [
+                                            'class' => 'btn btn-sm btn-danger',
+                                            'title' => 'Eliminar',
+                                            'onclick' => "if (confirm('Tem a certeza que pretende eliminar esta manutenção?')) { "
+                                                . "var form = document.createElement('form'); "
+                                                . "form.method = 'POST'; "
+                                                . "form.action = '" . Yii::$app->urlManager->createUrl(['maintenance/delete', 'id' => $model->id]) . "'; "
+                                                . "var input = document.createElement('input'); "
+                                                . "input.type = 'hidden'; "
+                                                . "input.name = '" . Yii::$app->request->csrfParam . "'; "
+                                                . "input.value = '" . $csrfToken . "'; "
+                                                . "form.appendChild(input); "
+                                                . "document.body.appendChild(form); "
+                                                . "form.submit(); "
+                                                . "} return false;",
+                                        ]);
+                                    },
+                                ],
+                            ],
+                        ],
+                    ]) ?>
+
+                </div>
             </div>
         </div>
     </div>
