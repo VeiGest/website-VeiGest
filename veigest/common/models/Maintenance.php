@@ -29,6 +29,11 @@ use yii\db\Expression;
  */
 class Maintenance extends ActiveRecord
 {
+    // Constantes de status de manutenção
+    const STATUS_SCHEDULED = 'scheduled';
+    const STATUS_COMPLETED = 'completed';
+    const STATUS_CANCELLED = 'cancelled';
+
     // Constantes de tipos de manutenção
     const TYPE_PREVENTIVE = 'preventive';
     const TYPE_CORRECTIVE = 'corrective';
@@ -37,6 +42,20 @@ class Maintenance extends ActiveRecord
     const TYPE_TIRE = 'tire';
     const TYPE_BRAKE = 'brake';
     const TYPE_OTHER = 'other';
+
+    /**
+     * Retorna os labels dos status de manutenção
+     * 
+     * @return array
+     */
+    public static function getStatusLabels()
+    {
+        return [
+            self::STATUS_SCHEDULED => 'Agendada',
+            self::STATUS_COMPLETED => 'Concluída',
+            self::STATUS_CANCELLED => 'Cancelada',
+        ];
+    }
 
     /**
      * Retorna os labels dos tipos de manutenção

@@ -26,6 +26,11 @@ use yii\behaviors\TimestampBehavior;
  */
 class Maintenance extends ActiveRecord
 {
+    // Constantes de status
+    const STATUS_SCHEDULED = 'scheduled';
+    const STATUS_COMPLETED = 'completed';
+    const STATUS_CANCELLED = 'cancelled';
+
     /**
      * {@inheritdoc}
      */
@@ -47,7 +52,7 @@ class Maintenance extends ActiveRecord
             [['date'], 'date', 'format' => 'php:Y-m-d'],
             [['cost'], 'number'],
             [['type', 'workshop'], 'string', 'max' => 200],
-            [['status'], 'in', 'range' => ['scheduled', 'completed', 'overdue']],
+            [['status'], 'in', 'range' => [self::STATUS_SCHEDULED, self::STATUS_COMPLETED, self::STATUS_CANCELLED]],
             [['vehicle_id'], 'exist', 'skipOnError' => true, 'targetClass' => Vehicle::class, 'targetAttribute' => ['vehicle_id' => 'id']],
 
             // Aliases PT (permitir load/validation)
