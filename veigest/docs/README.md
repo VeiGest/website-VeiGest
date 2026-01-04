@@ -20,6 +20,7 @@ Documentação técnica completa do sistema de gestão de frotas VeiGest.
 - [Views e Templates](frontend/views.md)
 - [Assets e CSS](frontend/assets.md)
 - [Layouts](frontend/layouts.md)
+- [Sistema de Perfil](frontend/profile.md) ⭐ **Novo**
 
 ### 🗄️ [Base de Dados](database/)
 - [Schema e Tabelas](database/schema.md)

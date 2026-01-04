@@ -10,10 +10,14 @@ Os controllers do frontend gerem páginas web e estão em `frontend/controllers/
 |------------|--------|------------------|
 | `SiteController` | main | Páginas públicas, login, registo |
 | `DashboardController` | dashboard | Dashboard principal, métricas |
+| `ProfileController` | dashboard | Gestão de perfil pessoal (RF-FO-003) |
 | `ReportController` | dashboard | Relatórios e análises |
 | `DocumentController` | dashboard | Gestão documental |
-| `GestorController` | dashboard | Funcionalidades de gestor |
-| `CondutorController` | dashboard | Funcionalidades de condutor |
+| `DriverController` | dashboard | Gestão de condutores |
+| `VehicleController` | dashboard | Gestão de veículos |
+| `MaintenanceController` | dashboard | Gestão de manutenções |
+| `RouteController` | dashboard | Gestão de rotas |
+| `AlertController` | dashboard | Gestão de alertas |
 
 ---
 
@@ -645,6 +649,123 @@ return $this->goBack();                        // Página anterior
 return $this->goHome();                        // Homepage
 return $this->refresh();                       // Mesma página
 ```
+
+---
+
+## ProfileController
+
+Gere o perfil pessoal do utilizador (RF-FO-003).
+
+### Actions
+
+| Action | Rota | Descrição |
+|--------|------|-----------|
+| `index` | `/profile` | Visualização do perfil |
+| `update` | `/profile/update` | Edição de dados |
+| `changePassword` | `/profile/change-password` | Alteração de senha |
+| `history` | `/profile/history` | Histórico de alterações |
+| `deletePhoto` | `/profile/delete-photo` | Remover foto (POST) |
+
+### Estrutura
+
+```php
+<?php
+namespace frontend\controllers;
+
+use Yii;
+use yii\web\Controller;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
+use yii\data\ActiveDataProvider;
+use frontend\models\ProfileForm;
+use frontend\models\ChangePasswordForm;
+use common\models\ProfileHistory;
+
+class ProfileController extends Controller
+{
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    ['allow' => true, 'roles' => ['@']], // Apenas autenticados
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => ['delete-photo' => ['POST']],
+            ],
+        ];
+    }
+
+    // RF-FO-003.1: Visualização de dados pessoais
+    public function actionIndex()
+    {
+        $user = Yii::$app->user->identity;
+        
+        $historyProvider = new ActiveDataProvider([
+            'query' => ProfileHistory::find()
+                ->where(['user_id' => $user->id])
+                ->orderBy(['created_at' => SORT_DESC]),
+            'pagination' => ['pageSize' => 10],
+        ]);
+
+        return $this->render('index', [
+            'user' => $user,
+            'historyProvider' => $historyProvider,
+        ]);
+    }
+
+    // RF-FO-003.2 + RF-FO-003.4: Edição + Upload de foto
+    public function actionUpdate()
+    {
+        $model = new ProfileForm();
+        $model->loadFromUser(Yii::$app->user->identity);
+
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $model->photoFile = UploadedFile::getInstance($model, 'photoFile');
+            
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', 'Perfil atualizado.');
+                return $this->redirect(['index']);
+            }
+        }
+
+        return $this->render('update', ['model' => $model]);
+    }
+
+    // RF-FO-003.3: Alteração de palavra-passe
+    public function actionChangePassword()
+    {
+        $model = new ChangePasswordForm();
+
+        if ($model->load(Yii::$app->request->post()) && $model->changePassword()) {
+            Yii::$app->session->setFlash('success', 'Senha alterada.');
+            return $this->redirect(['index']);
+        }
+
+        return $this->render('change-password', ['model' => $model]);
+    }
+
+    // RF-FO-003.5: Histórico de alterações
+    public function actionHistory()
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => ProfileHistory::find()
+                ->where(['user_id' => Yii::$app->user->id])
+                ->orderBy(['created_at' => SORT_DESC]),
+            'pagination' => ['pageSize' => 20],
+        ]);
+
+        return $this->render('history', ['dataProvider' => $dataProvider]);
+    }
+}
+```
+
+> 📖 **Documentação completa:** Ver [Sistema de Perfil](profile.md)
 
 ## Próximos Passos
 

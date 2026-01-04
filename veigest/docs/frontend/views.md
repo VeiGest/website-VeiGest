@@ -23,6 +23,11 @@ frontend/views/
 │   ├── vehicles.php       # Lista de veículos
 │   ├── maintenance.php    # Manutenções
 │   └── alerts.php         # Alertas
+├── profile/                # Views do ProfileController ⭐ Novo
+│   ├── index.php          # Visualização do perfil
+│   ├── update.php         # Edição de dados
+│   ├── change-password.php # Alteração de senha
+│   └── history.php        # Histórico de alterações
 ├── report/                 # Views do ReportController
 │   ├── index.php          # Relatório geral
 │   ├── maintenance.php    # Relatório manutenção
@@ -242,6 +247,248 @@ JS;
 $this->registerJs($script);
 ?>
 ```
+
+---
+
+## Perfil do Utilizador ⭐ Novo
+
+### `profile/index.php` - Visualização
+
+```php
+<?php
+/**
+ * @var yii\web\View $this
+ * @var common\models\User $user
+ * @var yii\data\ActiveDataProvider $historyProvider
+ */
+
+use yii\helpers\Html;
+use yii\grid\GridView;
+
+$this->title = 'Meu Perfil';
+?>
+
+<div class="profile-index">
+    <!-- Header com foto -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div class="flex items-center gap-6">
+            <div class="relative">
+                <?php if ($user->photo): ?>
+                    <?= Html::img($user->getPhotoUrl(), [
+                        'class' => 'w-24 h-24 rounded-full object-cover',
+                        'alt' => $user->name
+                    ]) ?>
+                <?php else: ?>
+                    <div class="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center">
+                        <span class="text-3xl text-blue-600">
+                            <?= strtoupper(substr($user->name, 0, 1)) ?>
+                        </span>
+                    </div>
+                <?php endif; ?>
+            </div>
+            
+            <div class="flex-1">
+                <h2 class="text-2xl font-bold"><?= Html::encode($user->name) ?></h2>
+                <p class="text-gray-500"><?= Html::encode($user->email) ?></p>
+                <p class="text-sm">
+                    <span class="px-2 py-1 rounded bg-blue-100 text-blue-800">
+                        <?= ucfirst($user->role) ?>
+                    </span>
+                </p>
+            </div>
+            
+            <div>
+                <?= Html::a('Editar Perfil', ['update'], ['class' => 'btn btn-primary']) ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid de informações -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Dados Pessoais -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Dados Pessoais</h3>
+            <dl class="space-y-3">
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Telefone</dt>
+                    <dd><?= Html::encode($user->phone ?: '-') ?></dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Carta de Condução</dt>
+                    <dd><?= Html::encode($user->license_number ?: '-') ?></dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Validade</dt>
+                    <dd><?= $user->license_expiry ? Yii::$app->formatter->asDate($user->license_expiry) : '-' ?></dd>
+                </div>
+            </dl>
+        </div>
+
+        <!-- Segurança -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Segurança</h3>
+            <p class="text-sm text-gray-500 mb-4">
+                Último acesso: <?= Yii::$app->formatter->asDatetime($user->last_login_at) ?>
+            </p>
+            <?= Html::a('Alterar Senha', ['change-password'], ['class' => 'btn btn-outline']) ?>
+        </div>
+    </div>
+</div>
+```
+
+### `profile/update.php` - Edição de Dados
+
+```php
+<?php
+use yii\helpers\Html;
+use yii\bootstrap5\ActiveForm;
+
+$this->title = 'Editar Perfil';
+?>
+
+<div class="profile-update">
+    <div class="bg-white rounded-lg shadow p-6 max-w-2xl">
+        <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
+        
+        <!-- Upload de Foto -->
+        <div class="mb-6 text-center">
+            <div class="relative inline-block">
+                <?php if ($model->photo): ?>
+                    <?= Html::img($model->getPhotoUrl(), [
+                        'class' => 'w-32 h-32 rounded-full object-cover mx-auto',
+                        'id' => 'photo-preview'
+                    ]) ?>
+                <?php else: ?>
+                    <div class="w-32 h-32 rounded-full bg-gray-200 mx-auto flex items-center justify-center" id="photo-preview">
+                        <i class="fas fa-camera text-3xl text-gray-400"></i>
+                    </div>
+                <?php endif; ?>
+            </div>
+            <?= $form->field($model, 'photoFile')->fileInput([
+                'class' => 'hidden',
+                'id' => 'photo-input',
+                'accept' => 'image/*',
+            ])->label(false) ?>
+            <button type="button" onclick="document.getElementById('photo-input').click()" class="mt-2 text-blue-600">
+                Alterar foto
+            </button>
+        </div>
+        
+        <!-- Dados -->
+        <div class="grid grid-cols-2 gap-4">
+            <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'license_number')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'license_expiry')->input('date') ?>
+        </div>
+        
+        <div class="flex justify-end gap-3 mt-6">
+            <?= Html::a('Cancelar', ['index'], ['class' => 'btn btn-secondary']) ?>
+            <?= Html::submitButton('Guardar', ['class' => 'btn btn-primary']) ?>
+        </div>
+        
+        <?php ActiveForm::end(); ?>
+    </div>
+</div>
+```
+
+### `profile/change-password.php` - Alteração de Senha
+
+```php
+<?php
+use yii\helpers\Html;
+use yii\bootstrap5\ActiveForm;
+
+$this->title = 'Alterar Senha';
+?>
+
+<div class="change-password max-w-md mx-auto">
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-6">Alterar Palavra-passe</h2>
+        
+        <?php $form = ActiveForm::begin(); ?>
+        
+        <?= $form->field($model, 'currentPassword')
+            ->passwordInput(['placeholder' => 'Senha atual']) ?>
+        
+        <?= $form->field($model, 'newPassword')
+            ->passwordInput(['placeholder' => 'Nova senha']) ?>
+        
+        <?= $form->field($model, 'confirmPassword')
+            ->passwordInput(['placeholder' => 'Confirmar nova senha']) ?>
+        
+        <div class="bg-blue-50 p-4 rounded mb-4">
+            <p class="text-sm text-blue-800">A senha deve conter:</p>
+            <ul class="text-sm text-blue-700 list-disc ml-4">
+                <li>Mínimo 6 caracteres</li>
+                <li>Pelo menos 1 letra maiúscula</li>
+                <li>Pelo menos 1 letra minúscula</li>
+                <li>Pelo menos 1 número</li>
+            </ul>
+        </div>
+        
+        <div class="flex justify-end gap-3">
+            <?= Html::a('Cancelar', ['index'], ['class' => 'btn btn-secondary']) ?>
+            <?= Html::submitButton('Alterar Senha', ['class' => 'btn btn-primary']) ?>
+        </div>
+        
+        <?php ActiveForm::end(); ?>
+    </div>
+</div>
+```
+
+### `profile/history.php` - Histórico de Alterações
+
+```php
+<?php
+use yii\helpers\Html;
+use yii\grid\GridView;
+
+$this->title = 'Histórico de Alterações';
+?>
+
+<div class="profile-history">
+    <div class="bg-white rounded-lg shadow">
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'columns' => [
+                [
+                    'attribute' => 'created_at',
+                    'format' => 'datetime',
+                    'label' => 'Data/Hora',
+                ],
+                [
+                    'attribute' => 'change_type',
+                    'label' => 'Tipo',
+                    'value' => function($model) {
+                        $types = [
+                            'update' => 'Dados Atualizados',
+                            'password' => 'Senha Alterada',
+                            'photo' => 'Foto Alterada',
+                        ];
+                        return $types[$model->change_type] ?? $model->change_type;
+                    },
+                ],
+                [
+                    'attribute' => 'ip_address',
+                    'label' => 'IP',
+                ],
+                [
+                    'attribute' => 'changes',
+                    'label' => 'Detalhes',
+                    'format' => 'raw',
+                    'value' => function($model) {
+                        return '<pre class="text-xs">' . Html::encode($model->changes) . '</pre>';
+                    },
+                ],
+            ],
+        ]) ?>
+    </div>
+</div>
+```
+
+> 📖 **Documentação completa:** Ver [Sistema de Perfil](profile.md)
 
 ---
 

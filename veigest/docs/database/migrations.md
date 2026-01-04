@@ -434,6 +434,91 @@ $this->createTable('{{%vehicle}}', ...);
 
 ---
 
+## Migrations Recentes ⭐
+
+### m251125_000000_add_status_to_maintenances
+
+Adiciona coluna `status` à tabela `maintenances`:
+
+```php
+<?php
+use yii\db\Migration;
+
+class m251125_000000_add_status_to_maintenances extends Migration
+{
+    public function safeUp()
+    {
+        $this->addColumn('{{%maintenances}}', 'status', 
+            $this->string(20)
+                ->notNull()
+                ->defaultValue('scheduled')
+                ->after('cost')
+        );
+
+        $this->createIndex(
+            'idx-maintenances-status',
+            '{{%maintenances}}',
+            'status'
+        );
+    }
+
+    public function safeDown()
+    {
+        $this->dropIndex('idx-maintenances-status', '{{%maintenances}}');
+        $this->dropColumn('{{%maintenances}}', 'status');
+    }
+}
+```
+
+### m251125_010000_create_profile_history_table
+
+Cria tabela para histórico de alterações de perfil (RF-FO-003.5):
+
+```php
+<?php
+use yii\db\Migration;
+
+class m251125_010000_create_profile_history_table extends Migration
+{
+    public function safeUp()
+    {
+        $this->createTable('{{%profile_history}}', [
+            'id' => $this->primaryKey(),
+            'user_id' => $this->integer()->notNull(),
+            'change_type' => $this->string(50)->notNull(), // 'update', 'password', 'photo'
+            'changes' => $this->text()->null(),            // JSON com alterações
+            'ip_address' => $this->string(45)->null(),     // Suporta IPv6
+            'user_agent' => $this->string(255)->null(),
+            'created_at' => $this->datetime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+        ], 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+        // Índices
+        $this->createIndex('idx-profile_history-user_id', '{{%profile_history}}', 'user_id');
+        $this->createIndex('idx-profile_history-change_type', '{{%profile_history}}', 'change_type');
+        $this->createIndex('idx-profile_history-created_at', '{{%profile_history}}', 'created_at');
+
+        // Foreign key
+        $this->addForeignKey(
+            'fk-profile_history-user_id',
+            '{{%profile_history}}',
+            'user_id',
+            '{{%user}}',
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
+    }
+
+    public function safeDown()
+    {
+        $this->dropForeignKey('fk-profile_history-user_id', '{{%profile_history}}');
+        $this->dropTable('{{%profile_history}}');
+    }
+}
+```
+
+---
+
 ## Debugging
 
 ### Ver SQL Gerado
