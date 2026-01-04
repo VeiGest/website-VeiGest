@@ -67,145 +67,56 @@ class DashboardController extends Controller
 
     /**
      * Displays documents page.
+     * Redireciona para DocumentController::actionIndex()
      *
-     * @return string
+     * @return \yii\web\Response
      */
     public function actionDocuments()
     {
-        return $this->render('documents');
+        return $this->redirect(['document/index']);
     }
 
     /**
      * Displays drivers page.
+     * Redireciona para DriverController::actionIndex()
      *
-     * @return string
+     * @return \yii\web\Response
      */
     public function actionDrivers()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Driver::find()
-                ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
-                ->where([
-                    'auth_assignment.item_name' => 'driver',
-                    'users.company_id' => Yii::$app->user->identity->company_id,
-                    'users.status' => Driver::STATUS_ACTIVE
-                ]),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'defaultOrder' => ['created_at' => SORT_DESC],
-            ],
-        ]);
-
-        return $this->render('drivers', [
-            'dataProvider' => $dataProvider,
-        ]);
+        return $this->redirect(['driver/index']);
     }
 
     /**
      * Displays maintenance page.
+     * Redireciona para MaintenanceController::actionIndex()
      *
-     * @return string
+     * @return \yii\web\Response
      */
     public function actionMaintenance($status = 'scheduled')
     {
-        $companyId = Yii::$app->user->identity->company_id;
-        
-        // Build query based on status filter
-        $query = Maintenance::find()
-            ->where(['company_id' => $companyId]);
-        
-        if ($status === 'scheduled') {
-            // Agendadas: status='scheduled' E data futura (exclui atrasadas)
-            $query->andWhere(['status' => 'scheduled'])
-                ->andWhere(['>', 'date', date('Y-m-d')])
-                ->orderBy(['date' => SORT_ASC]);
-        } elseif ($status === 'completed') {
-            // Concluídas
-            $query->andWhere(['status' => 'completed'])
-                ->orderBy(['date' => SORT_DESC]);
-        } elseif ($status === 'overdue') {
-            // Atrasadas: status='scheduled' MAS data já passou
-            $query->andWhere(['status' => 'scheduled'])
-                ->andWhere(['<', 'date', date('Y-m-d')])
-                ->orderBy(['date' => SORT_ASC]);
-        }
-        
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => [
-                'pageSize' => 20,
-            ],
-        ]);
-
-        // Calculate stats
-        $allMaintenances = Maintenance::find()
-            ->where(['company_id' => $companyId])
-            ->all();
-
-        $stats = [
-            'scheduled' => 0,
-            'completed' => 0,
-            'overdue' => 0,
-            'totalCost' => 0,
-        ];
-
-        foreach ($allMaintenances as $maintenance) {
-            if ($maintenance->status === 'scheduled') {
-                if ($maintenance->date && strtotime($maintenance->date) < strtotime(date('Y-m-d'))) {
-                    $stats['overdue']++;
-                } else {
-                    $stats['scheduled']++;
-                }
-            } elseif ($maintenance->status === 'completed') {
-                $stats['completed']++;
-            }
-        }
-        
-        // Calculate total cost only for the filtered status
-        $filteredMaintenances = $dataProvider->query->all();
-        foreach ($filteredMaintenances as $maintenance) {
-            $stats['totalCost'] += (float)$maintenance->cost;
-        }
-
-        return $this->render('maintenance', [
-            'dataProvider' => $dataProvider,
-            'stats' => $stats,
-            'status' => $status,
-        ]);
+        return $this->redirect(['maintenance/index', 'status' => $status]);
     }
 
     /**
      * Displays reports page.
+     * Redireciona para ReportController::actionIndex()
      *
-     * @return string
+     * @return \yii\web\Response
      */
     public function actionReports()
     {
-        return $this->render('reports');
+        return $this->redirect(['report/index']);
     }
 
     /**
      * Displays vehicles page.
+     * Redireciona para VehicleController::actionIndex()
      *
-     * @return string
+     * @return \yii\web\Response
      */
     public function actionVehicles()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Vehicle::find()
-                ->where(['company_id' => Yii::$app->user->identity->company_id]),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-            'sort' => [
-                'defaultOrder' => ['created_at' => SORT_DESC],
-            ],
-        ]);
-
-        return $this->render('vehicles', [
-            'dataProvider' => $dataProvider,
-        ]);
+        return $this->redirect(['vehicle/index']);
     }
 }

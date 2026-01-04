@@ -151,7 +151,7 @@ class MaintenanceController extends Controller
             
             if ($model->save()) {
                 Yii::$app->session->setFlash('success', 'Manutenção criada com sucesso.');
-                return $this->redirect(['dashboard/maintenance']);
+                return $this->redirect(['index']);
             }
         }
 
@@ -225,7 +225,7 @@ class MaintenanceController extends Controller
 
         if ($model->status !== 'scheduled') {
             Yii::$app->session->setFlash('warning', 'Esta manutenção já foi concluída ou não está agendada.');
-            return $this->redirect(['dashboard/maintenance']);
+            return $this->redirect(['index']);
         }
 
         // Simply mark as completed
@@ -233,11 +233,11 @@ class MaintenanceController extends Controller
 
         if ($model->save(false)) {
             Yii::$app->session->setFlash('success', 'Manutenção concluída com sucesso!');
-            return $this->redirect(['dashboard/maintenance']);
+            return $this->redirect(['index']);
         }
 
         Yii::$app->session->setFlash('error', 'Erro ao concluir manutenção.');
-        return $this->redirect(['dashboard/maintenance']);
+        return $this->redirect(['index']);
     }
 
     /**

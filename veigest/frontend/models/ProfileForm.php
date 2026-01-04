@@ -185,8 +185,25 @@ class ProfileForm extends Model
         
         // Diretório de upload
         $uploadDir = Yii::getAlias('@frontend/web/uploads/avatars');
+        
+        // Cria diretório se não existir
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0775, true);
+            if (!@mkdir($uploadDir, 0777, true)) {
+                Yii::error("Não foi possível criar diretório: $uploadDir", 'profile');
+                return null;
+            }
+        }
+        
+        // Verifica se o diretório é gravável
+        if (!is_writable($uploadDir)) {
+            // Tenta ajustar permissões
+            @chmod($uploadDir, 0777);
+            
+            if (!is_writable($uploadDir)) {
+                Yii::error("Diretório não gravável: $uploadDir", 'profile');
+                $this->addError('photoFile', 'Erro de permissão ao salvar foto. Contacte o administrador.');
+                return null;
+            }
         }
 
         // Nome único do ficheiro
@@ -202,7 +219,8 @@ class ProfileForm extends Model
         if ($this->photoFile->saveAs($filePath)) {
             return '/uploads/avatars/' . $fileName;
         }
-
+        
+        $this->addError('photoFile', 'Erro ao guardar a foto.');
         return null;
     }
 

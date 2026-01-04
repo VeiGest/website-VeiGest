@@ -11,6 +11,7 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int $company_id
  * @property string $name
+ * @property string $username
  * @property string $email
  * @property string $password_hash
  * @property string|null $phone
@@ -20,12 +21,15 @@ use yii\db\ActiveRecord;
  * @property string $status
  * @property string $created_at
  * @property string|null $updated_at
+ * 
+ * @property Vehicle[] $vehicles
+ * @property Route[] $routes
  */
 class Driver extends ActiveRecord
 {
-    const STATUS_ACTIVE = 10;
-    const STATUS_INACTIVE = 9;
-    const STATUS_DELETED = 0;
+    const STATUS_ACTIVE = 'active';
+    const STATUS_INACTIVE = 'inactive';
+    const STATUS_DELETED = 'deleted'; // Para soft delete (via campo diferente se necessário)
 
     public $password; // Campo temporário para password
 
@@ -50,17 +54,23 @@ class Driver extends ActiveRecord
             [['phone'], 'string', 'max' => 20],
             [['license_number'], 'string', 'max' => 50],
             [['license_expiry'], 'safe'],
-            [['status'], 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-            [['nome', 'telefone', 'numero_carta', 'validade_carta'], 'safe'],
-            // Verificar unicidade do email por empresa
+            [['status'], 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE]],
+            [['nome', 'telefone', 'numero_carta', 'validade_carta', 'roles', 'username', 'auth_key'], 'safe'],
+            // Verificar unicidade do email por empresa - filter para excluir o próprio registro ao editar
             [
                 ['email'],
                 'unique',
                 'targetAttribute' => ['email', 'company_id'],
+                'filter' => function($query) {
+                    // Ao editar, excluir o próprio registro da validação
+                    if (!$this->isNewRecord) {
+                        $query->andWhere(['!=', 'id', $this->id]);
+                    }
+                },
                 'message' => 'Este email já está registado na sua empresa.'
             ],
-            // Password - obrigatória ao criar, opcional ao editar
-            [['password'], 'string', 'min' => 6],
+            // Password - opcional (será gerada se não fornecida)
+            [['password'], 'string', 'min' => 6, 'skipOnEmpty' => true],
         ];
     }
 
@@ -116,8 +126,108 @@ class Driver extends ActiveRecord
     }
 
     /**
-     * Relation to auth_assignment (para RBAC)
+     * Relação com veículos atribuídos a este condutor
+     * @return \yii\db\ActiveQuery
      */
+    public function getVehicles()
+    {
+        return $this->hasMany(Vehicle::class, ['driver_id' => 'id']);
+    }
+
+    /**
+     * Relação com rotas atribuídas a este condutor
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRoutes()
+    {
+        return $this->hasMany(Route::class, ['driver_id' => 'id']);
+    }
+
+    /**
+     * Obter número de veículos atribuídos
+     * @return int
+     */
+    public function getVehicleCount()
+    {
+        return $this->getVehicles()->count();
+    }
+
+    /**
+     * Obter número de rotas atribuídas
+     * @return int
+     */
+    public function getRouteCount()
+    {
+        return $this->getRoutes()->count();
+    }
+
+    /**
+     * Verifica se a carta de condução está válida
+     * @return bool|null null se não há data de validade
+     */
+    public function isLicenseValid()
+    {
+        if (empty($this->license_expiry)) {
+            return null;
+        }
+        return strtotime($this->license_expiry) > time();
+    }
+
+    /**
+     * Dias até a carta expirar
+     * @return int|null null se não há data de validade
+     */
+    public function getDaysUntilLicenseExpiry()
+    {
+        if (empty($this->license_expiry)) {
+            return null;
+        }
+        return ceil((strtotime($this->license_expiry) - time()) / 86400);
+    }
+
+    /**
+     * Obter nome de exibição (nome ou username)
+     * @return string
+     */
+    public function getDisplayName()
+    {
+        return $this->name ?: $this->username ?: 'Sem nome';
+    }
+
+    /**
+     * Obter URL do avatar/foto
+     * @return string|null
+     */
+    public function getAvatarUrl()
+    {
+        // Usa 'photo' que é o campo real da tabela users (não existe 'avatar')
+        if (!empty($this->photo)) {
+            // Se é uma URL completa (ex: Gravatar), retorna diretamente
+            if (strpos($this->photo, 'http') === 0) {
+                return $this->photo;
+            }
+            // Se é um caminho local e o arquivo existe
+            if (file_exists(Yii::getAlias('@frontend/web') . $this->photo)) {
+                return $this->photo;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Verifica se o condutor está disponível (ativo e com carta válida)
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        if ($this->status != self::STATUS_ACTIVE) {
+            return false;
+        }
+        $licenseValid = $this->isLicenseValid();
+        // Se não tem data de validade, considera disponível
+        return $licenseValid === null || $licenseValid === true;
+    }
+
     // Alias getters for legacy fields
     public function getNome() { return $this->name; }
     public function setNome($v) { $this->name = $v; }

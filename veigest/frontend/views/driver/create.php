@@ -5,33 +5,55 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var frontend\models\Driver $model */
 
-$this->title = 'Criar Condutor';
+$this->title = 'Novo Condutor';
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['dashboard/index']];
-$this->params['breadcrumbs'][] = ['label' => 'Condutores', 'url' => ['dashboard/drivers']];
+$this->params['breadcrumbs'][] = ['label' => 'Condutores', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="content-wrapper">
     <div class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2 justify-content-center text-center">
-                <div class="col-12">
-                    <h1 class="m-0" style="font-weight: 700;"><?= Html::encode($this->title) ?></h1>
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0" style="color: var(--dark-color); font-weight: 700;">
+                        <i class="fas fa-user-plus mr-2"></i><?= Html::encode($this->title) ?>
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="<?= \yii\helpers\Url::to(['dashboard/index']) ?>">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="<?= \yii\helpers\Url::to(['index']) ?>">Condutores</a></li>
+                        <li class="breadcrumb-item active"><?= Html::encode($this->title) ?></li>
+                    </ol>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="content d-flex justify-content-center" style="padding: 0 16px;">
-        <div class="card w-100" style="max-width: min(960px, calc(100vw - 340px)); margin: 0 auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <div class="card-header" style="background-color: var(--primary-color); color: white; border-bottom: 3px solid var(--dark-color);">
-                <h3 class="card-title mb-0 text-center"><i class="fas fa-user-plus"></i> <?= Html::encode($this->title) ?></h3>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <?= Html::a('<i class="fas fa-arrow-left"></i> Voltar', ['index'], ['class' => 'btn btn-secondary mb-3']) ?>
+                </div>
             </div>
-            <div class="card-body p-5">
-                <?= $this->render('_form', [
-                    'model' => $model,
-                ]) ?>
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8">
+                    <div class="card card-primary card-outline" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-user mr-2"></i>Dados do Condutor
+                            </h3>
+                        </div>
+                        <div class="card-body p-4">
+                            <?= $this->render('_form', [
+                                'model' => $model,
+                            ]) ?>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>

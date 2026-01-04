@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var frontend\models\Driver $model */
 
-$this->title = 'Editar Condutor: ' . $model->name;
+$this->title = 'Editar Condutor: ' . $model->getDisplayName();
 $this->params['breadcrumbs'][] = ['label' => 'Dashboard', 'url' => ['dashboard/index']];
-$this->params['breadcrumbs'][] = ['label' => 'Condutores', 'url' => ['dashboard/drivers']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => 'Condutores', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->getDisplayName(), 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Editar';
 ?>
 
@@ -17,21 +17,38 @@ $this->params['breadcrumbs'][] = 'Editar';
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0"><?= Html::encode($this->title) ?></h1>
+                    <h1 class="m-0" style="color: var(--dark-color); font-weight: 700;">
+                        <i class="fas fa-user-edit mr-2"></i>Editar Condutor
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="<?= \yii\helpers\Url::to(['dashboard/index']) ?>">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="<?= \yii\helpers\Url::to(['index']) ?>">Condutores</a></li>
+                        <li class="breadcrumb-item"><a href="<?= \yii\helpers\Url::to(['view', 'id' => $model->id]) ?>"><?= Html::encode($model->getDisplayName()) ?></a></li>
+                        <li class="breadcrumb-item active">Editar</li>
+                    </ol>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="content">
+    <section class="content">
         <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <?= Html::a('<i class="fas fa-arrow-left"></i> Voltar', ['view', 'id' => $model->id], ['class' => 'btn btn-secondary mb-3']) ?>
+                </div>
+            </div>
             <div class="row justify-content-center">
-                <div class="col-md-10">
-                    <div class="card" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                        <div class="card-header" style="background-color: var(--primary-color); color: white; border-bottom: 3px solid var(--dark-color);">
-                            <h3 class="card-title mb-0"><i class="fas fa-user-edit"></i> Editar Condutor</h3>
+                <div class="col-lg-10 col-xl-8">
+                    <div class="card card-warning card-outline" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-user mr-2"></i>Editar: <?= Html::encode($model->getDisplayName()) ?>
+                            </h3>
                         </div>
-                        <div class="card-body p-5">
+                        <div class="card-body p-4">
                             <?= $this->render('_form', [
                                 'model' => $model,
                             ]) ?>
@@ -40,5 +57,5 @@ $this->params['breadcrumbs'][] = 'Editar';
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </div>

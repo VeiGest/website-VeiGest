@@ -4,6 +4,8 @@ namespace frontend\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use common\models\User;
+use common\models\Document;
 
 /**
  * This is the model class for table "vehicles".
@@ -21,6 +23,11 @@ use yii\db\ActiveRecord;
  * @property string|null $photo
  * @property string $created_at
  * @property string|null $updated_at
+ * 
+ * @property User $driver
+ * @property Maintenance[] $maintenances
+ * @property Document[] $documents
+ * @property FuelLog[] $fuelLogs
  */
 class Vehicle extends ActiveRecord
 {
@@ -166,4 +173,86 @@ class Vehicle extends ActiveRecord
 
     public function getFoto() { return $this->photo; }
     public function setFoto($value) { $this->photo = $value; }
+
+    /* =========================
+     * RELATIONS (RF-FO-004)
+     * ========================= */
+
+    /**
+     * Condutor atribuído ao veículo
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDriver()
+    {
+        return $this->hasOne(User::class, ['id' => 'driver_id']);
+    }
+
+    /**
+     * Manutenções do veículo (RF-FO-004.4 - Histórico de utilizações)
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMaintenances()
+    {
+        return $this->hasMany(Maintenance::class, ['vehicle_id' => 'id'])
+            ->orderBy(['date' => SORT_DESC]);
+    }
+
+    /**
+     * Documentos associados ao veículo (RF-FO-004.5)
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDocuments()
+    {
+        return $this->hasMany(Document::class, ['vehicle_id' => 'id']);
+    }
+
+    /**
+     * Registos de combustível do veículo
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFuelLogs()
+    {
+        return $this->hasMany(FuelLog::class, ['vehicle_id' => 'id'])
+            ->orderBy(['date' => SORT_DESC]);
+    }
+
+    /**
+     * Rotas onde este veículo foi utilizado
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRoutes()
+    {
+        return $this->hasMany(Route::class, ['vehicle_id' => 'id'])
+            ->orderBy(['start_time' => SORT_DESC]);
+    }
+
+    /**
+     * Calcula custos totais do veículo
+     * @return array
+     */
+    public function getCostSummary()
+    {
+        $maintenanceCost = $this->getMaintenances()->sum('cost') ?: 0;
+        $fuelCost = $this->getFuelLogs()->sum('value') ?: 0;
+        
+        return [
+            'maintenance_cost' => (float) $maintenanceCost,
+            'fuel_cost' => (float) $fuelCost,
+            'total_cost' => (float) ($maintenanceCost + $fuelCost),
+        ];
+    }
+
+    /**
+     * Lista de condutores disponíveis para atribuição
+     * @return User[] Array de objetos User (condutores)
+     */
+    public static function getAvailableDrivers($companyId)
+    {
+        return User::find()
+            ->where(['company_id' => $companyId])
+            ->andWhere(['not', ['license_number' => null]])
+            ->andWhere(['status' => 'active'])
+            ->orderBy(['name' => SORT_ASC])
+            ->all();
+    }
 }

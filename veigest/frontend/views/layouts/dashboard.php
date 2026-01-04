@@ -208,13 +208,13 @@ DashboardAsset::register($this);
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/vehicles']) ?>" class="nav-link">
+                                    <a href="<?= Yii::$app->urlManager->createUrl(['vehicle/index']) ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Veículos</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/drivers']) ?>" class="nav-link">
+                                    <a href="<?= Yii::$app->urlManager->createUrl(['driver/index']) ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Condutores</p>
                                     </a>
@@ -229,21 +229,21 @@ DashboardAsset::register($this);
                         </li>
 
                         <li class="nav-item">
-                            <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/maintenance']) ?>" class="nav-link">
+                            <a href="<?= Yii::$app->urlManager->createUrl(['maintenance/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-tools"></i>
                                 <p>Manutenção</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/documents']) ?>" class="nav-link">
+                            <a href="<?= Yii::$app->urlManager->createUrl(['document/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-file-alt"></i>
                                 <p>Documentos</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/alerts']) ?>" class="nav-link">
+                            <a href="<?= Yii::$app->urlManager->createUrl(['alert/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-bell"></i>
                                 <p>Alertas</p>
                             </a>

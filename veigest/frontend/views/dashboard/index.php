@@ -51,7 +51,7 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
             <div class="icon">
                 <i class="fas fa-truck"></i>
             </div>
-            <a href="<?= \yii\helpers\Url::to(['dashboard/vehicles']) ?>" class="small-box-footer">Ver mais <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= \yii\helpers\Url::to(['vehicle/index']) ?>" class="small-box-footer">Ver mais <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -64,7 +64,7 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
             <div class="icon">
                 <i class="fas fa-user-tie"></i>
             </div>
-            <a href="<?= \yii\helpers\Url::to(['dashboard/drivers']) ?>" class="small-box-footer">Ver mais <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= \yii\helpers\Url::to(['driver/index']) ?>" class="small-box-footer">Ver mais <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -90,7 +90,7 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
             <div class="icon">
                 <i class="fas fa-euro-sign"></i>
             </div>
-            <a href="<?= \yii\helpers\Url::to(['dashboard/maintenance', 'status' => 'completed']) ?>" class="small-box-footer">Ver mais <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= \yii\helpers\Url::to(['maintenance/index', 'status' => 'completed']) ?>" class="small-box-footer">Ver mais <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 </div>
@@ -152,7 +152,7 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
 <!-- Navigation Cards -->
 <div class="row mt-4 mb-4 g-3">
     <div class="col-md-4">
-        <a href="<?= \yii\helpers\Url::to(['dashboard/maintenance', 'status' => 'scheduled']) ?>" class="card text-decoration-none text-dark h-100 hover-shadow" style="min-height: 140px;">
+        <a href="<?= \yii\helpers\Url::to(['maintenance/index', 'status' => 'scheduled']) ?>" class="card text-decoration-none text-dark h-100 hover-shadow" style="min-height: 140px;">
             <div class="card-body d-flex flex-column justify-content-between p-4">
                 <div>
                     <h5 class="card-title mb-0" style="font-size: 18px; font-weight: 700; color: #2c3e50;">Manutenções Agendadas</h5>
@@ -164,7 +164,7 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
         </a>
     </div>
     <div class="col-md-4">
-        <a href="<?= \yii\helpers\Url::to(['dashboard/maintenance', 'status' => 'overdue']) ?>" class="card text-decoration-none text-dark h-100 hover-shadow" style="min-height: 140px;">
+        <a href="<?= \yii\helpers\Url::to(['maintenance/index', 'status' => 'overdue']) ?>" class="card text-decoration-none text-dark h-100 hover-shadow" style="min-height: 140px;">
             <div class="card-body d-flex flex-column justify-content-between p-4">
                 <div>
                     <h5 class="card-title mb-0" style="font-size: 18px; font-weight: 700; color: #2c3e50;">Manutenções Atrasadas</h5>

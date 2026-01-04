@@ -270,38 +270,58 @@ class DashboardController extends Controller
         ]);
     }
     
-    // Outras pages do dashboard
+    // Outras pages do dashboard - Redirecionam para controllers específicos
     public function actionVehicles()
     {
-        // Lista de veículos
-        return $this->render('vehicles');
+        // Redireciona para VehicleController::actionIndex
+        return $this->redirect(['vehicle/index']);
     }
     
-    public function actionMaintenance()
+    public function actionMaintenance($status = 'scheduled')
     {
-        // Manutenções
-        return $this->render('maintenance');
+        // Redireciona para MaintenanceController::actionIndex
+        return $this->redirect(['maintenance/index', 'status' => $status]);
     }
     
     public function actionDrivers()
     {
-        // Condutores
-        return $this->render('drivers');
+        // Redireciona para DriverController::actionIndex
+        return $this->redirect(['driver/index']);
     }
     
     public function actionDocuments()
     {
-        // Documentos
-        return $this->render('documents');
+        // Redireciona para DocumentController::actionIndex
+        return $this->redirect(['document/index']);
     }
     
     public function actionAlerts()
     {
-        // Alertas
-        return $this->render('alerts');
+        // Redireciona para AlertController::actionIndex
+        return $this->redirect(['alert/index']);
+    }
+    
+    public function actionReports()
+    {
+        // Redireciona para ReportController::actionIndex
+        return $this->redirect(['report/index']);
     }
 }
 ```
+
+### Nota sobre Rotas
+
+O `DashboardController` atua como um **facade** para manter compatibilidade com URLs antigas.
+As rotas `dashboard/vehicles`, `dashboard/drivers`, etc. redirecionam para os controllers específicos:
+
+| URL Antiga | Redireciona Para |
+|------------|-----------------|
+| `dashboard/vehicles` | `vehicle/index` |
+| `dashboard/drivers` | `driver/index` |
+| `dashboard/maintenance` | `maintenance/index` |
+| `dashboard/documents` | `document/index` |
+| `dashboard/alerts` | `alert/index` |
+| `dashboard/reports` | `report/index` |
 
 ---
 

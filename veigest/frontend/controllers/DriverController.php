@@ -4,31 +4,39 @@ namespace frontend\controllers;
 
 use Yii;
 use frontend\models\Driver;
+use frontend\models\Vehicle;
+use frontend\models\Route;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
+/**
+ * DriverController - Gestão de Condutores
+ * Implementa operações CRUD para condutores com RBAC
+ */
 class DriverController extends Controller
 {
     public $layout = 'dashboard';
 
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
-                    // Index action requires drivers.view permission
                     [
                         'allow' => true,
-                        'actions' => ['index'],
+                        'actions' => ['index', 'view'],
                         'matchCallback' => function($rule, $action) {
                             return Yii::$app->user->can('drivers.view');
                         },
                     ],
-                    // Create action requires drivers.create permission
                     [
                         'allow' => true,
                         'actions' => ['create'],
@@ -36,15 +44,6 @@ class DriverController extends Controller
                             return Yii::$app->user->can('drivers.create');
                         },
                     ],
-                    // View action requires drivers.view permission
-                    [
-                        'allow' => true,
-                        'actions' => ['view'],
-                        'matchCallback' => function($rule, $action) {
-                            return Yii::$app->user->can('drivers.view');
-                        },
-                    ],
-                    // Update action requires drivers.update permission
                     [
                         'allow' => true,
                         'actions' => ['update'],
@@ -52,7 +51,6 @@ class DriverController extends Controller
                             return Yii::$app->user->can('drivers.update');
                         },
                     ],
-                    // Delete action requires drivers.delete permission
                     [
                         'allow' => true,
                         'actions' => ['delete'],
@@ -73,25 +71,125 @@ class DriverController extends Controller
 
     /**
      * Lista de condutores
+     * @return string
      */
     public function actionIndex()
     {
+        $query = Driver::find()
+            ->where(['company_id' => $this->getCompanyId()])
+            ->andWhere(['like', 'roles', 'condutor']);
+            // Removido filtro de status para mostrar todos os condutores
+            // O filtro por status é aplicado via query string abaixo
+
+        // Filtros opcionais
+        $status = Yii::$app->request->get('status');
+        if ($status !== null && $status !== '') {
+            $query->andWhere(['status' => $status]);
+        }
+
+        $search = Yii::$app->request->get('search');
+        if (!empty($search)) {
+            $query->andWhere([
+                'or',
+                ['like', 'name', $search],
+                ['like', 'email', $search],
+                ['like', 'license_number', $search],
+            ]);
+        }
+
         $dataProvider = new ActiveDataProvider([
-            'query' => Driver::find()->where(['company_id' => $this->getCompanyId(), 'role' => 'condutor', 'status' => Driver::STATUS_ACTIVE]),
+            'query' => $query,
             'pagination' => [
-                'pageSize' => 10,
+                'pageSize' => 15,
             ],
             'sort' => [
                 'defaultOrder' => ['created_at' => SORT_DESC],
+                'attributes' => [
+                    'name',
+                    'email',
+                    'status',
+                    'license_expiry',
+                    'created_at',
+                ],
             ],
         ]);
-        return $this->render('/dashboard/drivers', [
+
+        // Estatísticas para dashboard
+        $stats = [
+            'total' => Driver::find()
+                ->where(['company_id' => $this->getCompanyId()])
+                ->andWhere(['like', 'roles', 'condutor'])
+                ->count(),
+            'active' => Driver::find()
+                ->where(['company_id' => $this->getCompanyId(), 'status' => Driver::STATUS_ACTIVE])
+                ->andWhere(['like', 'roles', 'condutor'])
+                ->count(),
+            'inactive' => Driver::find()
+                ->where(['company_id' => $this->getCompanyId(), 'status' => Driver::STATUS_INACTIVE])
+                ->andWhere(['like', 'roles', 'condutor'])
+                ->count(),
+            'expiring_license' => Driver::find()
+                ->where(['company_id' => $this->getCompanyId(), 'status' => Driver::STATUS_ACTIVE])
+                ->andWhere(['like', 'roles', 'condutor'])
+                ->andWhere(['<=', 'license_expiry', date('Y-m-d', strtotime('+30 days'))])
+                ->andWhere(['>=', 'license_expiry', date('Y-m-d')])
+                ->count(),
+        ];
+
+        return $this->render('index', [
             'dataProvider' => $dataProvider,
+            'stats' => $stats,
+        ]);
+    }
+
+    /**
+     * Visualizar condutor com detalhes
+     * @param int $id
+     * @return string
+     */
+    public function actionView($id)
+    {
+        $model = $this->findModel($id);
+
+        // Veículos atribuídos a este condutor
+        $vehiclesProvider = new ActiveDataProvider([
+            'query' => Vehicle::find()
+                ->where(['driver_id' => $model->id, 'company_id' => $this->getCompanyId()]),
+            'pagination' => false,
+        ]);
+
+        // Rotas atribuídas (últimas 10)
+        $routesProvider = new ActiveDataProvider([
+            'query' => Route::find()
+                ->where(['driver_id' => $model->id])
+                ->orderBy(['created_at' => SORT_DESC]),
+            'pagination' => ['pageSize' => 10],
+        ]);
+
+        // Estatísticas do condutor
+        $stats = [
+            'total_vehicles' => $model->getVehicleCount(),
+            'total_routes' => $model->getRouteCount(),
+            // Removido filtro por status pois a tabela routes não tem essa coluna
+            'completed_routes' => Route::find()
+                ->where(['driver_id' => $model->id])
+                ->andWhere(['not', ['end_time' => null]]) // Rotas concluídas = com end_time preenchido
+                ->count(),
+            'license_valid' => $model->isLicenseValid(),
+            'days_until_license_expiry' => $model->getDaysUntilLicenseExpiry(),
+        ];
+
+        return $this->render('view', [
+            'model' => $model,
+            'vehiclesProvider' => $vehiclesProvider,
+            'routesProvider' => $routesProvider,
+            'stats' => $stats,
         ]);
     }
 
     /**
      * Criar condutor
+     * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
@@ -99,121 +197,146 @@ class DriverController extends Controller
         $model->company_id = $this->getCompanyId();
         $model->status = Driver::STATUS_ACTIVE;
 
-        if (Yii::$app->request->isPost) {
-            if ($model->load(Yii::$app->request->post())) {
-                // Converter status para inteiro
-                $model->status = (int)$model->status;
-                
-                if (!empty($model->password)) {
-                    $model->setPassword($model->password);
-                }
-                // Auto-gerar username se não existir
-                if (empty($model->username)) {
-                    $base = !empty($model->email) ? strstr($model->email, '@', true) : null;
-                    if (!$base) {
-                        $base = !empty($model->name) ? strtolower(preg_replace('/[^a-z0-9]+/i', '-', $model->name)) : 'condutor';
-                    }
-                    $username = $base;
-                    $suffix = 1;
-                    while (\common\models\User::find()->where(['username' => $username, 'company_id' => $model->company_id])->exists()) {
-                        $username = $base . '-' . $suffix++;
-                    }
-                    $model->username = $username;
-                }
-                // auth_key para sessão/remember-me
-                if (empty($model->auth_key)) {
-                    $model->auth_key = Yii::$app->security->generateRandomString();
-                }
+        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
+            // Definir roles como condutor
+            $model->roles = 'condutor';
 
-                if ($model->save()) {
-                    // Atribuir RBAC 'driver'
-                    $auth = Yii::$app->authManager;
-                    $role = $auth->getRole('driver');
-                    if ($role && !$auth->getAssignment('driver', $model->id)) {
-                        $auth->assign($role, $model->id);
-                    }
-                    Yii::$app->session->setFlash('success', 'Condutor criado com sucesso.');
-                    return $this->redirect(['dashboard/drivers']);
-                } else {
-                    Yii::error('Driver save failed: ' . json_encode($model->errors), 'driver-create');
-                }
+            // Set password se fornecida
+            if (!empty($model->password)) {
+                $model->setPassword($model->password);
+            } else {
+                // Gerar password aleatória se não fornecida
+                $randomPassword = Yii::$app->security->generateRandomString(8);
+                $model->setPassword($randomPassword);
+            }
+
+            // Auto-gerar username se não existir
+            if (empty($model->username)) {
+                $model->username = $this->generateUsername($model);
+            }
+
+            // auth_key para sessão/remember-me
+            if (empty($model->auth_key)) {
+                $model->auth_key = Yii::$app->security->generateRandomString();
+            }
+
+            if ($model->save()) {
+                // Atribuir RBAC 'driver'
+                $this->assignDriverRole($model->id);
+                
+                Yii::$app->session->setFlash('success', 'Condutor criado com sucesso.');
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::error('Driver save failed: ' . json_encode($model->errors), 'driver-create');
+                Yii::$app->session->setFlash('error', 'Erro ao criar condutor. Verifique os dados.');
             }
         }
 
-        $this->layout = 'dashboard';
         return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Visualizar condutor
-     */
-    public function actionView($id)
-    {
-        $model = $this->findModel($id);
-
-        $this->layout = 'dashboard';
-        return $this->render('view', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
      * Atualizar condutor
+     * @param int $id
+     * @return string|\yii\web\Response
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
-        if (Yii::$app->request->isPost) {
-            if ($model->load(Yii::$app->request->post())) {
-                if (!empty($model->password)) {
-                    $model->setPassword($model->password);
-                }
-                if ($model->save()) {
-                    // Garantir atribuição RBAC
-                    $auth = Yii::$app->authManager;
-                    if (!$auth->getAssignment('driver', $model->id)) {
-                        $role = $auth->getRole('driver');
-                        if ($role) { $auth->assign($role, $model->id); }
-                    }
-                    Yii::$app->session->setFlash('success', 'Condutor atualizado com sucesso.');
-                    return $this->redirect(['dashboard/drivers']);
-                }
+        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
+            // Atualizar password apenas se fornecida
+            if (!empty($model->password)) {
+                $model->setPassword($model->password);
+            }
+
+            if ($model->save()) {
+                // Garantir atribuição RBAC
+                $this->assignDriverRole($model->id);
+                
+                Yii::$app->session->setFlash('success', 'Condutor atualizado com sucesso.');
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::error('Driver update failed: ' . json_encode($model->errors), 'driver-update');
+                Yii::$app->session->setFlash('error', 'Erro ao atualizar condutor. Verifique os dados.');
             }
         }
 
-        $this->layout = 'dashboard';
         return $this->render('update', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Apagar condutor
+     * Apagar condutor (soft delete)
+     * @param int $id
+     * @return \yii\web\Response
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        Yii::$app->session->setFlash('success', 'Condutor removido.');
-        return $this->redirect(['dashboard/drivers']);
+        $model = $this->findModel($id);
+
+        // Verificar se tem veículos atribuídos
+        if ($model->getVehicleCount() > 0) {
+            Yii::$app->session->setFlash('error', 'Não é possível apagar este condutor pois possui veículos atribuídos. Remova as atribuições primeiro.');
+            return $this->redirect(['view', 'id' => $id]);
+        }
+
+        // Verificar se tem rotas pendentes
+        $pendingRoutes = Route::find()
+            ->where(['driver_id' => $model->id])
+            ->andWhere(['in', 'status', ['pendente', 'em_curso']])
+            ->count();
+        
+        if ($pendingRoutes > 0) {
+            Yii::$app->session->setFlash('error', 'Não é possível apagar este condutor pois possui rotas pendentes ou em curso.');
+            return $this->redirect(['view', 'id' => $id]);
+        }
+
+        // Soft delete - marcar como inativo
+        $model->status = Driver::STATUS_INACTIVE;
+        if ($model->save(false)) {
+            // Remover role RBAC
+            $auth = Yii::$app->authManager;
+            $auth->revokeAll($model->id);
+            
+            Yii::$app->session->setFlash('success', 'Condutor desativado com sucesso.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Erro ao desativar condutor.');
+        }
+
+        return $this->redirect(['index']);
     }
 
+    /**
+     * Encontrar modelo por ID
+     * @param int $id
+     * @return Driver
+     * @throws NotFoundHttpException
+     */
     protected function findModel($id)
     {
-        $model = Driver::findOne([
-            'id' => $id,
-            'company_id' => $this->getCompanyId(),
-        ]);
+        $model = Driver::find()
+            ->where([
+                'id' => $id,
+                'company_id' => $this->getCompanyId(),
+            ])
+            ->andWhere(['like', 'roles', 'condutor'])
+            ->one();
 
-        if ($model !== null) {
+        if ($model !== null && $model->status != Driver::STATUS_INACTIVE) {
             return $model;
         }
 
         throw new NotFoundHttpException('Condutor não encontrado.');
     }
 
+    /**
+     * Obter ID da empresa do usuário logado
+     * @return int|null
+     */
     private function getCompanyId()
     {
         $identity = Yii::$app->user->identity;
@@ -221,5 +344,44 @@ class DriverController extends Controller
             return $identity->getAttribute('company_id');
         }
         return null;
+    }
+
+    /**
+     * Gerar username único para o condutor
+     * @param Driver $model
+     * @return string
+     */
+    private function generateUsername($model)
+    {
+        $base = !empty($model->email) ? strstr($model->email, '@', true) : null;
+        if (!$base) {
+            $base = !empty($model->name) ? strtolower(preg_replace('/[^a-z0-9]+/i', '-', $model->name)) : 'condutor';
+        }
+        
+        $username = $base;
+        $suffix = 1;
+        
+        while (\common\models\User::find()->where(['username' => $username, 'company_id' => $model->company_id])->exists()) {
+            $username = $base . '-' . $suffix++;
+        }
+        
+        return $username;
+    }
+
+    /**
+     * Atribuir role de driver no RBAC
+     * @param int $userId
+     */
+    private function assignDriverRole($userId)
+    {
+        $auth = Yii::$app->authManager;
+        
+        // Verificar se já tem a role
+        if (!$auth->getAssignment('driver', $userId)) {
+            $role = $auth->getRole('driver');
+            if ($role) {
+                $auth->assign($role, $userId);
+            }
+        }
     }
 }
