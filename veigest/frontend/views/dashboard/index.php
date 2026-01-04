@@ -259,7 +259,7 @@ const ctxState = document.getElementById('stateChart').getContext('2d');
 new Chart(ctxState, {
     type: 'doughnut',
     data: {
-        labels: ['Agendadas', 'Concluídas', 'Atrasadas'],
+        labels: ['Agendadas', 'Concluidas', 'Atrasadas'],
         datasets: [{
             data: [<?= $scheduled ?>, <?= $completed ?>, <?= $overdue ?>],
             backgroundColor: ['#09BC8A', '#17A2B8', '#EF4444']
@@ -275,7 +275,7 @@ new Chart(ctxCost, {
     data: {
         labels: <?= json_encode($labels) ?>,
         datasets: [{
-            label: 'Custo (€)',
+            label: 'Custo (EUR)',
             data: <?= json_encode($monthlyCosts) ?>,
             backgroundColor: '#09BC8A',
             borderColor: '#08a572',
