@@ -142,6 +142,13 @@ DashboardAsset::register($this);
                         <i class="fas fa-user-circle"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
+                        <a href="<?= Yii::$app->urlManager->createUrl(['profile/index']) ?>" class="dropdown-item">
+                            <i class="fas fa-user mr-2"></i> Meu Perfil
+                        </a>
+                        <a href="<?= Yii::$app->urlManager->createUrl(['profile/change-password']) ?>" class="dropdown-item">
+                            <i class="fas fa-key mr-2"></i> Alterar Senha
+                        </a>
+                        <div class="dropdown-divider"></div>
                         <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/logout']) ?>" class="dropdown-item">
                             <i class="fas fa-sign-out-alt mr-2"></i> Sair
                         </a>
@@ -246,6 +253,14 @@ DashboardAsset::register($this);
                             <a href="<?= Yii::$app->urlManager->createUrl(['report/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-chart-bar"></i>
                                 <p>Relatórios</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-header">CONTA</li>
+                        <li class="nav-item">
+                            <a href="<?= Yii::$app->urlManager->createUrl(['profile/index']) ?>" class="nav-link">
+                                <i class="nav-icon fas fa-user-circle"></i>
+                                <p>Meu Perfil</p>
                             </a>
                         </li>
                     </ul>
