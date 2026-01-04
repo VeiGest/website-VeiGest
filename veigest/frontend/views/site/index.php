@@ -12,7 +12,7 @@ $this->title = 'Bem-vindo à VeiGest';
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
                     <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                        Gestão Inteligente de Frotas Empresariais
+                        Gestão Inteligente de Frotas Empresariais 
                     </h1>
                     <p class="text-lg mb-8 text-opacity-90">
                         Plataforma completa para monitorizar veículos, condutores e otimizar operações da sua frota em tempo real.

@@ -12,17 +12,23 @@ use yii\web\IdentityInterface;
  * User model
  *
  * @property integer $id
+ * @property string $username
  * @property string $name
- * @property string $company_id
+ * @property integer $company_id
+ * @property string $email
  * @property string $password_hash
+ * @property string $phone
+ * @property string $status
+ * @property string $estado
+ * @property string $auth_key
  * @property string $password_reset_token
  * @property string $verification_token
- * @property string $email
- * @property string $auth_key
- 
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
+ * @property string $license_number
+ * @property string $license_expiry
+ * @property string $photo
+ * @property string $roles
+ * @property string $created_at
+ * @property string $updated_at
  * @property string $password write-only password
  */
 
@@ -30,12 +36,8 @@ use yii\web\IdentityInterface;
 
 class User extends ActiveRecord implements IdentityInterface
 {
-    public const STATUS_DELETED = 0;
-    public const STATUS_INACTIVE = 9;
-    public const STATUS_ACTIVE = 10;
-
-    // Virtual attribute for password - only used during create/update
     public $password;
+
 
     /**
      * {@inheritdoc}
@@ -61,19 +63,6 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Aliases for legacy `nome` usage (maps to `name` column).
-     */
-    public function getNome()
-    {
-        return $this->name;
-    }
-
-    public function setNome($value)
-    {
-        $this->name = $value;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function rules()
@@ -86,14 +75,11 @@ class User extends ActiveRecord implements IdentityInterface
             ['password', 'required', 'on' => ['create', 'adminCreate']],
 
             ['email', 'email'],
-            ['username', 'string', 'max' => 64],
-            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9._-]{3,64}$/'],
-            ['username', 'unique', 'targetAttribute' => ['username', 'company_id']],
-
-            ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+            ['username', 'string', 'max' => 255],
+            ['username', 'unique'],
 
             ['role', 'in', 'range' => ['admin', 'gestor', 'condutor']],
+            ['estado', 'in', 'range' => ['ativo', 'inativo']],
         ];
     }
 
@@ -110,7 +96,7 @@ class User extends ActiveRecord implements IdentityInterface
             'company_id',
             'password',
             'role',
-            'status'
+            'estado'
         ];
 
         // Cenário de criação por admin → password obrigatória
@@ -121,7 +107,7 @@ class User extends ActiveRecord implements IdentityInterface
             'company_id',
             'password',
             'role',
-            'status'
+            'estado'
         ];
 
         // Cenário de edição → password opcional
@@ -132,7 +118,7 @@ class User extends ActiveRecord implements IdentityInterface
             'company_id',
             'password',
             'role',
-            'status'
+            'estado'
         ];
 
         $scenarios['signup'] = [
@@ -140,8 +126,7 @@ class User extends ActiveRecord implements IdentityInterface
             'name',
             'email',
             'company_id',
-            'password',
-            'status'
+            'password'
         ];
 
         return $scenarios;
@@ -155,7 +140,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['id' => $id, 'estado' => 'ativo']);
     }
 
     /**
@@ -168,7 +153,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // assume token is stored in auth_key (simple bearer token)
-        return static::findOne(['auth_key' => $token, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['auth_key' => $token, 'estado' => 'ativo']);
     }
 
     /**
@@ -179,7 +164,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['username' => $username, 'estado' => 'ativo']);
     }
 
     /**
@@ -190,7 +175,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByEmail($email)
     {
-        return static::findOne(['email' => $email, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['email' => $email, 'estado' => 'ativo']);
     }
 
     /**
@@ -207,7 +192,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'status' => self::STATUS_ACTIVE,
+            'estado' => 'ativo',
 
         ]);
     }
@@ -222,6 +207,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return static::findOne([
             'verification_token' => $token,
+            'estado' => 'inativo',
+
         ]);
     }
 
@@ -280,10 +267,6 @@ class User extends ActiveRecord implements IdentityInterface
         // Gerar auth_key apenas na criação
         if ($insert) {
             $this->generateAuthKey();
-        }
-
-        if ($this->status === null) {
-            $this->status = self::STATUS_ACTIVE;
         }
 
         // Criar hash da password se for preenchida
@@ -361,23 +344,20 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
 
-        // Retorna a role principal mapeada para categorias de UI
+        // Retorna a primeira role encontrada (ou a mais importante)
         $roleNames = array_keys($roles);
 
-        // Prioridade: admin > manager/maintenance-manager > senior-driver/driver
-        if (in_array('admin', $roleNames, true)) {
+        // Prioridade: admin > gestor > condutor
+        if (in_array('admin', $roleNames)) {
             return 'admin';
         }
-        if (in_array('manager', $roleNames, true) || in_array('maintenance-manager', $roleNames, true)) {
-            // Mapear para 'gestor' para compatibilidade com UI existente
+        if (in_array('gestor', $roleNames)) {
             return 'gestor';
         }
-        if (in_array('senior-driver', $roleNames, true) || in_array('driver', $roleNames, true)) {
-            // Mapear para 'condutor' para compatibilidade com UI existente
+        if (in_array('condutor', $roleNames)) {
             return 'condutor';
         }
 
-        // Fallback: primeira role
         return $roleNames[0] ?? null;
     }
 

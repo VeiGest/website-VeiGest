@@ -1,46 +1,232 @@
-# API - Backend (versioned)
+# VeiGest API REST - Backend
 
-Esta pasta contém o módulo de API do backend. A API implementada segue um padrão RESTful e possui versionamento por módulos (por ex. `v1`).
+Esta é a implementação oficial da API RESTful para o sistema VeiGest, seguindo rigorosamente os padrões REST e as melhores práticas de desenvolvimento de APIs.
 
-## Visão geral da estrutura
+## 🏗️ Arquitetura da API
 
-- `backend/modules/api/Module.php` — módulo principal da API (registro do namespace)
-- `backend/modules/api/v1/Module.php` — módulo da versão `v1`
-- `backend/modules/api/v1/controllers/` — controllers REST da versão `v1`:
-  - `AuthController.php` — endpoint de login (POST `/api/v1/auth/login`) que retorna `access_token`
-  - `UserController.php` — `yii\\rest\\ActiveController` para `common\\models\\User` (rotas RESTful `GET /api/v1/user`, `GET /api/v1/user/<id>`, etc.)
+A API foi reestruturada para seguir um padrão arquitetural sólido:
 
-As rotas REST estão configuradas em `backend/config/main.php` via `yii\\rest\\UrlRule`.
+### Estrutura de Diretórios
+```
+backend/modules/api/
+├── Module.php                     # Módulo principal da API
+├── components/
+│   └── ApiAuthenticator.php      # Autenticação personalizada Bearer Token
+├── controllers/
+│   ├── BaseApiController.php     # Controlador base com comportamentos comuns
+│   ├── AuthController.php        # Endpoints de autenticação
+│   ├── VehicleController.php     # CRUD de veículos
+│   └── UserController.php        # CRUD de usuários/condutores
+└── models/
+    ├── Company.php               # Modelo de empresa
+    ├── Vehicle.php               # Modelo de veículo
+    ├── Maintenance.php           # Modelo de manutenção
+    └── FuelLog.php               # Modelo de abastecimento
+```
 
-## Endpoints principais (v1)
+### Controladores Principais
 
-- POST /api/v1/auth/login
-  - Body (application/json):
-    - `username`: string
-    - `password`: string
-  - Resposta (200):
-    - `{ "access_token": "...", "user": { "id": 1, "nome": "...", "email": "..." } }`
-  - Erros: `{ "error": "mensagem" }`
+  - Configurações CORS automáticas
+  - Autenticação Bearer Token
+  - Respostas padronizadas (success/error)
+  - Verificações de multi-tenancy
+  - Content negotiation (JSON/XML)
 
-- GET /api/v1/user
-  - Lista de usuários (requer header Authorization)
-  - Header: `Authorization: Bearer <access_token>`
+  - `POST /api/auth/login` — Login com username/password
+  - `GET /api/auth/me` — Informações do usuário autenticado
+  - `POST /api/auth/refresh` — Renovação de token
+  - `POST /api/auth/logout` — Logout
+  - `GET /api/auth/info` — Informações da API
 
-- GET /api/v1/user/<id>
-  - Detalhes de um usuário (requer token)
+  - CRUD completo com filtragem por empresa
+  - Endpoints personalizados para manutenções e abastecimentos
+  - Estatísticas de consumo e custos
 
-Observação: `UserController` é um `ActiveController` que expõe as ações padrão (`index`, `view`, `create`, `update`, `delete`) do modelo `common\\models\\User`. Em `UrlRule` o pluralize foi configurado como `false` (use `/user`).
+### Novos Módulos / Endpoints (resumo)
 
-## Autenticação
+- **MaintenanceController** — CRUD de manutenções e endpoints de relatórios:
+  - `GET /api/maintenance`, `POST /api/maintenance`, `PUT /api/maintenance/{id}`, `DELETE /api/maintenance/{id}`
+  - `GET /api/maintenance/by-vehicle/{vehicle_id}`
+  - `GET /api/maintenance/by-status/{estado}`
+  - `POST /api/maintenance/{id}/schedule`
+  - Relatórios: `GET /api/maintenance/reports/monthly`, `GET /api/maintenance/reports/costs`
 
-A autenticação atual é simples: a API usa Bearer token no header `Authorization`. O token armazenado/consultado é o campo `auth_key` do modelo `User`.
+- **FuelLogController** — Gestão de abastecimentos, estatísticas e relatórios de eficiência:
+  - `GET /api/fuel-log`, `POST /api/fuel-log`, `PUT /api/fuel-log/{id}`
+  - `GET /api/fuel-log/stats`, `GET /api/fuel-log/efficiency-report`, `GET /api/fuel-log/alerts`
 
-Fluxo de login:
-1. Cliente envia POST `/api/v1/auth/login` com `username` e `password`.
-2. Se as credenciais forem válidas, o controller retorna `access_token` (que é `auth_key`). Se `auth_key` estiver vazio, o controller gera e salva um novo.
-3. Cliente inclui o header `Authorization: Bearer <access_token>` em requisições subsequentes.
+- **CompanyController** — Endpoints avançados de empresa e estatísticas por empresa:
+  - `GET /api/company/{id}/vehicles`, `GET /api/company/{id}/users`, `GET /api/company/{id}/stats`
 
-Segurança e melhorias recomendadas:
+- **DocumentController / FileController** — Upload, listagem e download de ficheiros/documentos com multi-tenancy.
+
+Consulte `API_ENDPOINTS_COMPLETE.md` para a lista completa e exemplos de requests/response.
+
+- **UserController** — Gestão de usuários:
+  - CRUD com controle de permissões RBAC
+  - Filtragem por empresa (multi-tenancy)
+  - Perfil do usuário e gestão de condutores
+
+As rotas REST são configuradas automaticamente em `backend/config/main.php`.
+
+## 🚀 Endpoints Principais
+
+### Autenticação
+- `POST /api/auth/login` — Login de usuário
+- `GET /api/auth/me` — Perfil do usuário autenticado  
+- `POST /api/auth/refresh` — Renovar token
+- `POST /api/auth/logout` — Logout
+- `GET /api/auth/info` — Informações da API
+
+### Veículos
+- `GET /api/vehicles` — Listar veículos da empresa
+- `POST /api/vehicles` — Criar novo veículo
+- `GET /api/vehicles/{id}` — Detalhes do veículo
+- `PUT /api/vehicles/{id}` — Atualizar veículo
+- `DELETE /api/vehicles/{id}` — Deletar veículo
+- `GET /api/vehicles/{id}/maintenances` — Manutenções do veículo
+- `GET /api/vehicles/{id}/fuel-logs` — Abastecimentos do veículo
+- `GET /api/vehicles/{id}/stats` — Estatísticas do veículo
+- `GET /api/vehicles/by-status/{status}` — Filtrar por status
+
+### Usuários
+- `GET /api/users` — Listar usuários da empresa
+- `POST /api/users` — Criar novo usuário
+- `GET /api/users/{id}` — Detalhes do usuário
+- `PUT /api/users/{id}` — Atualizar usuário
+- `DELETE /api/users/{id}` — Deletar usuário
+- `GET /api/users/drivers` — Listar apenas condutores
+- `GET /api/users/profile` — Perfil completo do usuário
+- `PUT /api/users/{id}/photo` — Atualizar foto do usuário
+
+Todos os endpoints (exceto autenticação) requerem header: `Authorization: Bearer <access_token>`
+
+## 🔐 Sistema de Autenticação
+
+A API implementa um sistema robusto de autenticação Bearer Token com Base64 encoding:
+
+### Fluxo de Autenticação
+1. **Login**: Cliente envia `POST /api/auth/login` com `username` e `password`
+2. **Geração de Token**: Sistema gera token Base64 contendo:
+   - `user_id` — ID do usuário
+   - `company_id` — ID da empresa (multi-tenancy)
+   - `roles` — Papéis RBAC do usuário
+   - `permissions` — Permissões específicas
+   - `expires_at` — Timestamp de expiração (24h)
+3. **Uso**: Cliente inclui `Authorization: Bearer <token>` em requisições
+4. **Validação**: Sistema decodifica e valida o token em cada requisição
+
+### Estrutura do Token (Base64)
+```json
+{
+  "user_id": 123,
+  "username": "admin",
+  "company_id": 1,
+  "company_code": "ACME001",
+  "roles": ["manager", "user"],
+  "permissions": ["manage_vehicles", "view_reports"],
+  "expires_at": 1703123456,
+  "issued_at": 1703037056
+}
+```
+
+### Multi-tenancy e RBAC
+- **Multi-tenancy**: Cada empresa tem acesso apenas aos seus dados
+- **RBAC**: Controle granular de permissões por papel
+- **Filtragem Automática**: Todos os recursos são filtrados por `company_id`
+
+### Recursos de Segurança:
+- **Tokens com Expiração**: 24 horas de validade
+- **Validação de Estado**: Usuários inativos são rejeitados
+- **CORS Configurado**: Headers de segurança automáticos  
+- **HTTPS Recomendado**: Para ambientes de produção
+- **Rate Limiting**: Configurável por controlador
+
+## 📊 Formatos de Resposta
+
+### Resposta de Sucesso
+```json
+{
+  "success": true,
+  "data": { ... },
+  "message": "Operação realizada com sucesso",
+  "timestamp": "2025-12-17T10:30:00Z"
+}
+```
+
+### Resposta de Erro
+```json
+{
+  "success": false,
+  "message": "Descrição do erro",
+  "errors": { ... },
+  "timestamp": "2025-12-17T10:30:00Z"
+}
+```
+
+## 🛠️ Configuração e Uso
+
+### Requisitos
+- PHP 7.4+
+- Yii2 Framework
+- Base de dados configurada
+- Extensão JSON habilitada
+
+### Configuração em main.php
+```php
+'modules' => [
+    'api' => [
+        'class' => 'backend\modules\api\Module',
+    ],
+],
+'urlManager' => [
+    'enablePrettyUrl' => true,
+    'showScriptName' => false,
+    'rules' => [
+        ['class' => 'yii\rest\UrlRule', 'controller' => 'api/auth'],
+        ['class' => 'yii\rest\UrlRule', 'controller' => 'api/vehicle'],
+        ['class' => 'yii\rest\UrlRule', 'controller' => 'api/user'],
+    ],
+],
+```
+
+## 🧪 Testes
+
+A API inclui uma suite completa de testes JavaScript:
+- Testes de autenticação
+- Testes de CRUD para todos os recursos
+- Validação de multi-tenancy
+- Verificação de permissões RBAC
+
+Execute os testes:
+```bash
+cd backend/modules/api/v1/api-tests
+node run-all-tests.js
+```
+
+## 📚 Documentação Completa
+
+Para documentação detalhada de cada endpoint, consulte:
+- `API_ENDPOINTS.md` — Documentação completa da API
+- `API_REQUIREMENTS_GUIDE.md` — Guia de desenvolvimento
+- `api-tests/README.md` — Guia de testes
+
+## 🔄 Versionamento
+
+A API suporta versionamento através da URL:
+- Versão atual: `/api/` (sem versão = v1)
+- Futuras versões: `/api/v2/`, `/api/v3/`, etc.
+
+## 📞 Suporte
+
+Para dúvidas ou problemas:
+1. Consulte a documentação completa
+2. Execute os testes para validar a instalação  
+3. Verifique os logs do Yii2 em `runtime/logs/`
+
+---
+
+**VeiGest API v1.0** — Sistema de Gestão de Veículos
 - Em produção, não use `auth_key` simples sem expiração. Prefira JWTs (com assinatura e claims) ou uma tabela separada de tokens com `expires_at` e `revoked`.
 - Limite origens permitidas no CORS em vez de liberar '*' globalmente.
 - Use HTTPS sempre.

@@ -4,10 +4,13 @@ return [
     'components' => [
         'db' => [
             'class' => \yii\db\Connection::class,
-            'dsn' => 'mysql:host=localhost;dbname=veigest',
-            'username' => 'root',
-            'password' => '',
+            'dsn' => 'mysql:host=db;port=3306;dbname=veigest_db',
+            'username' => 'veigest_user',
+            'password' => 'secret',
             'charset' => 'utf8mb4',
+            'attributes' => [
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"
+            ],
         ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,

@@ -3,17 +3,32 @@
 namespace frontend\controllers;
 
 use Yii;
-use frontend\models\Document;
-use frontend\models\Vehicle;
-use frontend\models\Driver;
-use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
+use yii\web\Response;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use common\models\Document;
+use common\models\File;
+use common\models\Vehicle;
+use common\models\User;
+use frontend\models\DocumentSearch;
+use frontend\models\DocumentUploadForm;
 
+/**
+ * DocumentController implementa as ações CRUD para Document.
+ */
 class DocumentController extends Controller
 {
+    /**
+     * @var string
+     */
+    public $layout = 'dashboard';
+
+    /**
+     * {@inheritdoc}
+     */
     public function behaviors()
     {
         return [
@@ -22,127 +37,226 @@ class DocumentController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['@'], // Apenas utilizadores autenticados
                     ],
+                ],
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
                 ],
             ],
         ];
     }
 
-    public function init()
-    {
-        parent::init();
-        $this->layout = 'dashboard';
-    }
-
+    /**
+     * Lista todos os documentos.
+     * 
+     * @return string
+     */
     public function actionIndex()
     {
-        $companyId = Yii::$app->user->identity->company_id;
-        $query = Document::find()->where(['company_id' => $companyId]);
+        $searchModel = new DocumentSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => ['pageSize' => 20],
-        ]);
+        // Estatísticas
+        $companyId = Yii::$app->user->identity->company_id;
+        $stats = Document::getStatsByCompany($companyId);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'counters' => $this->buildCounters($companyId),
+            'stats' => $stats,
         ]);
     }
 
+    /**
+     * Exibe um documento específico.
+     * 
+     * @param int $id
+     * @return string
+     * @throws NotFoundHttpException se o documento não for encontrado
+     */
+    public function actionView($id)
+    {
+        $model = $this->findModel($id);
+
+        return $this->render('view', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Cria um novo documento.
+     * 
+     * @return string|Response
+     */
     public function actionCreate()
     {
-        $model = new Document();
+        $model = new DocumentUploadForm();
         $companyId = Yii::$app->user->identity->company_id;
 
-        if ($model->load(Yii::$app->request->post())) {
-            $model->file = UploadedFile::getInstance($model, 'file');
+        // Listas para dropdowns
+        $vehicles = Vehicle::find()
+            ->where(['company_id' => $companyId])
+            ->orderBy(['license_plate' => SORT_ASC])
+            ->all();
+        
+        $drivers = User::find()
+            ->where(['company_id' => $companyId, 'roles' => 'condutor'])
+            ->orderBy(['name' => SORT_ASC])
+            ->all();
 
-            if ($model->validate()) {
-                $basePath = Yii::getAlias('@frontend/web/uploads/documents/' . $companyId);
-                if (!is_dir($basePath)) {
-                    mkdir($basePath, 0775, true);
-                }
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $model->uploadedFile = UploadedFile::getInstance($model, 'uploadedFile');
 
-                $fileName = uniqid('', true) . '.' . $model->file->extension;
-                $fullPath = $basePath . '/' . $fileName;
-
-                if ($model->file->saveAs($fullPath)) {
-                    $model->file_path = 'uploads/documents/' . $companyId . '/' . $fileName;
-                    $model->company_id = $companyId;
-                    $model->save(false);
-                    Yii::$app->session->setFlash('success', 'Documento carregado com sucesso.');
-                    return $this->redirect(['index']);
-                }
-
-                Yii::$app->session->setFlash('error', 'Falha ao gravar o ficheiro.');
+            if ($document = $model->upload()) {
+                Yii::$app->session->setFlash('success', 'Documento enviado com sucesso!');
+                return $this->redirect(['index']);
             }
         }
 
         return $this->render('create', [
             'model' => $model,
-            'vehicles' => Vehicle::find()
-                ->where(['company_id' => $companyId])
-                ->select(['id', 'license_plate AS matricula'])
-                ->indexBy('id')
-                ->column(),
-            'drivers' => Driver::find()->where(['company_id' => $companyId])->select(['name', 'id'])->indexBy('id')->column(),
+            'vehicles' => $vehicles,
+            'drivers' => $drivers,
         ]);
     }
 
-    public function actionDownload($id)
+    /**
+     * Atualiza um documento existente.
+     * 
+     * @param int $id
+     * @return string|Response
+     * @throws NotFoundHttpException se o documento não for encontrado
+     */
+    public function actionUpdate($id)
     {
-        $doc = $this->findOwn($id);
-        $path = Yii::getAlias('@frontend/web/' . $doc->file_path);
+        $model = $this->findModel($id);
+        $companyId = Yii::$app->user->identity->company_id;
 
-        if (!file_exists($path)) {
-            throw new NotFoundHttpException('Ficheiro não encontrado.');
+        // Listas para dropdowns
+        $vehicles = Vehicle::find()
+            ->where(['company_id' => $companyId])
+            ->orderBy(['license_plate' => SORT_ASC])
+            ->all();
+        
+        $drivers = User::find()
+            ->where(['company_id' => $companyId, 'roles' => 'condutor'])
+            ->orderBy(['name' => SORT_ASC])
+            ->all();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('success', 'Documento atualizado com sucesso!');
+            return $this->redirect(['index']);
         }
 
-        return Yii::$app->response->sendFile($path, basename($path));
+        return $this->render('update', [
+            'model' => $model,
+            'vehicles' => $vehicles,
+            'drivers' => $drivers,
+        ]);
     }
 
+    /**
+     * Elimina um documento.
+     * 
+     * @param int $id
+     * @return Response
+     * @throws NotFoundHttpException se o documento não for encontrado
+     */
     public function actionDelete($id)
     {
-        $doc = $this->findOwn($id);
-        $path = Yii::getAlias('@frontend/web/' . $doc->file_path);
-
-        if (file_exists($path)) {
-            @unlink($path);
+        $model = $this->findModel($id);
+        
+        try {
+            $model->delete();
+            Yii::$app->session->setFlash('success', 'Documento eliminado com sucesso!');
+        } catch (\Exception $e) {
+            Yii::$app->session->setFlash('error', 'Erro ao eliminar o documento.');
+            Yii::error('Erro ao eliminar documento: ' . $e->getMessage());
         }
 
-        $doc->delete();
-        Yii::$app->session->setFlash('success', 'Documento eliminado.');
         return $this->redirect(['index']);
     }
 
-    private function findOwn($id): Document
+    /**
+     * Download do ficheiro de um documento.
+     * 
+     * @param int $id
+     * @return Response
+     * @throws NotFoundHttpException se o documento não for encontrado
+     */
+    public function actionDownload($id)
     {
-        $companyId = Yii::$app->user->identity->company_id;
-        $doc = Document::findOne(['id' => $id, 'company_id' => $companyId]);
-        if (!$doc) {
-            throw new NotFoundHttpException('Documento não encontrado.');
+        $model = $this->findModel($id);
+        $file = $model->file;
+
+        if (!$file) {
+            throw new NotFoundHttpException('Ficheiro não encontrado.');
         }
-        return $doc;
+
+        $filePath = $file->getAbsolutePath();
+
+        if (!file_exists($filePath)) {
+            throw new NotFoundHttpException('Ficheiro não encontrado no servidor.');
+        }
+
+        return Yii::$app->response->sendFile($filePath, $file->original_name);
     }
 
-    private function buildCounters(int $companyId): array
+    /**
+     * Retorna veículos e motoristas para AJAX (usado no formulário)
+     * 
+     * @return array
+     */
+    public function actionGetOptions()
     {
-        [$today, $limit] = $this->statusDates();
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $companyId = Yii::$app->user->identity->company_id;
+
+        $vehicles = Vehicle::find()
+            ->select(['id', 'license_plate', 'brand', 'model'])
+            ->where(['company_id' => $companyId])
+            ->orderBy(['license_plate' => SORT_ASC])
+            ->asArray()
+            ->all();
+        
+        $drivers = User::find()
+            ->select(['id', 'name'])
+            ->where(['company_id' => $companyId, 'roles' => 'condutor'])
+            ->orderBy(['name' => SORT_ASC])
+            ->asArray()
+            ->all();
 
         return [
-            'total' => Document::find()->where(['company_id' => $companyId])->count(),
-            Document::STATUS_VALID => Document::find()->where(['company_id' => $companyId])->andWhere(['>', 'expires_at', $limit])->count(),
-            Document::STATUS_DUE_SOON => Document::find()->where(['company_id' => $companyId])->andWhere(['between', 'expires_at', $today, $limit])->count(),
-            Document::STATUS_EXPIRED => Document::find()->where(['company_id' => $companyId])->andWhere(['<', 'expires_at', $today])->count(),
+            'vehicles' => $vehicles,
+            'drivers' => $drivers,
         ];
     }
 
-    private function statusDates(): array
+    /**
+     * Encontra o modelo Document baseado no ID.
+     * 
+     * @param int $id
+     * @return Document o modelo encontrado
+     * @throws NotFoundHttpException se o modelo não for encontrado ou não pertence à empresa do utilizador
+     */
+    protected function findModel($id)
     {
-        $today = date('Y-m-d');
-        $limit = date('Y-m-d', strtotime('+30 days'));
-        return [$today, $limit];
+        $companyId = Yii::$app->user->identity->company_id;
+        
+        $model = Document::find()
+            ->where(['id' => $id, 'company_id' => $companyId])
+            ->one();
+
+        if ($model === null) {
+            throw new NotFoundHttpException('O documento solicitado não existe.');
+        }
+
+        return $model;
     }
 }
