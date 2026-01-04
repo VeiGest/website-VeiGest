@@ -297,6 +297,179 @@ class UserController extends BaseApiController
     }
 
     /**
+     * Vincular usuário a uma empresa
+     * 
+     * PUT /api/users/{id}/link-company
+     * 
+     * Permite que um admin vincule um usuário a outra empresa.
+     * Apenas admins podem usar este endpoint.
+     * 
+     * @param integer $id ID do usuário
+     * @return array
+     * @throws ForbiddenHttpException
+     * @throws NotFoundHttpException
+     * 
+     * Body JSON esperado:
+     * {
+     *   "company_id": 2
+     * }
+     * 
+     * @since 2026-01-03
+     */
+    public function actionLinkCompany($id)
+    {
+        // Verificar se o usuário tem permissão de admin
+        $tokenData = Yii::$app->params['token_data'] ?? [];
+        $userRoles = $tokenData['roles'] ?? [];
+        
+        if (!in_array('admin', $userRoles)) {
+            throw new ForbiddenHttpException('Apenas administradores podem vincular usuários a empresas');
+        }
+
+        // Buscar o usuário pelo ID (sem filtro de empresa para admins)
+        $user = User::findOne($id);
+        if (!$user) {
+            throw new NotFoundHttpException('Usuário não encontrado');
+        }
+
+        // Obter dados do body
+        $bodyParams = Yii::$app->request->bodyParams;
+        
+        if (!isset($bodyParams['company_id'])) {
+            return $this->errorResponse('Campo company_id é obrigatório', 400);
+        }
+
+        $newCompanyId = (int) $bodyParams['company_id'];
+
+        // Verificar se a empresa existe
+        $company = \backend\modules\api\models\Company::findOne($newCompanyId);
+        if (!$company) {
+            throw new NotFoundHttpException('Empresa não encontrada');
+        }
+
+        // Verificar se a empresa está ativa
+        if ($company->status !== 'active') {
+            return $this->errorResponse('Não é possível vincular usuário a uma empresa inativa', 400);
+        }
+
+        // Armazenar empresa anterior para log
+        $previousCompanyId = $user->company_id;
+
+        // Atualizar company_id do usuário
+        $user->company_id = $newCompanyId;
+        
+        if ($user->save(false)) {
+            // Registrar atividade (se o modelo ActivityLog existir)
+            try {
+                $this->logActivity(
+                    $this->getCompanyId(), // company_id do admin
+                    $this->getUserId(),
+                    'link_company',
+                    'user',
+                    $user->id,
+                    [
+                        'previous_company_id' => $previousCompanyId,
+                        'new_company_id' => $newCompanyId,
+                        'user_username' => $user->username,
+                    ]
+                );
+            } catch (\Exception $e) {
+                // Log silently fails
+                Yii::warning('Falha ao registrar atividade: ' . $e->getMessage());
+            }
+
+            return $this->successResponse([
+                'user' => [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'company_id' => $user->company_id,
+                ],
+                'company' => [
+                    'id' => $company->id,
+                    'name' => $company->name,
+                    'email' => $company->email,
+                    'status' => $company->status,
+                ],
+                'previous_company_id' => $previousCompanyId,
+            ], 'Usuário vinculado à empresa com sucesso');
+        }
+
+        return $this->errorResponse('Erro ao vincular usuário à empresa', 400, $user->errors);
+    }
+
+    /**
+     * Desvincular usuário de uma empresa (remover company_id)
+     * 
+     * DELETE /api/users/{id}/unlink-company
+     * 
+     * @param integer $id ID do usuário
+     * @return array
+     * @throws ForbiddenHttpException
+     * 
+     * @since 2026-01-03
+     */
+    public function actionUnlinkCompany($id)
+    {
+        // Verificar se o usuário tem permissão de admin
+        $tokenData = Yii::$app->params['token_data'] ?? [];
+        $userRoles = $tokenData['roles'] ?? [];
+        
+        if (!in_array('admin', $userRoles)) {
+            throw new ForbiddenHttpException('Apenas administradores podem desvincular usuários de empresas');
+        }
+
+        // Buscar o usuário
+        $user = User::findOne($id);
+        if (!$user) {
+            throw new NotFoundHttpException('Usuário não encontrado');
+        }
+
+        // Não permitir desvincular o próprio usuário
+        if ($user->id == $this->getUserId()) {
+            return $this->errorResponse('Não é possível desvincular seu próprio usuário', 400);
+        }
+
+        $previousCompanyId = $user->company_id;
+
+        // Como company_id é NOT NULL na migration, não podemos remover totalmente
+        // Mas podemos retornar erro informando isso
+        return $this->errorResponse(
+            'Não é possível desvincular usuário. O campo company_id é obrigatório no sistema. Use link-company para transferir para outra empresa.',
+            400,
+            ['info' => 'Use PUT /api/users/{id}/link-company para transferir o usuário para outra empresa']
+        );
+    }
+
+    /**
+     * Registrar atividade no log
+     * 
+     * @param int $companyId
+     * @param int $userId
+     * @param string $action
+     * @param string $entity
+     * @param int $entityId
+     * @param array $details
+     */
+    private function logActivity($companyId, $userId, $action, $entity, $entityId, $details = [])
+    {
+        try {
+            $log = new \backend\modules\api\models\ActivityLog();
+            $log->company_id = $companyId;
+            $log->user_id = $userId;
+            $log->action = $action;
+            $log->entity = $entity;
+            $log->entity_id = $entityId;
+            $log->details = json_encode($details);
+            $log->ip = Yii::$app->request->userIP;
+            $log->save(false);
+        } catch (\Exception $e) {
+            Yii::warning('Erro ao salvar log de atividade: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function findModel($id)

@@ -84,19 +84,21 @@ return [
                 'POST api/auth/logout' => 'api/auth/logout',
                 'GET api/auth/me' => 'api/auth/me',
                 'POST api/auth/refresh' => 'api/auth/refresh',
+                'GET api/auth/info' => 'api/auth/info',
+                'OPTIONS api/auth/<action:\w+>' => 'api/auth/options',
                 
-                // REST API routes
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/vehicle'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/user'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/company'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/maintenance'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/fuel-log'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/file'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/document'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/alert'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/activity-log'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/route'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/ticket'], 'pluralize' => false],
+                // REST API routes - usando plural para consistência
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/vehicle' => 'api/vehicle'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/user' => 'api/user'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/company' => 'api/company'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/maintenance' => 'api/maintenance'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/fuel-log' => 'api/fuel-log'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/file' => 'api/file'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/document' => 'api/document'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/alert' => 'api/alert'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/activity-log' => 'api/activity-log'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/route' => 'api/route'], 'pluralize' => true],
+                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/ticket' => 'api/ticket'], 'pluralize' => true],
                 
                 // Custom endpoints for companies
                 'GET api/companies/<id:\d+>/vehicles' => 'api/company/vehicles',
@@ -110,12 +112,13 @@ return [
                 'GET api/vehicles/by-status/<status:\w+>' => 'api/vehicle/by-status',
                 
                 // Custom endpoints for maintenance
-                'GET api/maintenance/by-vehicle/<vehicle_id:\d+>' => 'api/maintenance/by-vehicle',
-                'GET api/maintenance/by-status/<estado:\w+>' => 'api/maintenance/by-status',
-                'POST api/maintenance/<id:\d+>/schedule' => 'api/maintenance/schedule',
-                'GET api/maintenance/reports/monthly' => 'api/maintenance/reports-monthly',
-                'GET api/maintenance/reports/costs' => 'api/maintenance/reports-costs',
-                'GET api/maintenance/stats' => 'api/maintenance/stats',
+                'GET api/maintenances/by-vehicle/<vehicle_id:\d+>' => 'api/maintenance/by-vehicle',
+                'GET api/maintenances/by-status/<estado:\w+>' => 'api/maintenance/by-status',
+                'POST api/maintenances/<id:\d+>/schedule' => 'api/maintenance/schedule',
+                'GET api/maintenances/reports/monthly' => 'api/maintenance/reports-monthly',
+                'GET api/maintenances/reports/costs' => 'api/maintenance/reports-costs',
+                'GET api/maintenances/stats' => 'api/maintenance/stats',
+                'GET api/maintenances/scheduled' => 'api/maintenance/scheduled',
                 
                 // Custom endpoints for fuel logs
                 'GET api/fuel-logs/by-vehicle/<vehicle_id:\d+>' => 'api/fuel-log/by-vehicle',
@@ -128,6 +131,8 @@ return [
                 'GET api/users/profile' => 'api/user/profile',
                 'GET api/users/by-company/<company_id:\d+>' => 'api/user/by-company',
                 'POST api/users/<id:\d+>/update-photo' => 'api/user/update-photo',
+                'PUT api/users/<id:\d+>/link-company' => 'api/user/link-company',
+                'DELETE api/users/<id:\d+>/unlink-company' => 'api/user/unlink-company',
                 
                 // Custom endpoints for files
                 'POST api/files/upload' => 'api/file/upload',

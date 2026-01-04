@@ -1,19 +1,21 @@
 /**
  * VeiGest API - Testes de Autenticação
  * Testa endpoints de login, logout, me e refresh
+ * 
+ * @updated 2026-01-03 - Credenciais atualizadas conforme migration
  */
 
 const { apiRequest, formatTestResult, decodeToken } = require('../utils/http-client.js');
 
-// Credenciais de teste
+// Credenciais de teste (conforme m251121_000000_veigest_consolidated_migration.php)
 const TEST_CREDENTIALS = {
     admin: {
-        username: 'apiadmin',
-        password: 'password'
+        username: 'admin',
+        password: 'admin'
     },
     manager: {
         username: 'gestor',
-        password: 'gestor123'
+        password: 'manager123'
     },
     driver: {
         username: 'driver1',
@@ -185,7 +187,7 @@ async function runAuthTests() {
         results.success++;
         console.log(formatTestResult('Login Manager - Sucesso', managerLoginResult));
         
-        const managerToken = managerLoginResult.response.body.data.token;
+        const managerToken = managerLoginResult.response.body.data.access_token;
         const managerTokenData = decodeToken(managerToken);
         
         if (managerTokenData) {

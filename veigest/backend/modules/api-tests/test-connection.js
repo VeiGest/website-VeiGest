@@ -1,8 +1,9 @@
 /**
  * Script rápido para testar conectividade com a API
+ * @updated 2026-01-03 - URL atualizada para domínio de produção
  */
 
-const API_URL = 'http://localhost:21080/api/auth/login';
+const API_URL = 'https://veigestback.dryadlang.org/api/auth/login';
 
 console.log('🔍 Testando conexão com API VeiGest...\n');
 console.log(`URL: ${API_URL}\n`);

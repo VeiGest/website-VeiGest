@@ -4,6 +4,8 @@
 
 Esta documentação completa da API RESTful VeiGest fornece guias detalhados sobre arquitetura, implementação, configuração e manutenção do sistema.
 
+**URL de Produção:** `https://veigestback.dryadlang.org/api`
+
 ## 📁 Estrutura da Documentação
 
 ### 🏗️ Arquitetura e Design
@@ -16,6 +18,9 @@ Esta documentação completa da API RESTful VeiGest fornece guias detalhados sob
 
 ### 🔄 Desenvolvimento e Manutenção
 - **[FUTURAS_MODIFICACOES.md](FUTURAS_MODIFICACOES.md)** - Plano de melhorias e expansões
+
+### 📋 Changelogs
+- **[CHANGELOG-2026-01-03.md](CHANGELOG-2026-01-03.md)** - Correções de URL, credenciais, rotas e novo endpoint link-company
 
 ### 🚨 Troubleshooting
 - **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Solução de problemas comuns
@@ -47,10 +52,10 @@ node run-all-tests.js
 
 ### Primeiro Teste
 ```bash
-# Login de teste
-curl -X POST http://localhost:21080/api/auth/login \
+# Login de teste (produção)
+curl -X POST https://veigestback.dryadlang.org/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "admin123"}'
+  -d '{"username": "admin", "password": "admin"}'
 ```
 
 ## 📊 Status da API

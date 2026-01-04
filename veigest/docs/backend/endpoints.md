@@ -3,8 +3,8 @@
 ## Base URL
 
 ```
-Desenvolvimento: http://localhost:8002/api
-Produção: https://api.veigest.com/api
+Desenvolvimento: http://localhost:21080/api
+Produção: https://veigestback.dryadlang.org/api
 ```
 
 ## Headers Obrigatórios
@@ -27,7 +27,7 @@ Login e obtenção de token.
 ```json
 {
     "username": "admin",
-    "password": "admin123"
+    "password": "admin"
 }
 ```
 
@@ -35,19 +35,27 @@ Login e obtenção de token.
 ```json
 {
     "success": true,
-    "message": "Login realizado com sucesso",
     "data": {
-        "token": "eyJ1c2VyX2lkIjox...",
+        "access_token": "eyJ1c2VyX2lkIjox...",
         "token_type": "Bearer",
         "expires_at": 1704153600,
         "expires_in": 86400,
         "user": {
             "id": 1,
             "username": "admin",
-            "email": "admin@veigest.pt",
-            "role": "admin",
+            "name": "Administrator",
+            "email": "admin@veigest.com",
+            "status": "ativo",
             "company_id": 1
-        }
+        },
+        "company": {
+            "id": 1,
+            "name": "VeiGest - Demo Company",
+            "code": 1766505548333,
+            "email": "admin@veigest.com"
+        },
+        "roles": ["admin"],
+        "permissions": ["users.view", "users.create", "..."]
     }
 }
 ```
@@ -61,14 +69,26 @@ Perfil do utilizador autenticado.
 {
     "success": true,
     "data": {
-        "id": 1,
-        "username": "admin",
-        "email": "admin@veigest.pt",
-        "role": "admin",
+        "user": {
+            "id": 1,
+            "username": "admin",
+            "name": "Administrator",
+            "email": "admin@veigest.com",
+            "phone": null,
+            "status": "ativo",
+            "company_id": 1
+        },
         "company": {
             "id": 1,
-            "name": "VeiGest Demo",
-            "code": "VEI001"
+            "name": "VeiGest - Demo Company",
+            "code": 1766505548333,
+            "email": "admin@veigest.com"
+        },
+        "roles": ["admin"],
+        "permissions": ["users.view", "..."],
+        "token_info": {
+            "issued_at": 1704067200,
+            "expires_at": 1704153600
         }
     }
 }
@@ -83,7 +103,9 @@ Renovar token.
 {
     "success": true,
     "data": {
-        "token": "eyJ1c2VyX2lkIjox...",
+        "access_token": "eyJ1c2VyX2lkIjox...",
+        "token_type": "Bearer",
+        "expires_in": 86400,
         "expires_at": 1704240000
     }
 }
@@ -454,6 +476,52 @@ Listar apenas condutores.
 ### GET /api/users/profile
 
 Perfil do utilizador atual.
+
+### PUT /api/users/{id}/link-company
+
+**NOVO** - Vincular utilizador a uma empresa diferente.
+
+**Permissão:** Apenas administradores (`admin` role)
+
+**Request:**
+```json
+{
+    "company_id": 2
+}
+```
+
+**Response (200):**
+```json
+{
+    "success": true,
+    "message": "Usuário vinculado à empresa com sucesso",
+    "data": {
+        "user": {
+            "id": 5,
+            "username": "driver1",
+            "name": "Maria Santos",
+            "email": "driver1@veigest.com",
+            "company_id": 2
+        },
+        "company": {
+            "id": 2,
+            "name": "Nova Empresa",
+            "email": "nova@empresa.com",
+            "status": "active"
+        },
+        "previous_company_id": 1
+    },
+    "timestamp": "2026-01-03T14:00:00+00:00"
+}
+```
+
+**Erros:**
+| Código | Descrição |
+|--------|-----------|
+| 400 | Campo company_id é obrigatório |
+| 400 | Não é possível vincular a empresa inativa |
+| 403 | Apenas administradores podem usar |
+| 404 | Utilizador ou empresa não encontrado |
 
 ---
 

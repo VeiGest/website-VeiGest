@@ -1,9 +1,11 @@
 /**
  * VeiGest API - HTTP Client Utility
  * Fornece funções para fazer requisições HTTP e formatar respostas
+ * 
+ * @updated 2026-01-03 - URL atualizada para domínio de produção
  */
 
-const API_BASE_URL = 'http://localhost:8002/api';
+const API_BASE_URL = 'https://veigestback.dryadlang.org/api';
 
 /**
  * Faz uma requisição HTTP para a API

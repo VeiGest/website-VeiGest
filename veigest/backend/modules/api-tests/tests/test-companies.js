@@ -343,11 +343,11 @@ if (require.main === module) {
         }
     })
     .then(loginResult => {
-        if (!loginResult.success || !loginResult.response.body?.data?.token) {
+        if (!loginResult.success || !loginResult.response.body?.data?.access_token) {
             throw new Error('Falha no login: ' + loginResult.error);
         }
         
-        const token = loginResult.response.body.data.token;
+        const token = loginResult.response.body.data.access_token;
         const companyId = loginResult.response.body.data.user?.company_id || 1;
         
         return runCompanyTests(token, companyId);

@@ -1,9 +1,11 @@
 /**
  * Teste de Conectividade Completa - API VeiGest
  * Testa conectividade e estrutura básica de todos os endpoints
+ * 
+ * @updated 2026-01-03 - URL atualizada para domínio de produção
  */
 
-const API_URL = 'http://localhost:8002/api';
+const API_URL = 'https://veigestback.dryadlang.org/api';
 
 console.log('🔍 Testando conectividade completa da API VeiGest...\n');
 console.log(`Base URL: ${API_URL}\n`);
@@ -40,11 +42,11 @@ async function testEndpoint(endpoint) {
     
     let body = null;
     
-    // Se for login, enviar credenciais
+    // Se for login, enviar credenciais (conforme migration)
     if (endpoint.path === '/auth/login') {
         body = JSON.stringify({
-            username: 'apiadmin',
-            password: 'password'
+            username: 'admin',
+            password: 'admin'
         });
     }
     

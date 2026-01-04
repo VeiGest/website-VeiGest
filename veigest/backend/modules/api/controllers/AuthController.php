@@ -260,9 +260,41 @@ class AuthController extends Controller
      */
     public function actionLogout()
     {
-        // Como usamos tokens stateless, o logout é apenas do lado cliente
-        // Aqui podemos registrar o logout para auditoria se necessário
+        /*
+        Registra o logout do usuário, na tabela activity_logs
+
+            $this->createTable('{{%activity_logs}}', [
+            'id' => $this->primaryKey(),
+            'company_id' => $this->integer()->notNull(),
+            'user_id' => $this->integer(),
+            'action' => $this->string(255)->notNull(),
+            'entity' => $this->string(100)->notNull()->comment('Ex: vehicle, document, user'),
+            'entity_id' => $this->integer(),
+            'details' => $this->json(),
+            'ip' => $this->string(45),
+            'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+        ], 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+
+        $this->createIndex('idx_activity_logs_created_at', '{{%activity_logs}}', 'created_at');
+        $this->createIndex('idx_activity_logs_entity', '{{%activity_logs}}', ['entity', 'entity_id']);
+        $this->createIndex('idx_activity_logs_user_id', '{{%activity_logs}}', 'user_id');
+        $this->addForeignKey('fk_activity_logs_company', '{{%activity_logs}}', 'company_id', '{{%companies}}', 'id', 'CASCADE');
+        $this->addForeignKey('fk_activity_logs_user', '{{%activity_logs}}', 'user_id', '{{%users}}', 'id', 'SET NULL');
+
+        $user = Yii::$app->user->identity;
+        \backend\modules\api\models\ActivityLog::log(
+            $user->company_id,
+            $user->id,
+            'logout',
+            "user",
+            $user->id,
+            null,
+            [],
+            Yii::$app->request->userIP
+        );
         
+        */
+
         return [
             'success' => true,
             'message' => 'Logout realizado com sucesso',

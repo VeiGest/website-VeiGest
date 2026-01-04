@@ -54,8 +54,8 @@ async function runAllTests() {
         console.log('\n🔑 Obtendo token para testes subsequentes...');
         const loginResult = await apiRequest('POST', '/auth/login', {
             body: {
-                username: 'apiadmin',
-                password: 'password'
+                username: 'admin',
+                password: 'admin'
             }
         });
 
