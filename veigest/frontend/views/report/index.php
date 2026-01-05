@@ -147,7 +147,7 @@ foreach ($maintenanceByCategory as $cat) {
             <div class="col-lg-3 col-md-6">
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>€<?= number_format($stats['total_costs'], 0, ',', '.') ?></h3>
+                        <h3>€<?= number_format($stats['total_costs'], 2, ',', '.') ?></h3>
                         <p>Custos Totais</p>
                     </div>
                     <div class="icon">
@@ -287,7 +287,7 @@ foreach ($maintenanceByCategory as $cat) {
                         <tr>
                             <td><i class="fas fa-gas-pump mr-2 text-warning"></i>Combustível Consumido</td>
                             <td><strong><?= number_format($stats['fuel_liters'], 2, ',', '.') ?> L</strong></td>
-                            <td>€<?= number_format($stats['fuel_cost'], 2, ',', '.') ?> (€<?= number_format($stats['fuel_avg_price'], 3, ',', '.') ?>/L)</td>
+                            <td>€<?= number_format($stats['fuel_cost'], 2, ',', '.') ?> (€<?= number_format($stats['fuel_avg_price'], 2, ',', '.') ?>/L)</td>
                         </tr>
                         <tr>
                             <td><i class="fas fa-wrench mr-2 text-danger"></i>Manutenções</td>

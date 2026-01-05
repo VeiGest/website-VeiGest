@@ -108,14 +108,20 @@ class SiteController extends Controller
 
         $model = new \common\models\LoginForm();
 
+        // DEBUG: Log raw POST data
+        $postData = Yii::$app->request->post();
+        Yii::info('RAW POST DATA: ' . json_encode($postData), 'login');
+
         if ($model->load(Yii::$app->request->post())) {
-            Yii::info('Login form loaded: username=' . $model->username, 'login');
+            Yii::info('===== LOGIN ATTEMPT =====', 'login');
+            Yii::info('Model username: ' . $model->username, 'login');
+            Yii::info('Model password: ' . $model->password, 'login');
+            Yii::info('Password received: ' . ($model->password ? 'YES' : 'NO'), 'login');
             
-            try {
-                $loginResult = $model->login();
-                Yii::info('Login result: ' . ($loginResult ? 'true' : 'false'), 'login');
+            if ($model->validate()) {
+                Yii::info('✓ Form validation passed', 'login');
                 
-                if ($loginResult) {
+                if ($model->login()) {
                     $user = Yii::$app->user->identity;
                     Yii::info('Login successful for user: ' . $user->id . ' role: ' . $user->role, 'login');
 
@@ -140,12 +146,13 @@ class SiteController extends Controller
                     Yii::info('User has unknown role - using goHome()', 'login');
                     return $this->goHome();
                 } else {
-                    Yii::warning('Login failed - validation errors: ' . json_encode($model->errors), 'login');
+                    Yii::error('✗ Login method returned false', 'login');
                 }
-            } catch (\Exception $e) {
-                Yii::error('Login threw exception: ' . $e->getMessage() . ' | ' . $e->getTraceAsString(), 'login');
-                throw $e;
+            } else {
+                Yii::error('✗ Form validation FAILED: ' . json_encode($model->errors), 'login');
             }
+        } else {
+            Yii::info('No POST data received', 'login');
         }
 
         return $this->render('login', ['model' => $model]);

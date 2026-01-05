@@ -257,9 +257,9 @@ $vehicleCosts = array_map(function($v) {
                                     <span class="text-muted">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-right"><?= number_format($log->liters, 2, ',', '.') ?> L</td>
-                            <td class="text-right">€<?= number_format($log->value, 2, ',', '.') ?></td>
-                            <td class="text-right">€<?= number_format($log->price_per_liter, 3, ',', '.') ?></td>
+                            <td class="text-right"><?= $log->liters ? number_format($log->liters, 2, ',', '.') : '0' ?> L</td>
+                            <td class="text-right">€<?= $log->value ? number_format($log->value, 2, ',', '.') : '0' ?></td>
+                            <td class="text-right">€<?= $log->price_per_liter ? number_format($log->price_per_liter, 3, ',', '.') : '-' ?></td>
                             <td class="text-right">
                                 <?= $log->current_mileage ? number_format($log->current_mileage, 0, ',', '.') . ' km' : '-' ?>
                             </td>

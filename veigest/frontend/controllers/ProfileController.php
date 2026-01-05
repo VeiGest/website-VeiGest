@@ -24,6 +24,8 @@ use common\models\ProfileHistory;
  */
 class ProfileController extends Controller
 {
+    public $layout = 'dashboard';
+
     /**
      * {@inheritdoc}
      */

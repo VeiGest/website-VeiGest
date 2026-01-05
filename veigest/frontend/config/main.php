@@ -33,6 +33,7 @@ return [
             'cookieParams' => [
                 'path' => '/',
                 'domain' => '.dryadlang.org',
+                'httpOnly' => true,
             ],
         ],
 
