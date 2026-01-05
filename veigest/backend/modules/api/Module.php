@@ -11,7 +11,7 @@ use yii\web\Response;
  * Módulo principal da API RESTful para gestão de veículos
  * Fornece versionamento e configurações globais
  * 
- * @author VeiGest Team
+ * .
  * @version 1.0
  */
 class Module extends BaseModule

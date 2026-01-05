@@ -16,7 +16,7 @@ use backend\modules\api\models\Vehicle;
  * Fornece operações CRUD para documentos com multi-tenancy
  * Implementa filtragem automática por company_id
  * 
- * @author VeiGest Team
+ * .
  */
 class DocumentController extends BaseApiController
 {

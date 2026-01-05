@@ -14,7 +14,7 @@ use backend\modules\api\models\Alert;
  * Fornece operações CRUD para alertas com multi-tenancy
  * Implementa filtragem automática por company_id
  * 
- * @author VeiGest Team
+ * .
  */
 class AlertController extends BaseApiController
 {

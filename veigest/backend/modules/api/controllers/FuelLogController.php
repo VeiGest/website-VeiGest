@@ -14,7 +14,7 @@ use backend\modules\api\models\FuelLog;
  * Fornece operações CRUD para registros de abastecimento com multi-tenancy
  * Implementa filtragem automática por company_id
  * 
- * @author VeiGest Team
+ * .
  */
 class FuelLogController extends BaseApiController
 {

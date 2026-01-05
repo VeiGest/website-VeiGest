@@ -14,7 +14,7 @@ use common\models\User;
  * Implementa autenticação Bearer Token com Base64 encoding
  * Suporta multi-tenancy através de company_id no token
  * 
- * @author VeiGest Team
+ * .
  */
 class ApiAuthenticator extends AuthMethod
 {

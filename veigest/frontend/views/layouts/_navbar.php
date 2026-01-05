@@ -82,9 +82,9 @@ use yii\bootstrap5\Html;
 
 
                     <!-- LOGOUT -->
-                    <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'inline'])
+                    <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'd-inline-block', 'id' => 'logout-form'])
                         . Html::submitButton(
-                            'Logout (' . Yii::$app->user->identity->username . ')',
+                            'Logout (' . Html::encode(Yii::$app->user->identity->username) . ')',
                             ['class' => 'btn btn-danger px-4 py-2 rounded font-medium']
                         )
                         . Html::endForm();

@@ -13,7 +13,14 @@ return [
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-frontend',
+            'csrfParam' => '_csrf',
+            'cookieValidationKey' => 'Yup8MeyEmKivPSYV944gTuoRjBGqKkVt',
+            'csrfCookie' => [
+                'path' => '/',
+                'domain' => '.dryadlang.org',
+                'httpOnly' => true,
+                'secure' => true,
+            ],
         ],
         'user' => [
             'identityClass' => 'common\models\User',

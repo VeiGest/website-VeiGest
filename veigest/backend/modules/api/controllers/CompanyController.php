@@ -14,7 +14,7 @@ use backend\modules\api\models\Company;
  * Fornece operações CRUD para empresas com controle de acesso
  * Implementa filtragem e validação de permissões
  * 
- * @author VeiGest Team
+ * .
  */
 class CompanyController extends BaseApiController
 {

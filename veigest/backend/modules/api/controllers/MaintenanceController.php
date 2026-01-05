@@ -14,7 +14,7 @@ use backend\modules\api\models\Maintenance;
  * Fornece operações CRUD para manutenções com multi-tenancy
  * Implementa filtragem automática por company_id
  * 
- * @author VeiGest Team
+ * .
  */
 class MaintenanceController extends BaseApiController
 {

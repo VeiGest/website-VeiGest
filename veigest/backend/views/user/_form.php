@@ -26,11 +26,10 @@ use yii\widgets\ActiveForm;
         'prompt' => 'Selecione um role...'
     ]) ?>
 
-
-    <?= $form->field($model, 'estado')->dropDownList([
-        'ativo' => 'Ativo',
-        'inativo' => 'Inativo',
-    ]) ?>
+    <?= $form->field($model, 'status')->dropDownList([
+        'active' => 'Ativo',
+        'inactive' => 'Inativo',
+    ], ['prompt' => 'Selecione o estado...']) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

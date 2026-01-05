@@ -14,7 +14,7 @@ use common\models\User;
  * Fornece operações CRUD para usuários/condutores com multi-tenancy
  * Implementa filtragem automática por company_id
  * 
- * @author VeiGest Team
+ * .
  */
 class UserController extends BaseApiController
 {

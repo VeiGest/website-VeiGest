@@ -19,7 +19,7 @@ use backend\modules\api\components\ApiAuthenticator;
  * Fornece endpoints de autenticação para API VeiGest
  * Implementa login, logout, refresh token e informações do usuário
  * 
- * @author VeiGest Team
+ * .
  */
 class AuthController extends Controller
 {

@@ -54,7 +54,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['ticket'],
                         'allow' => true,
-                        'roles' => ['driver', 'senior-driver', 'maintenance-manager', 'manager', 'admin'],
+                        'roles' => ['@'], // Qualquer utilizador autenticado
                     ],
                 ],
             ],
@@ -116,27 +116,28 @@ class SiteController extends Controller
                 Yii::info('Login result: ' . ($loginResult ? 'true' : 'false'), 'login');
                 
                 if ($loginResult) {
-                    Yii::info('Login successful for user: ' . Yii::$app->user->id, 'login');
+                    $user = Yii::$app->user->identity;
+                    Yii::info('Login successful for user: ' . $user->id . ' role: ' . $user->role, 'login');
 
-                    // ADMIN → frontend homepage
-                    if (Yii::$app->user->can('admin')) {
-                        Yii::info('User can admin - redirecting to /site/index', 'login');
+                    // Redirect based on role (using user->role field directly)
+                    $role = $user->role;
+                    
+                    if ($role === 'admin') {
+                        Yii::info('User is admin - redirecting to /site/index', 'login');
                         return $this->redirect(['/site/index']);
                     }
 
-                    // MANAGER → frontend homepage
-                    if (Yii::$app->user->can('manager')) {
-                        Yii::info('User can manager - redirecting to /site/index', 'login');
-                        return $this->redirect(['/site/index']);
+                    if ($role === 'manager') {
+                        Yii::info('User is manager - redirecting to /dashboard/index', 'login');
+                        return $this->redirect(['/dashboard/index']);
                     }
 
-                    // DRIVER → frontend homepage
-                    if (Yii::$app->user->can('driver')) {
-                        Yii::info('User can driver - redirecting to /site/index', 'login');
-                        return $this->redirect(['/site/index']);
+                    if ($role === 'driver') {
+                        Yii::info('User is driver - redirecting to /dashboard/index', 'login');
+                        return $this->redirect(['/dashboard/index']);
                     }
 
-                    Yii::info('User has no role - using goHome()', 'login');
+                    Yii::info('User has unknown role - using goHome()', 'login');
                     return $this->goHome();
                 } else {
                     Yii::warning('Login failed - validation errors: ' . json_encode($model->errors), 'login');

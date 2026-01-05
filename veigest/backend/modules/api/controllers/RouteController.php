@@ -16,7 +16,7 @@ use common\models\User;
  * Fornece operações CRUD para rotas com multi-tenancy
  * Implementa filtragem automática por company_id
  * 
- * @author VeiGest Team
+ * .
  */
 class RouteController extends BaseApiController
 {

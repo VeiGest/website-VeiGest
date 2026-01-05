@@ -179,21 +179,6 @@ $avatar = Url::to('@web/img/user-placeholder.png');
                                 ['class' => 'nav-link ' . (Yii::$app->controller->id == 'site' ? 'active' : '')]
                             ) ?>
                         </li>
-                        <li class="nav-item">
-                            <?= Html::a('<i class="nav-icon fas fa-tools"></i><p>Manutenção</p>', ['/maintenance/index'], ['class' => 'nav-link']) ?>
-                        </li>
-
-                        <li class="nav-item">
-                            <?= Html::a('<i class="nav-icon fas fa-file-alt"></i><p>Documentos</p>', ['/document/index'], ['class' => 'nav-link']) ?>
-                        </li>
-
-                        <li class="nav-item">
-                            <?= Html::a('<i class="nav-icon fas fa-bell"></i><p>Alertas</p>', ['/alert/index'], ['class' => 'nav-link']) ?>
-                        </li>
-
-                        <li class="nav-item">
-                            <?= Html::a('<i class="nav-icon fas fa-chart-bar"></i><p>Relatórios</p>', ['/report/index'], ['class' => 'nav-link']) ?>
-                        </li>
 
                         <?php if (Yii::$app->user->can('admin')): ?>
 

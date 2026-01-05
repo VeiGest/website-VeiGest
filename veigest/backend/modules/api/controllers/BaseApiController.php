@@ -16,7 +16,7 @@ use backend\modules\api\components\ApiAuthenticator;
  * Fornece configurações comuns e comportamentos padrão
  * para todos os controladores da API VeiGest
  * 
- * @author VeiGest Team
+ * .
  */
 class BaseApiController extends ActiveController
 {

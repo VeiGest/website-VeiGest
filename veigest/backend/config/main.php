@@ -60,8 +60,14 @@ return [
             'errorAction' => 'site/error',
     ],
         'request' => [
-            'csrfParam' => '_csrf-backend',
+            'csrfParam' => '_csrf',
             'cookieValidationKey' => 'Yup8MeyEmKivPSYV944gTuoRjBGqKkVt',
+            'csrfCookie' => [
+                'path' => '/',
+                'domain' => '.dryadlang.org',
+                'httpOnly' => true,
+                'secure' => true,
+            ],
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
             ],

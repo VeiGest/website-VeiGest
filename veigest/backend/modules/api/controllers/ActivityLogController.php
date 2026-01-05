@@ -14,7 +14,7 @@ use backend\modules\api\models\ActivityLog;
  * Fornece operações para logs de atividade com multi-tenancy
  * Apenas leitura - logs são criados automaticamente
  * 
- * @author VeiGest Team
+ * .
  */
 class ActivityLogController extends BaseApiController
 {
