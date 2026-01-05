@@ -218,14 +218,14 @@ DashboardAsset::register($this);
                         <li class="nav-item menu-open">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-car"></i>
-                                <p>Fleet <i class="right fas fa-angle-left"></i></p>
+                                <p>Frota <i class="right fas fa-angle-left"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <!-- Vehicles - All roles (view only for driver) -->
                                 <li class="nav-item">
                                     <a href="<?= Yii::$app->urlManager->createUrl(['vehicle/index']) ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Vehicles</p>
+                                        <p>Veículos</p>
                                     </a>
                                 </li>
                                 
@@ -234,7 +234,7 @@ DashboardAsset::register($this);
                                 <li class="nav-item">
                                     <a href="<?= Yii::$app->urlManager->createUrl(['driver/index']) ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Drivers</p>
+                                        <p>Condutores</p>
                                     </a>
                                 </li>
                                 <?php endif; ?>
@@ -243,7 +243,7 @@ DashboardAsset::register($this);
                                 <li class="nav-item">
                                     <a href="<?= Yii::$app->urlManager->createUrl(['route/index']) ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Routes</p>
+                                        <p>Rotas</p>
                                     </a>
                                 </li>
                             </ul>
@@ -254,7 +254,7 @@ DashboardAsset::register($this);
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['maintenance/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-tools"></i>
-                                <p>Maintenance</p>
+                                <p>Manutenção</p>
                             </a>
                         </li>
 
@@ -262,7 +262,7 @@ DashboardAsset::register($this);
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['document/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-file-alt"></i>
-                                <p>Documents</p>
+                                <p>Documentos</p>
                             </a>
                         </li>
                         <?php endif; ?>
@@ -271,7 +271,7 @@ DashboardAsset::register($this);
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['alert/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-bell"></i>
-                                <p>Alerts</p>
+                                <p>Alertas</p>
                             </a>
                         </li>
 
@@ -280,17 +280,17 @@ DashboardAsset::register($this);
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['report/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-chart-bar"></i>
-                                <p>Reports</p>
+                                <p>Relatórios</p>
                             </a>
                         </li>
                         <?php endif; ?>
 
-                        <li class="nav-header">ACCOUNT</li>
+                        <li class="nav-header">CONTA</li>
                         <!-- Profile - All roles (edit allowed for all) -->
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['profile/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-user-circle"></i>
-                                <p>My Profile</p>
+                                <p>Meu Perfil</p>
                             </a>
                         </li>
                     </ul>
@@ -314,7 +314,7 @@ DashboardAsset::register($this);
         <footer class="main-footer">
             <strong>VeiGest &copy; 2025</strong>
             <div class="float-right d-none d-sm-inline-block">
-                <b>Version</b> 1.0.0
+                <b>Versão</b> 1.0.0
             </div>
         </footer>
     </div>

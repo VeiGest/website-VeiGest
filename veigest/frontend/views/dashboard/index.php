@@ -136,7 +136,7 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
                     <a href="<?= \yii\helpers\Url::to(['vehicle/create']) ?>" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i> Novo Veículo</a>
                 <?php endif; ?>
                 <?php if (\Yii::$app->user->can('drivers.create')): ?>
-                    <a href="<?= \yii\helpers\Url::to(['driver/create']) ?>" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i> New Driver</a>
+                    <a href="<?= \yii\helpers\Url::to(['driver/create']) ?>" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i> Novo Condutor</a>
                 <?php endif; ?>
                 <?php if (\Yii::$app->user->can('maintenances.create')): ?>
                     <a href="<?= \yii\helpers\Url::to(['maintenance/create']) ?>" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i> Agendar Manutenção</a>

@@ -2,7 +2,7 @@
 
 /** @var yii\web\View $this */
 
-$this->title = 'My Yii Application';
+$this->title = 'Alertas do Sistema';
 ?>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div>
@@ -19,7 +19,7 @@ $this->title = 'My Yii Application';
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="dashboard.html">Home</a></li>
+                            <li class="breadcrumb-item"><a href="dashboard.html">Início</a></li>
                             <li class="breadcrumb-item active">Alertas</li>
                         </ol>
                     </div>

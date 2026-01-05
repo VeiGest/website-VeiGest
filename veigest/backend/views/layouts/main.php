@@ -77,7 +77,7 @@ $avatar = Url::to('@web/img/user-placeholder.png');
                     <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <?= Html::a('Home', ['/site/index'], ['class' => 'nav-link']) ?>
+                    <?= Html::a('Início', ['/site/index'], ['class' => 'nav-link']) ?>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="<?= Yii::getAlias('@frontendUrl') ?>"
@@ -121,7 +121,7 @@ $avatar = Url::to('@web/img/user-placeholder.png');
                             <?= Html::a('<i class="fas fa-user mr-2"></i> Perfil', ['/user/view', 'id' => $identity->id], ['class' => 'dropdown-item']) ?>
                             <div class="dropdown-divider"></div>
                             <?= Html::beginForm(['/site/logout'], 'post')
-                                . Html::submitButton('<i class="fas fa-sign-out-alt mr-2"></i> Logout (' . Html::encode($identity->username) . ')', ['class' => 'dropdown-item'])
+                                . Html::submitButton('<i class="fas fa-sign-out-alt mr-2"></i> Sair (' . Html::encode($identity->username) . ')', ['class' => 'dropdown-item'])
                                 . Html::endForm() ?>
                         </div>
                     <?php endif; ?>
@@ -213,7 +213,7 @@ $avatar = Url::to('@web/img/user-placeholder.png');
         <!-- FOOTER -->
         <footer class="main-footer">
             <strong>VeiGest &copy; <?= date('Y') ?></strong>
-            <div class="float-right d-none d-sm-inline-block">Version 1.0.0</div>
+            <div class="float-right d-none d-sm-inline-block">Versão 1.0.0</div>
         </footer>
 
     </div>

@@ -160,13 +160,13 @@ $is500 = ($errorCode >= 500);
                 <i class="fas fa-shield-halved"></i>
             </div>
             <div class="error-code forbidden">403</div>
-            <h1 class="error-title">Access Denied</h1>
+            <h1 class="error-title">Acesso Negado</h1>
         <?php elseif ($is404): ?>
             <div class="error-icon not-found">
                 <i class="fas fa-map-signs"></i>
             </div>
             <div class="error-code not-found">404</div>
-            <h1 class="error-title">Page Not Found</h1>
+            <h1 class="error-title">Página Não Encontrada</h1>
         <?php else: ?>
             <div class="error-icon server-error">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -181,10 +181,10 @@ $is500 = ($errorCode >= 500);
         
         <div class="btn-group">
             <a href="<?= Yii::getAlias('@frontendUrl') ?>" class="btn btn-primary">
-                <i class="fas fa-home"></i> Go to Homepage
+                <i class="fas fa-home"></i> Ir para Início
             </a>
             <a href="javascript:history.back()" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Go Back
+                <i class="fas fa-arrow-left"></i> Voltar
             </a>
         </div>
     </div>

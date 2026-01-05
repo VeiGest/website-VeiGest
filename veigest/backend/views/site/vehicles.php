@@ -2,7 +2,7 @@
 
 /** @var yii\web\View $this */
 
-$this->title = 'My Yii Application';
+$this->title = 'Frota de Veículos';
 ?>
 <head>
     <meta charset="UTF-8">

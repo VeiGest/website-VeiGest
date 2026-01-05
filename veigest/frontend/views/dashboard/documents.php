@@ -2,7 +2,7 @@
 
 /** @var yii\web\View $this */
 
-$this->title = 'My Yii Application';
+$this->title = 'Gestão Documental';
 ?>
 
 <body class="hold-transition sidebar-mini layout-fixed">

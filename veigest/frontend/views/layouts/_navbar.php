@@ -17,7 +17,7 @@ use yii\bootstrap5\Html;
                 <?= Html::a('Início', ['/site/index'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
-                <?= Html::a('About', ['/site/about'], [
+                <?= Html::a('Sobre', ['/site/about'], [
                     'class' => 'text-gray-700 hover:text-primary transition',
                 ]) ?>
                 <?= Html::a('Serviços', ['/site/services'], [
@@ -47,7 +47,7 @@ use yii\bootstrap5\Html;
 
                 <?php if (Yii::$app->user->isGuest): ?>
 
-                    <?= Html::a('Login', ['/site/login'], [
+                    <?= Html::a('Entrar', ['/site/login'], [
                         'class' => 'text-gray-700 hover:text-primary font-medium px-4 py-2 rounded transition',
                     ]) ?>
 
@@ -84,7 +84,7 @@ use yii\bootstrap5\Html;
                     <!-- LOGOUT -->
                     <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'd-inline-block', 'id' => 'logout-form'])
                         . Html::submitButton(
-                            'Logout (' . Html::encode(Yii::$app->user->identity->username) . ')',
+                            'Sair (' . Html::encode(Yii::$app->user->identity->username) . ')',
                             ['class' => 'btn btn-danger px-4 py-2 rounded font-medium']
                         )
                         . Html::endForm();

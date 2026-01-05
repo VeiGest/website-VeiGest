@@ -80,9 +80,9 @@ $photoUrl = $user->photo
                                 ])->hint('Formato: +351 912 345 678') ?>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label font-weight-bold">Username</label>
+                                <label class="form-label font-weight-bold">Nome de Utilizador</label>
                                 <input type="text" class="form-control" value="<?= Html::encode($user->username) ?>" disabled>
-                                <small class="text-muted">O username não pode ser alterado.</small>
+                                <small class="text-muted">O nome de utilizador não pode ser alterado.</small>
                             </div>
                         </div>
 

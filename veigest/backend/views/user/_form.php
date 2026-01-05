@@ -23,8 +23,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'password')->passwordInput() ?>
 
     <?= $form->field($model, 'role')->dropDownList($roles, [
-        'prompt' => 'Selecione um role...'
-    ]) ?>
+        'prompt' => 'Selecione um papel...'
+    ])->label('Papel') ?>
 
     <?= $form->field($model, 'status')->dropDownList([
         'active' => 'Ativo',
@@ -32,7 +32,7 @@ use yii\widgets\ActiveForm;
     ], ['prompt' => 'Selecione o estado...']) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

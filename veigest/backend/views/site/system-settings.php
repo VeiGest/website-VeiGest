@@ -2,7 +2,7 @@
 
 /** @var yii\web\View $this */
 
-$this->title = 'My Yii Application';
+$this->title = 'Configurações do Sistema';
 ?>
 <head>
     <meta charset="UTF-8">
