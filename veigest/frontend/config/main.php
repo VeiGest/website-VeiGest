@@ -20,17 +20,19 @@ return [
                 'domain' => '.dryadlang.org',
                 'httpOnly' => true,
                 'secure' => true,
+                'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
             ],
         ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => [
-                'name' => '_identity',
+                'name' => '_identity-frontend',
                 'httpOnly' => true,
                 'path' => '/',
-                'domain' => '.dryadlang.org', // Compartilhar entre subdomínios
-                'secure' => true, // HTTPS
+                'domain' => '.dryadlang.org',
+                'secure' => true,
+                'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
             ],
         ],
 
@@ -39,9 +41,10 @@ return [
             'name' => 'VeiGestSession',
             'cookieParams' => [
                 'path' => '/',
-                'domain' => '.dryadlang.org', // Compartilhar entre subdomínios
+                'domain' => '.dryadlang.org',
                 'httpOnly' => true,
-                'secure' => true, // HTTPS
+                'secure' => true,
+                'sameSite' => 'Lax',
             ],
         ],
 
