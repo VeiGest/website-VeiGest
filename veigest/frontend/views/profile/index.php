@@ -274,11 +274,11 @@ $photoUrl = $user->photo
                         <ul class="list-unstyled mb-0">
                             <li class="mb-3">
                                 <small class="text-muted d-block">Conta criada em</small>
-                                <strong><?= Yii::$app->formatter->asDatetime($user->created_at, 'long') ?></strong>
+                                <strong><?= Yii::$app->formatter->asDatetime(strtotime($user->created_at), 'php:d/m/Y \à\s H:i') ?></strong>
                             </li>
                             <li class="mb-3">
                                 <small class="text-muted d-block">Última atualização</small>
-                                <strong><?= $user->updated_at ? Yii::$app->formatter->asDatetime($user->updated_at, 'long') : 'Nunca' ?></strong>
+                                <strong><?= $user->updated_at ? Yii::$app->formatter->asDatetime(strtotime($user->updated_at), 'php:d/m/Y \à\s H:i') : 'Nunca' ?></strong>
                             </li>
                             <li>
                                 <small class="text-muted d-block">ID do Utilizador</small>

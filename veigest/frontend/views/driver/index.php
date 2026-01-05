@@ -107,9 +107,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'value' => function($model) {
                                     $avatarUrl = $model->getAvatarUrl();
                                     $avatar = $avatarUrl 
-                                        ? '<img src="' . $avatarUrl . '" class="img-circle elevation-1 mr-2" style="width: 30px; height: 30px; object-fit: cover;">'
-                                        : '<div class="img-circle elevation-1 bg-primary d-inline-flex align-items-center justify-content-center mr-2" style="width: 30px; height: 30px;"><i class="fas fa-user text-white" style="font-size: 12px;"></i></div>';
-                                    return $avatar . '<strong>' . Html::encode($model->getDisplayName()) . '</strong>';
+                                        ? '<img src="' . $avatarUrl . '" class="img-circle elevation-1 mr-2" style="width: 30px; height: 30px; object-fit: cover; vertical-align: middle; display: inline-block;">'
+                                        : '<div class="img-circle elevation-1 bg-primary d-inline-flex align-items-center justify-content-center mr-2" style="width: 30px; height: 30px; vertical-align: middle; display: inline-flex;"><i class="fas fa-user text-white" style="font-size: 12px;"></i></div>';
+                                    return '<div style="display: flex; align-items: center;">' . $avatar . '<strong>' . Html::encode($model->getDisplayName()) . '</strong></div>';
                                 },
                             ],
                             [

@@ -185,6 +185,54 @@ class AlertController extends Controller
             ];
         }
 
+        // ==============================
+        // Cartas - CRÍTICO (expiradas)
+        // ==============================
+        $expiredLicenses = (new Query())
+            ->from('users')
+            ->where(['company_id' => $companyId])
+            ->andWhere(['<', 'license_expiry', $today])
+            ->andWhere(['not', ['license_expiry' => null]])
+            ->all();
+
+        foreach ($expiredLicenses as $driver) {
+            $key = 'license:' . $driver['id'] . ':critical';
+            if (isset($seen[$key])) { continue; }
+            $seen[$key] = true;
+
+            $dateStr = Yii::$app->formatter->asDate($driver['license_expiry']);
+            $critical[] = [
+                'title' => 'Carta de Condutor Expirada',
+                'message' => $driver['name'] . ' - carta expirou em ' . $dateStr,
+                'action' => ['driver/update', 'id' => $driver['id']],
+            ];
+        }
+
+        // ====================================================
+        // Cartas - ATENÇÃO (próximas 30 dias)
+        // ====================================================
+        $in30days = date('Y-m-d', strtotime('+30 days'));
+        $nearLicenses = (new Query())
+            ->from('users')
+            ->where(['company_id' => $companyId])
+            ->andWhere(['between', 'license_expiry', $today, $in30days])
+            ->andWhere(['not', ['license_expiry' => null]])
+            ->all();
+
+        foreach ($nearLicenses as $driver) {
+            $key = 'license:' . $driver['id'] . ':warning';
+            if (isset($seen[$key])) { continue; }
+            $seen[$key] = true;
+
+            $dateStr = Yii::$app->formatter->asDate($driver['license_expiry']);
+            $daysLeft = ceil((strtotime($driver['license_expiry']) - strtotime($today)) / 86400);
+            $warning[] = [
+                'title' => 'Carta de Condutor Próxima de Expirar',
+                'message' => $driver['name'] . ' - vence em ' . $dateStr . ' (' . $daysLeft . 'd)',
+                'action' => ['driver/update', 'id' => $driver['id']],
+            ];
+        }
+
         $counts = [
             'critical' => count($critical),
             'warning'  => count($warning),
@@ -313,6 +361,57 @@ class AlertController extends Controller
                 'title' => 'Manutenção Próxima',
                 'message' => $m->type . " - {$plate} ({$daysLeft}d)",
                 'url' => \yii\helpers\Url::to(['maintenance/view', 'id' => $m->id]),
+            ];
+        }
+
+        // =======================================================
+        // 5. CARTAS DE CONDUTORES - CRÍTICO (expiradas)
+        // =======================================================
+        $expiredLicenses = (new Query())
+            ->from('users')
+            ->where(['company_id' => $companyId])
+            ->andWhere(['<', 'license_expiry', $today])
+            ->andWhere(['not', ['license_expiry' => null]])
+            ->all();
+
+        foreach ($expiredLicenses as $driver) {
+            $key = 'license:' . $driver['id'] . ':expired';
+            if (isset($seen[$key])) { continue; }
+            $seen[$key] = true;
+
+            $dateStr = Yii::$app->formatter->asDate($driver['license_expiry']);
+            $notifications[] = [
+                'priority' => 0, // CRÍTICO
+                'type' => 'license_expired',
+                'title' => 'Carta Expirada',
+                'message' => $driver['name'] . ' - Expirada em ' . $dateStr,
+                'url' => \yii\helpers\Url::to(['driver/view', 'id' => $driver['id']]),
+            ];
+        }
+
+        // =======================================================
+        // 6. CARTAS DE CONDUTORES - PRÓXIMAS (próximos 30 dias)
+        // =======================================================
+        $in30days = date('Y-m-d', strtotime('+30 days'));
+        $nearLicenses = (new Query())
+            ->from('users')
+            ->where(['company_id' => $companyId])
+            ->andWhere(['between', 'license_expiry', $today, $in30days])
+            ->andWhere(['not', ['license_expiry' => null]])
+            ->all();
+
+        foreach ($nearLicenses as $driver) {
+            $key = 'license:' . $driver['id'] . ':near';
+            if (isset($seen[$key])) { continue; }
+            $seen[$key] = true;
+
+            $daysLeft = ceil((strtotime($driver['license_expiry']) - strtotime($today)) / 86400);
+            $notifications[] = [
+                'priority' => 1, // AVISO
+                'type' => 'license_near',
+                'title' => 'Carta Próxima de Expirar',
+                'message' => $driver['name'] . ' (' . $daysLeft . 'd)',
+                'url' => \yii\helpers\Url::to(['driver/view', 'id' => $driver['id']]),
             ];
         }
 
