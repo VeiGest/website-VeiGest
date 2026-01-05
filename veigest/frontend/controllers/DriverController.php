@@ -93,11 +93,12 @@ class DriverController extends Controller
      */
     public function actionIndex()
     {
+        // Filtra apenas utilizadores com a role 'driver' via RBAC
         $query = Driver::find()
+            ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
             ->where(['company_id' => $this->getCompanyId()])
-            ->andWhere(['like', 'roles', 'condutor']);
-            // Removido filtro de status para mostrar todos os condutores
-            // O filtro por status é aplicado via query string abaixo
+            ->andWhere(['auth_assignment.item_name' => 'driver']);
+            // Drivers são identificados pela role 'driver' na tabela auth_assignment
 
         // Filtros opcionais
         $status = Yii::$app->request->get('status');
@@ -135,20 +136,24 @@ class DriverController extends Controller
         // Estatísticas para dashboard
         $stats = [
             'total' => Driver::find()
+                ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
                 ->where(['company_id' => $this->getCompanyId()])
-                ->andWhere(['like', 'roles', 'condutor'])
+                ->andWhere(['auth_assignment.item_name' => 'driver'])
                 ->count(),
             'active' => Driver::find()
+                ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
                 ->where(['company_id' => $this->getCompanyId(), 'status' => Driver::STATUS_ACTIVE])
-                ->andWhere(['like', 'roles', 'condutor'])
+                ->andWhere(['auth_assignment.item_name' => 'driver'])
                 ->count(),
             'inactive' => Driver::find()
+                ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
                 ->where(['company_id' => $this->getCompanyId(), 'status' => Driver::STATUS_INACTIVE])
-                ->andWhere(['like', 'roles', 'condutor'])
+                ->andWhere(['auth_assignment.item_name' => 'driver'])
                 ->count(),
             'expiring_license' => Driver::find()
+                ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
                 ->where(['company_id' => $this->getCompanyId(), 'status' => Driver::STATUS_ACTIVE])
-                ->andWhere(['like', 'roles', 'condutor'])
+                ->andWhere(['auth_assignment.item_name' => 'driver'])
                 ->andWhere(['<=', 'license_expiry', date('Y-m-d', strtotime('+30 days'))])
                 ->andWhere(['>=', 'license_expiry', date('Y-m-d')])
                 ->count(),

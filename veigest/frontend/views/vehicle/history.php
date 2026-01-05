@@ -112,10 +112,10 @@ $this->params['breadcrumbs'][] = 'Histórico';
                                             },
                                         ],
                                         [
-                                            'attribute' => 'mileage',
+                                            'attribute' => 'mileage_record',
                                             'label' => 'Km',
                                             'value' => function($model) {
-                                                return $model->mileage ? number_format($model->mileage, 0, ',', '.') . ' km' : '-';
+                                                return $model->mileage_record ? number_format($model->mileage_record, 0, ',', '.') . ' km' : '-';
                                             },
                                         ],
                                         [
@@ -231,37 +231,31 @@ $this->params['breadcrumbs'][] = 'Histórico';
                                             'attribute' => 'liters',
                                             'label' => 'Litros',
                                             'value' => function($model) {
-                                                return number_format($model->liters, 2, ',', '.') . ' L';
+                                                return $model->liters ? number_format($model->liters, 2, ',', '.') . ' L' : '-';
                                             },
                                         ],
                                         [
                                             'attribute' => 'price_per_liter',
                                             'label' => 'Preço/L',
                                             'value' => function($model) {
-                                                return number_format($model->price_per_liter, 3, ',', '.') . ' €';
+                                                return $model->price_per_liter ? number_format($model->price_per_liter, 3, ',', '.') . ' €' : '-';
                                             },
                                         ],
                                         [
-                                            'attribute' => 'total_cost',
+                                            'attribute' => 'value',
                                             'label' => 'Custo Total',
                                             'value' => function($model) {
-                                                return number_format($model->total_cost, 2, ',', '.') . ' €';
+                                                return $model->value ? number_format($model->value, 2, ',', '.') . ' €' : '-';
                                             },
                                         ],
                                         [
-                                            'attribute' => 'mileage',
+                                            'attribute' => 'current_mileage',
                                             'label' => 'Km no Abastecimento',
                                             'value' => function($model) {
-                                                return number_format($model->mileage, 0, ',', '.') . ' km';
+                                                return $model->current_mileage ? number_format($model->current_mileage, 0, ',', '.') . ' km' : '-';
                                             },
                                         ],
-                                        [
-                                            'attribute' => 'station',
-                                            'label' => 'Posto',
-                                            'value' => function($model) {
-                                                return Html::encode($model->station ?? '-');
-                                            },
-                                        ],
+
                                     ],
                                 ]) ?>
 
@@ -302,7 +296,7 @@ $this->params['breadcrumbs'][] = 'Histórico';
                                                     <?php
                                                     $totalCost = 0;
                                                     foreach ($fuelProvider->getModels() as $f) {
-                                                        $totalCost += $f->total_cost;
+                                                        $totalCost += $f->value;
                                                     }
                                                     echo number_format($totalCost, 2, ',', '.') . ' €';
                                                     ?>
@@ -321,7 +315,7 @@ $this->params['breadcrumbs'][] = 'Histórico';
                                                     $totalCost = 0;
                                                     foreach ($fuelProvider->getModels() as $f) {
                                                         $totalLiters += $f->liters;
-                                                        $totalCost += $f->total_cost;
+                                                        $totalCost += $f->value;
                                                     }
                                                     echo $totalLiters > 0 ? number_format($totalCost / $totalLiters, 3, ',', '.') . ' €' : '-';
                                                     ?>
