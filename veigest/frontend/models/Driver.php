@@ -112,8 +112,8 @@ class Driver extends ActiveRecord
     public static function optsStatus()
     {
         return [
-            self::STATUS_ACTIVE => 'Ativo',
-            self::STATUS_INACTIVE => 'Inativo',
+            self::STATUS_ACTIVE => 'Active',
+            self::STATUS_INACTIVE => 'Inactive',
         ];
     }
 
@@ -215,7 +215,7 @@ class Driver extends ActiveRecord
     }
 
     /**
-     * Verifica se o condutor está disponível (ativo e com carta válida)
+     * Check if driver is available (active and with valid license)
      * @return bool
      */
     public function isAvailable()
@@ -224,7 +224,7 @@ class Driver extends ActiveRecord
             return false;
         }
         $licenseValid = $this->isLicenseValid();
-        // Se não tem data de validade, considera disponível
+        // If no expiry date, consider available
         return $licenseValid === null || $licenseValid === true;
     }
 

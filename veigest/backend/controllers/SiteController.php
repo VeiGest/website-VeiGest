@@ -8,7 +8,16 @@ use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
+use yii\web\ForbiddenHttpException;
 
+/**
+ * SiteController - Backend Main Controller
+ * 
+ * Access Control:
+ * - Admin: FULL ACCESS
+ * - Manager: NO ACCESS (403 Forbidden)
+ * - Driver: NO ACCESS (403 Forbidden)
+ */
 class SiteController extends Controller
 {
     public function behaviors()
@@ -16,22 +25,26 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-
                 'rules' => [
-
+                    // Public actions (login, error)
                     [
                         'actions' => ['login', 'error'],
                         'allow' => true,
                     ],
-
-                    // permitir backend apenas a administradores
+                    // Backend access: admin only
                     [
                         'allow' => true,
                         'roles' => ['admin'],
                     ],
                 ],
+                // Custom deny callback - use blank layout for 403 errors
+                'denyCallback' => function ($rule, $action) {
+                    $action->controller->layout = 'blank';
+                    throw new ForbiddenHttpException(
+                        'You do not have permission to access the backend. Only administrators can access this area.'
+                    );
+                },
             ],
-
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
@@ -46,15 +59,22 @@ class SiteController extends Controller
         return [
             'error' => [
                 'class' => \yii\web\ErrorAction::class,
+                'layout' => 'blank', // Use blank layout for error pages
             ],
         ];
     }
 
+    /**
+     * Displays backend homepage.
+     */
     public function actionIndex()
     {
         return $this->render('index');
     }
 
+    /**
+     * Login action.
+     */
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
@@ -75,10 +95,13 @@ class SiteController extends Controller
         ]);
     }
 
+    /**
+     * Logout action.
+     */
     public function actionLogout()
     {
         Yii::$app->user->logout();
 
-        return $this->redirect('http://localhost/website-VeiGest/veigest/frontend/web/site/login');
+        return $this->redirect(Yii::getAlias('@frontendUrl') . '/site/login');
     }
 }

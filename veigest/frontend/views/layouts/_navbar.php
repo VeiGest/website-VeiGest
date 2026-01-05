@@ -57,22 +57,23 @@ use yii\bootstrap5\Html;
 
                 <?php else: ?>
 
-                    <!-- DASHBOARD gestor e condutor -->
+                    <!-- DASHBOARD / BACKEND BUTTON -->
                     <?php if (!Yii::$app->user->isGuest): ?>
 
                         <?php $role = Yii::$app->user->identity->role; ?>
 
                         <?php if ($role === 'admin'): ?>
+                            <!-- Admin: Only Backend access -->
                             <a href="<?= Yii::getAlias('@backendUrl') ?>"
                                 class="btn btn-dark px-4 py-2 mt-3">
-                                Aceder ao Backoffice
+                                <i class="fas fa-cogs me-2"></i> Backoffice
                             </a>
 
-                        <?php elseif ($role === 'gestor' || $role === 'condutor'): ?>
-
+                        <?php elseif ($role === 'manager' || $role === 'driver'): ?>
+                            <!-- Manager/Driver: Frontend Dashboard access -->
                             <a href="<?= \yii\helpers\Url::to(['/dashboard/index']) ?>"
                                 class="btn btn-success px-4 py-2 mt-3">
-                                Aceder ao Dashboard
+                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                             </a>
 
                         <?php endif; ?>

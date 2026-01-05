@@ -111,8 +111,8 @@ $photoUrl = $user->photo
                                             $role = $user->getRole();
                                             $roleLabels = [
                                                 'admin' => ['label' => 'Administrador', 'class' => 'badge-danger'],
-                                                'gestor' => ['label' => 'Gestor', 'class' => 'badge-primary'],
-                                                'condutor' => ['label' => 'Condutor', 'class' => 'badge-success'],
+                                                'manager' => ['label' => 'Manager', 'class' => 'badge-primary'],
+                                                'driver' => ['label' => 'Driver', 'class' => 'badge-success'],
                                             ];
                                             $roleInfo = $roleLabels[$role] ?? ['label' => ucfirst($role ?? 'N/A'), 'class' => 'badge-secondary'];
                                             ?>
@@ -120,12 +120,12 @@ $photoUrl = $user->photo
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th><i class="fas fa-toggle-on text-muted mr-2"></i>Estado:</th>
+                                        <th><i class="fas fa-toggle-on text-muted mr-2"></i>Status:</th>
                                         <td>
-                                            <?php if ($user->estado === 'ativo'): ?>
-                                                <span class="badge badge-success">Ativo</span>
+                                            <?php if ($user->status === 'active'): ?>
+                                                <span class="badge badge-success">Active</span>
                                             <?php else: ?>
-                                                <span class="badge badge-danger"><?= ucfirst($user->estado) ?></span>
+                                                <span class="badge badge-danger"><?= ucfirst($user->status) ?></span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -135,12 +135,12 @@ $photoUrl = $user->photo
                     </div>
                 </div>
 
-                <!-- Card de Informações de Condutor (se aplicável) -->
-                <?php if ($user->license_number || $user->hasRole('condutor')): ?>
+                <!-- Driver Information Card (if applicable) -->
+                <?php if ($user->license_number || $user->hasRole('driver')): ?>
                 <div class="card mb-4">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fas fa-id-card-alt mr-2"></i>Dados de Condutor
+                            <i class="fas fa-id-card-alt mr-2"></i>Driver Data
                         </h3>
                     </div>
                     <div class="card-body">

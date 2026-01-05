@@ -175,13 +175,13 @@ class VehicleController extends BaseApiController
             'maintenance_stats' => [
                 'total_maintenances' => $vehicle->getMaintenances()->count(),
                 'pending_maintenances' => $vehicle->getMaintenances()
-                    ->where(['estado' => 'agendada'])
+                    ->where(['status' => 'scheduled'])
                     ->count(),
                 'completed_maintenances' => $vehicle->getMaintenances()
-                    ->where(['estado' => 'concluida'])
+                    ->where(['status' => 'completed'])
                     ->count(),
                 'total_maintenance_cost' => $vehicle->getMaintenances()
-                    ->sum('custo') ?? 0,
+                    ->sum('cost') ?? 0,
             ],
             'fuel_stats' => [
                 'total_fuel_logs' => $vehicle->getFuelLogs()->count(),

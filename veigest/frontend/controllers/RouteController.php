@@ -7,30 +7,79 @@ use yii\web\Controller;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use frontend\models\Route;
 use frontend\models\Vehicle;
 use yii\helpers\ArrayHelper;
 use yii\db\Query;
 
+/**
+ * RouteController - Route Management
+ * 
+ * Access Control:
+ * - Admin: NO ACCESS (frontend blocked)
+ * - Manager: FULL ACCESS (view, create, update, delete)
+ * - Driver: READ ONLY (view routes only)
+ */
 class RouteController extends Controller
 {
-    public function beforeAction($action)
-    {
-        // Use dashboard layout for all route pages
-        $this->layout = 'dashboard';
+    public $layout = 'dashboard';
 
-        // Basic RBAC gate for the whole controller; finer checks inside actions
-        if (!Yii::$app->user->can('dashboard.view')) {
-            throw new ForbiddenHttpException('Sem permissão para aceder ao dashboard.');
-        }
-        return parent::beforeAction($action);
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    // Block admin from frontend
+                    [
+                        'allow' => false,
+                        'roles' => ['admin'],
+                        'denyCallback' => function ($rule, $action) {
+                            throw new ForbiddenHttpException(
+                                'Administrators do not have access to the frontend.'
+                            );
+                        },
+                    ],
+                    // View routes - manager and driver
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('routes.view');
+                        },
+                    ],
+                    // Create routes - manager only
+                    [
+                        'allow' => true,
+                        'actions' => ['create'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('routes.create');
+                        },
+                    ],
+                    // Update routes - manager only
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('routes.update');
+                        },
+                    ],
+                    // Delete routes - manager only
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('routes.delete');
+                        },
+                    ],
+                ],
+            ],
+        ];
     }
 
     public function actionIndex()
     {
-        if (!Yii::$app->user->can('routes.view')) {
-            throw new ForbiddenHttpException('Sem permissão para ver rotas.');
-        }
         $companyId = Yii::$app->user->identity->company_id;
 
         $query = Route::find()->where(['company_id' => $companyId])->orderBy(['start_time' => SORT_DESC]);
@@ -50,9 +99,6 @@ class RouteController extends Controller
 
     public function actionView($id)
     {
-        if (!Yii::$app->user->can('routes.view')) {
-            throw new ForbiddenHttpException('Sem permissão para ver rotas.');
-        }
         $model = $this->findModel($id);
         $this->ensureCompanyAccess($model->company_id);
         return $this->render('view', ['model' => $model]);
@@ -60,9 +106,6 @@ class RouteController extends Controller
 
     public function actionCreate()
     {
-        if (!Yii::$app->user->can('routes.create')) {
-            throw new ForbiddenHttpException('Sem permissão para criar rotas.');
-        }
         $companyId = Yii::$app->user->identity->company_id;
         $model = new Route();
         $model->company_id = $companyId;
@@ -81,9 +124,6 @@ class RouteController extends Controller
 
     public function actionUpdate($id)
     {
-        if (!Yii::$app->user->can('routes.update')) {
-            throw new ForbiddenHttpException('Sem permissão para editar rotas.');
-        }
         $companyId = Yii::$app->user->identity->company_id;
         $model = $this->findModel($id);
         $this->ensureCompanyAccess($model->company_id);
@@ -101,9 +141,6 @@ class RouteController extends Controller
 
     public function actionDelete($id)
     {
-        if (!Yii::$app->user->can('routes.delete')) {
-            throw new ForbiddenHttpException('Sem permissão para apagar rotas.');
-        }
         $model = $this->findModel($id);
         $this->ensureCompanyAccess($model->company_id);
         $model->delete();

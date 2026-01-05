@@ -19,7 +19,6 @@ use yii\web\IdentityInterface;
  * @property string $password_hash
  * @property string $phone
  * @property string $status
- * @property string $estado
  * @property string $auth_key
  * @property string $password_reset_token
  * @property string $verification_token
@@ -78,8 +77,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['username', 'string', 'max' => 255],
             ['username', 'unique'],
 
-            ['role', 'in', 'range' => ['admin', 'gestor', 'condutor']],
-            ['estado', 'in', 'range' => ['ativo', 'inativo']],
+            ['role', 'in', 'range' => ['admin', 'manager', 'driver']],
+            ['status', 'in', 'range' => ['active', 'inactive']],
         ];
     }
 
@@ -88,7 +87,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $scenarios = parent::scenarios();
 
-        // Cenário de criação → password obrigatória
+        // Creation scenario → password required
         $scenarios['create'] = [
             'username',
             'name',
@@ -96,10 +95,10 @@ class User extends ActiveRecord implements IdentityInterface
             'company_id',
             'password',
             'role',
-            'estado'
+            'status'
         ];
 
-        // Cenário de criação por admin → password obrigatória
+        // Admin creation scenario → password required
         $scenarios['adminCreate'] = [
             'username',
             'name',
@@ -107,10 +106,10 @@ class User extends ActiveRecord implements IdentityInterface
             'company_id',
             'password',
             'role',
-            'estado'
+            'status'
         ];
 
-        // Cenário de edição → password opcional
+        // Update scenario → password optional
         $scenarios['update'] = [
             'username',
             'name',
@@ -118,7 +117,7 @@ class User extends ActiveRecord implements IdentityInterface
             'company_id',
             'password',
             'role',
-            'estado'
+            'status'
         ];
 
         $scenarios['signup'] = [
@@ -140,7 +139,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'estado' => 'ativo']);
+        return static::findOne(['id' => $id, 'status' => 'active']);
     }
 
     /**
@@ -153,7 +152,7 @@ class User extends ActiveRecord implements IdentityInterface
         }
 
         // assume token is stored in auth_key (simple bearer token)
-        return static::findOne(['auth_key' => $token, 'estado' => 'ativo']);
+        return static::findOne(['auth_key' => $token, 'status' => 'active']);
     }
 
     /**
@@ -164,7 +163,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'estado' => 'ativo']);
+        return static::findOne(['username' => $username, 'status' => 'active']);
     }
 
     /**
@@ -175,7 +174,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByEmail($email)
     {
-        return static::findOne(['email' => $email, 'estado' => 'ativo']);
+        return static::findOne(['email' => $email, 'status' => 'active']);
     }
 
     /**
@@ -192,7 +191,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         return static::findOne([
             'password_reset_token' => $token,
-            'estado' => 'ativo',
+            'status' => 'active',
 
         ]);
     }
@@ -207,7 +206,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return static::findOne([
             'verification_token' => $token,
-            'estado' => 'inativo',
+            'status' => 'inactive',
 
         ]);
     }
@@ -264,12 +263,12 @@ class User extends ActiveRecord implements IdentityInterface
             return false;
         }
 
-        // Gerar auth_key apenas na criação
+        // Generate auth_key only on creation
         if ($insert) {
             $this->generateAuthKey();
         }
 
-        // Criar hash da password se for preenchida
+        // Create password hash if filled
         if (!empty($this->password)) {
             $this->password_hash = Yii::$app->security->generatePasswordHash($this->password);
         }
@@ -344,18 +343,18 @@ class User extends ActiveRecord implements IdentityInterface
             return null;
         }
 
-        // Retorna a primeira role encontrada (ou a mais importante)
+        // Return the first role found (or the most important one)
         $roleNames = array_keys($roles);
 
-        // Prioridade: admin > gestor > condutor
+        // Priority: admin > manager > driver
         if (in_array('admin', $roleNames)) {
             return 'admin';
         }
-        if (in_array('gestor', $roleNames)) {
-            return 'gestor';
+        if (in_array('manager', $roleNames)) {
+            return 'manager';
         }
-        if (in_array('condutor', $roleNames)) {
-            return 'condutor';
+        if (in_array('driver', $roleNames)) {
+            return 'driver';
         }
 
         return $roleNames[0] ?? null;

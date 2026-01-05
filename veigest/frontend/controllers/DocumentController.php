@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\web\UploadedFile;
 use yii\web\Response;
 use yii\filters\AccessControl;
@@ -17,7 +18,12 @@ use frontend\models\DocumentSearch;
 use frontend\models\DocumentUploadForm;
 
 /**
- * DocumentController implementa as ações CRUD para Document.
+ * DocumentController - Document Management (CRUD)
+ * 
+ * Access Control:
+ * - Admin: NO ACCESS (frontend blocked)
+ * - Manager: FULL ACCESS (view, create, update, delete)
+ * - Driver: NO ACCESS (documents not visible to drivers)
  */
 class DocumentController extends Controller
 {
@@ -35,9 +41,47 @@ class DocumentController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
+                    // Block admin from frontend
+                    [
+                        'allow' => false,
+                        'roles' => ['admin'],
+                        'denyCallback' => function ($rule, $action) {
+                            throw new ForbiddenHttpException(
+                                'Administrators do not have access to the frontend.'
+                            );
+                        },
+                    ],
+                    // View documents - manager only (driver has documents.view but limited)
                     [
                         'allow' => true,
-                        'roles' => ['@'], // Apenas utilizadores autenticados
+                        'actions' => ['index', 'view', 'download'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('documents.view');
+                        },
+                    ],
+                    // Create documents - manager only
+                    [
+                        'allow' => true,
+                        'actions' => ['create'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('documents.create');
+                        },
+                    ],
+                    // Update documents - manager only
+                    [
+                        'allow' => true,
+                        'actions' => ['update'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('documents.update');
+                        },
+                    ],
+                    // Delete documents - manager only
+                    [
+                        'allow' => true,
+                        'actions' => ['delete'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('documents.delete');
+                        },
                     ],
                 ],
             ],

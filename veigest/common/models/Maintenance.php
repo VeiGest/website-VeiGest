@@ -110,18 +110,18 @@ class Maintenance extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'company_id' => 'Empresa',
-            'vehicle_id' => 'Veículo',
-            'type' => 'Tipo',
-            'description' => 'Descrição',
-            'date' => 'Data',
-            'cost' => 'Custo',
-            'mileage_record' => 'Quilometragem',
-            'next_date' => 'Próxima Manutenção',
-            'workshop' => 'Oficina',
-            'status' => 'Estado',
-            'created_at' => 'Criado em',
-            'updated_at' => 'Atualizado em',
+            'company_id' => 'Company',
+            'vehicle_id' => 'Vehicle',
+            'type' => 'Type',
+            'description' => 'Description',
+            'date' => 'Date',
+            'cost' => 'Cost',
+            'mileage_record' => 'Mileage',
+            'next_date' => 'Next Maintenance',
+            'workshop' => 'Workshop',
+            'status' => 'Status',
+            'created_at' => 'Created at',
+            'updated_at' => 'Updated at',
         ];
     }
 

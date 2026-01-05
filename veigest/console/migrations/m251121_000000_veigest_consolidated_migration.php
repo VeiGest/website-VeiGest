@@ -4,9 +4,10 @@ use yii\db\Migration;
 
 /**
  * VeiGest - Ultra-Simplified Schema with RBAC Yii2
- * Last update: 2025-11-22 (Revision 4 - Added routes and tickets)
+ * Last update: 2025-11-22 (Revision 5 - English standardization)
  * ULTRA-LEAN: 13 main tables + 4 RBAC + 3 views
  * Removed: GPS tracking system
+ * Changes: Removed deprecated 'estado' field, standardized roles to English (manager, driver)
  */
 class m251121_000000_veigest_consolidated_migration extends Migration
 {
@@ -96,7 +97,6 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'password_hash' => $this->string(255)->notNull(),
             'phone' => $this->string(20),
             'status' => "ENUM('active','inactive') NOT NULL DEFAULT 'active'",
-            'estado' => "ENUM('ativo','inativo','suspenso') NOT NULL DEFAULT 'ativo'",
             'auth_key' => $this->string(32)->comment('For Yii2 authentication'),
             'password_reset_token' => $this->string(255),
             'verification_token' => $this->string(255)->comment('For email verification'),
@@ -113,7 +113,6 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         $this->createIndex('uk_email_company', '{{%users}}', ['email', 'company_id'], true);
         $this->createIndex('idx_company_id', '{{%users}}', 'company_id');
         $this->createIndex('idx_status', '{{%users}}', 'status');
-        $this->createIndex('idx_estado', '{{%users}}', 'estado');
         $this->createIndex('idx_license_expiry', '{{%users}}', 'license_expiry');
         $this->createIndex('idx_password_reset_token', '{{%users}}', 'password_reset_token');
         $this->createIndex('idx_verification_token', '{{%users}}', 'verification_token');
@@ -412,9 +411,8 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             'name' => 'Administrator',
             'username' => 'admin',
             'email' => 'admin@veigest.com',
-            'password_hash' => '$2a$12$bPmFsaXUVmV/gKqrgvxPe.OqO6TbCova1ImNRAj9xV/l1qx4/.sVi', // password: admin
+            'password_hash' => '$2a$12$yjs8TTsveJPiMeAg1D5fNePfO9rPOKmRRDBnW1xUFfss/NEPZhvEa', // password: admin
             'status' => 'active',
-            'estado' => 'ativo',
             'auth_key' => md5('admin@veigest.com' . time()),
             'roles' => 'admin',
         ]);
@@ -427,8 +425,8 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             ['name', 'type', 'description', 'created_at', 'updated_at'],
             [
                 ['admin', 1, 'Administrator', $time, $time],
-                ['gestor', 1, 'Gestor', $time, $time],
-                ['condutor', 1, 'Condutor', $time, $time],
+                ['manager', 1, 'Manager', $time, $time],
+                ['driver', 1, 'Driver', $time, $time],
             ]
         );
 
@@ -531,31 +529,33 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         // Admin: All except critical settings
         $this->execute("INSERT INTO auth_item_child (parent, child) SELECT 'admin', name FROM auth_item WHERE type = 2 AND name NOT IN ('system.config')");
 
-        // Manager (Fleet Administrator)
+        // Manager (Fleet Administrator) - Full access to frontend operations
         $this->batchInsert('{{%auth_item_child}}', ['parent', 'child'], [
-            ['gestor', 'companies.view'],
-            ['gestor', 'users.view'], ['gestor', 'users.create'], ['gestor', 'users.update'],
-            ['gestor', 'vehicles.view'], ['gestor', 'vehicles.create'], ['gestor', 'vehicles.update'], ['gestor', 'vehicles.assign'],
-            ['gestor', 'drivers.view'], ['gestor', 'drivers.create'], ['gestor', 'drivers.update'],
-            ['gestor', 'files.view'], ['gestor', 'files.upload'],
-            ['gestor', 'fuel.view'], ['gestor', 'fuel.update'],
-            ['gestor', 'alerts.view'], ['gestor', 'alerts.resolve'],
-            ['gestor', 'reports.view'], ['gestor', 'reports.create'], ['gestor', 'reports.export'], ['gestor', 'reports.advanced'],
-            ['gestor', 'dashboard.view'], ['gestor', 'dashboard.advanced'],
-            ['gestor', 'routes.view'], ['gestor', 'routes.create'], ['gestor', 'routes.update'], ['gestor', 'routes.delete'],
-            ['gestor', 'tickets.view'], ['gestor', 'tickets.create'], ['gestor', 'tickets.update'], ['gestor', 'tickets.delete'],
+            ['manager', 'companies.view'],
+            ['manager', 'users.view'], ['manager', 'users.create'], ['manager', 'users.update'],
+            ['manager', 'vehicles.view'], ['manager', 'vehicles.create'], ['manager', 'vehicles.update'], ['manager', 'vehicles.assign'],
+            ['manager', 'drivers.view'], ['manager', 'drivers.create'], ['manager', 'drivers.update'],
+            ['manager', 'files.view'], ['manager', 'files.upload'],
+            ['manager', 'maintenances.view'], ['manager', 'maintenances.create'], ['manager', 'maintenances.update'], ['manager', 'maintenances.delete'], ['manager', 'maintenances.schedule'],
+            ['manager', 'documents.view'], ['manager', 'documents.create'], ['manager', 'documents.update'], ['manager', 'documents.delete'],
+            ['manager', 'fuel.view'], ['manager', 'fuel.create'], ['manager', 'fuel.update'], ['manager', 'fuel.delete'],
+            ['manager', 'alerts.view'], ['manager', 'alerts.create'], ['manager', 'alerts.resolve'],
+            ['manager', 'reports.view'], ['manager', 'reports.create'], ['manager', 'reports.export'], ['manager', 'reports.advanced'],
+            ['manager', 'dashboard.view'], ['manager', 'dashboard.advanced'],
+            ['manager', 'routes.view'], ['manager', 'routes.create'], ['manager', 'routes.update'], ['manager', 'routes.delete'],
+            ['manager', 'tickets.view'], ['manager', 'tickets.create'], ['manager', 'tickets.update'], ['manager', 'tickets.delete'],
         ]);
 
-        // Condutor
+        // Driver
         $this->batchInsert('{{%auth_item_child}}', ['parent', 'child'], [
-            ['condutor', 'vehicles.view'],
-            ['condutor', 'files.view'],
-            ['condutor', 'fuel.view'], ['condutor', 'fuel.create'],
-            ['condutor', 'documents.view'],
-            ['condutor', 'alerts.view'],
-            ['condutor', 'dashboard.view'],
-            ['condutor', 'routes.view'],
-            ['condutor', 'tickets.view'], ['condutor', 'tickets.create'],
+            ['driver', 'vehicles.view'],
+            ['driver', 'files.view'],
+            ['driver', 'fuel.view'], ['driver', 'fuel.create'],
+            ['driver', 'documents.view'],
+            ['driver', 'alerts.view'],
+            ['driver', 'dashboard.view'],
+            ['driver', 'routes.view'],
+            ['driver', 'tickets.view'], ['driver', 'tickets.create'],
         ]);
 
         // Assign 'admin' role to user admin (user_id = 1)
@@ -576,38 +576,38 @@ class m251121_000000_veigest_consolidated_migration extends Migration
          * - Password: admin
          * - Role: admin (full administrator access)
          *
-         * MANAGER/GESTOR:
-         * - Username: gestor
+         * MANAGER:
+         * - Username: manager
          * - Password: manager123
-         * - Role: gestor (fleet manager - manages vehicles, users, reports)
+         * - Role: manager (fleet manager - manages vehicles, users, reports)
          *
-         * DRIVERS/CONDUTORES:
+         * DRIVERS:
          * - Username: driver1, driver2, driver3
          * - Password: driver123 (for all drivers)
-         * - Role: condutor (basic driver access - view vehicles, record fuel)
+         * - Role: driver (basic driver access - view vehicles, record fuel)
          */
 
         // Additional users (drivers and managers) - with different roles for testing
         $this->batchInsert('{{%users}}', [
-            'id', 'company_id', 'name', 'username', 'email', 'password_hash', 'phone', 'status', 'estado',
+            'id', 'company_id', 'name', 'username', 'email', 'password_hash', 'phone', 'status',
             'license_number', 'license_expiry', 'photo', 'roles', 'created_at'
         ], [
-            // Manager/Gestor user - username: gestor / password: manager123
-            [2, 1, 'Carlos Ferreira', 'gestor', 'gestor@veigest.com', '$2a$12$Z3uvYUYgFi02a4lIFswhteTtub2PZ0s2hK1f7B/83S3TN1fj6wHSy', '+351912345678', 'active', 'ativo', null, null, null, 'gestor', date('Y-m-d H:i:s')],
+            // Manager user - username: manager / password: manager123
+            [2, 1, 'Carlos Ferreira', 'manager', 'manager@veigest.com', '$2a$12$tHSe/ty2YB3VuLL0WswrAOQrNi0zifZzqtxpVsuLmYdl6XVatPU6G', '+351912345678', 'active', null, null, null, 'manager', date('Y-m-d H:i:s')],
             // Regular Driver 1 - username: driver1 / password: driver123
-            [5, 1, 'Maria Santos', 'driver1', 'driver1@veigest.com', '$2a$12$juAwSVZA1AlkwtKr4owi/.o6GTYIBv2Abl.jL8Qgj0NSknBqbt5XC', '+351945678901', 'active', 'ativo', 'PT987654321', '2027-06-15', null, 'condutor', date('Y-m-d H:i:s')],
+            [5, 1, 'Maria Santos', 'driver1', 'driver1@veigest.com', '$2a$12$8wh1Kv6CN3ZFob8XIjdezeSNV7OaC/ls/ZbZHS0ktf3PLDXrbboyy', '+351945678901', 'active', 'PT987654321', '2027-06-15', null, 'driver', date('Y-m-d H:i:s')],
             // Regular Driver 2 - username: driver2 / password: driver123
-            [6, 1, 'Pedro Gomes', 'driver2', 'driver2@veigest.com', '$2a$12$juAwSVZA1AlkwtKr4owi/.o6GTYIBv2Abl.jL8Qgj0NSknBqbt5XC', '+351956789012', 'active', 'ativo', 'PT456789123', '2026-08-20', null, 'condutor', date('Y-m-d H:i:s')],
+            [6, 1, 'Pedro Gomes', 'driver2', 'driver2@veigest.com', '$2a$12$8wh1Kv6CN3ZFob8XIjdezeSNV7OaC/ls/ZbZHS0ktf3PLDXrbboyy', '+351956789012', 'active', 'PT456789123', '2026-08-20', null, 'driver', date('Y-m-d H:i:s')],
             // Regular Driver 3 - username: driver3 / password: driver123
-            [7, 1, 'Sofia Almeida', 'driver3', 'driver3@veigest.com', '$2a$12$juAwSVZA1AlkwtKr4owi/.o6GTYIBv2Abl.jL8Qgj0NSknBqbt5XC', '+351967890123', 'active', 'ativo', 'PT789123456', '2025-12-15', null, 'condutor', date('Y-m-d H:i:s')],
+            [7, 1, 'Sofia Almeida', 'driver3', 'driver3@veigest.com', '$2a$12$8wh1Kv6CN3ZFob8XIjdezeSNV7OaC/ls/ZbZHS0ktf3PLDXrbboyy', '+351967890123', 'active', 'PT789123456', '2025-12-15', null, 'driver', date('Y-m-d H:i:s')],
         ]);
 
         // Assign roles to users (RBAC assignments)
         $this->batchInsert('{{%auth_assignment}}', ['item_name', 'user_id', 'created_at'], [
-            ['gestor', 2, $time],
-            ['condutor', 5, $time],
-            ['condutor', 6, $time],
-            ['condutor', 7, $time],
+            ['manager', 2, $time],
+            ['driver', 5, $time],
+            ['driver', 6, $time],
+            ['driver', 7, $time],
         ]);
 
         // Sample vehicles

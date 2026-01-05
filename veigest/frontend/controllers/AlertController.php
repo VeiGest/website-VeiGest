@@ -5,10 +5,19 @@ namespace frontend\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\db\Query;
 use frontend\models\Maintenance;
 use frontend\models\Vehicle;
 
+/**
+ * AlertController - Alert Management
+ * 
+ * Access Control:
+ * - Admin: NO ACCESS (frontend blocked)
+ * - Manager: FULL ACCESS (view, create, resolve)
+ * - Driver: READ ONLY (view alerts only)
+ */
 class AlertController extends Controller
 {
     public function behaviors()
@@ -17,9 +26,32 @@ class AlertController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
+                    // Block admin from frontend
+                    [
+                        'allow' => false,
+                        'roles' => ['admin'],
+                        'denyCallback' => function ($rule, $action) {
+                            throw new ForbiddenHttpException(
+                                'Administrators do not have access to the frontend.'
+                            );
+                        },
+                    ],
+                    // View alerts - manager and driver
                     [
                         'allow' => true,
-                        'roles' => ['@'],
+                        'actions' => ['index', 'notifications'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('alerts.view');
+                        },
+                    ],
+                    // Create/resolve alerts - manager only
+                    [
+                        'allow' => true,
+                        'actions' => ['create', 'resolve'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('alerts.create') || 
+                                   Yii::$app->user->can('alerts.resolve');
+                        },
                     ],
                 ],
             ],

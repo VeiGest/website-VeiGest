@@ -8,108 +8,107 @@
 use yii\helpers\Html;
 
 $this->title = $name;
+
+// Extract error code
+$errorCode = 500;
+if (isset($exception) && method_exists($exception, 'statusCode')) {
+    $errorCode = $exception->statusCode;
+} elseif (preg_match('/(\d{3})/', $name, $matches)) {
+    $errorCode = (int)$matches[1];
+}
+
+$is403 = ($errorCode == 403);
+$is404 = ($errorCode == 404);
+$is500 = ($errorCode >= 500);
 ?>
-<div class="bg-gray-50">
-    <!-- Hero Section -->
-    <section class="hero-gradient text-white py-20 md:py-32">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="mb-8">
-                <i class="fas fa-exclamation-triangle text-6xl mb-6"></i>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                <?= Html::encode($this->title) ?>
-            </h1>
-            <p class="text-lg mb-8 text-opacity-90">
-                Ocorreu um erro inesperado. Pedimos desculpa pelo inconveniente.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/" class="bg-white text-primary px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition text-center">
-                    Voltar ao Início
-                </a>
-                <button onclick="history.back()" class="border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:bg-opacity-10 transition">
-                    Tentar Novamente
-                </button>
-            </div>
-        </div>
-    </section>
 
-    <!-- Error Details Section -->
-    <section class="py-20 bg-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Detalhes do Erro</h2>
-                <p class="text-xl text-gray-600">Informações técnicas sobre o problema ocorrido</p>
-            </div>
-            <div class="bg-gray-50 rounded-lg p-8 card-shadow">
-                <div class="mb-6">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Mensagem de Erro</h3>
-                    <div class="bg-white border border-gray-300 rounded-lg p-4">
-                        <p class="text-gray-800 font-mono text-sm">
-                            <?= nl2br(Html::encode($message)) ?>
-                        </p>
-                    </div>
-                </div>
-                <?php if (YII_ENV_DEV): ?>
-                    <div class="mb-6">
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Informações Técnicas (Desenvolvimento)</h3>
-                        <div class="bg-white border border-gray-300 rounded-lg p-4">
-                            <pre class="text-gray-800 font-mono text-sm overflow-x-auto">
+<div class="error-container">
+    <div class="logo">
+        <img src="<?= Yii::getAlias('@web') ?>/images/veigest-logo.png" alt="VeiGest" onerror="this.style.display='none'">
+        <span>VeiGest</span>
+    </div>
+    
+    <?php if ($is403): ?>
+        <div class="error-icon" style="font-size:80px;margin-bottom:20px;color:#e74c3c;">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+        <div class="error-code" style="font-size:72px;font-weight:700;color:#e74c3c;margin-bottom:10px;">403</div>
+        <h1 class="error-title" style="font-size:24px;font-weight:600;color:#2c3e50;margin-bottom:15px;">Access Denied</h1>
+    <?php elseif ($is404): ?>
+        <div class="error-icon" style="font-size:80px;margin-bottom:20px;color:#f39c12;">
+            <i class="fas fa-map-signs"></i>
+        </div>
+        <div class="error-code" style="font-size:72px;font-weight:700;color:#f39c12;margin-bottom:10px;">404</div>
+        <h1 class="error-title" style="font-size:24px;font-weight:600;color:#2c3e50;margin-bottom:15px;">Page Not Found</h1>
+    <?php else: ?>
+        <div class="error-icon" style="font-size:80px;margin-bottom:20px;color:#9b59b6;">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="error-code" style="font-size:72px;font-weight:700;color:#9b59b6;margin-bottom:10px;"><?= $errorCode ?></div>
+        <h1 class="error-title" style="font-size:24px;font-weight:600;color:#2c3e50;margin-bottom:15px;"><?= Html::encode($name) ?></h1>
+    <?php endif; ?>
+    
+    <p class="error-message" style="color:#7f8c8d;font-size:16px;margin-bottom:30px;line-height:1.6;">
+        <?= nl2br(Html::encode($message)) ?>
+    </p>
+    
+    <div class="btn-group" style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap;">
+        <?php if ($is403 && Yii::$app->user->identity && Yii::$app->user->identity->role === 'admin'): ?>
+            <a href="<?= Yii::getAlias('@backendUrl') ?>" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:8px;font-weight:500;text-decoration:none;background:#09BC8A;color:white;">
+                <i class="fas fa-cogs"></i> Go to Backend
+            </a>
+        <?php else: ?>
+            <a href="<?= Yii::$app->homeUrl ?>" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:8px;font-weight:500;text-decoration:none;background:#09BC8A;color:white;">
+                <i class="fas fa-home"></i> Go to Homepage
+            </a>
+        <?php endif; ?>
+        <a href="javascript:history.back()" class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:8px;font-weight:500;text-decoration:none;background:#ecf0f1;color:#2c3e50;">
+            <i class="fas fa-arrow-left"></i> Go Back
+        </a>
+    </div>
+    
+    <?php if (YII_ENV_DEV && $is500): ?>
+    <div style="margin-top:30px;text-align:left;background:#f8f9fa;padding:15px;border-radius:8px;font-size:12px;">
+        <strong>Debug Info (DEV only):</strong>
+        <pre style="overflow-x:auto;white-space:pre-wrap;word-wrap:break-word;margin-top:10px;">
 <?= Html::encode($exception->getTraceAsString()) ?>
-                        </pre>
-                        </div>
-                    </div>
-                <?php endif; ?>
-                <div class="text-center">
-                    <p class="text-gray-600 mb-4">
-                        Se o problema persistir, entre em contacto com o nosso suporte técnico.
-                    </p>
-                    <!-- <a href="/site/contact" class="inline-block bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-90 transition">
-                        Contactar Suporte
-                    </a> -->
-                    <?= Html::a('Contactos', ['/site/contact'], [
-                    'class' => 'inline-block bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-90 transition',
-                    ]) ?>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Support Options -->
-    <section class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Precisa de Ajuda?</h2>
-                <p class="text-xl text-gray-600">Estamos aqui para ajudar</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-envelope text-4xl text-primary"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Email</h3>
-                    <p class="text-gray-600 mb-4">Envie-nos um email e responderemos dentro de 24 horas</p>
-                    <a href="mailto:support@veigest.com" class="text-primary hover:underline font-medium">support@veigest.com</a>
-                </div>
-
-                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-phone text-4xl text-primary"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Telefone</h3>
-                    <p class="text-gray-600 mb-4">Ligue-nos durante o horário comercial (9h-17h)</p>
-                    <a href="tel:+351210000000" class="text-primary hover:underline font-medium">+351 21 0000 000</a>
-                </div>
-
-                <div class="service-card bg-white rounded-lg p-8 card-shadow border-t-4 border-primary text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-comments text-4xl text-primary"></i>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Chat ao Vivo</h3>
-                    <p class="text-gray-600 mb-4">Conversa instantânea com nossos especialistas</p>
-                    <a href="#" class="text-primary hover:underline font-medium">Iniciar Chat</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
+        </pre>
+    </div>
+    <?php endif; ?>
 </div>
+
+<style>
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .logo img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .logo span {
+        font-size: 24px;
+        font-weight: 700;
+        color: #09BC8A;
+    }
+    
+    .error-container {
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        max-width: 500px;
+        margin: 20px auto;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+</style>

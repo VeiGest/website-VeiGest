@@ -14,8 +14,12 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
- * DriverController - Gestão de Condutores
- * Implementa operações CRUD para condutores com RBAC
+ * DriverController - Driver Management
+ * 
+ * Access Control:
+ * - Admin: NO ACCESS (frontend blocked)
+ * - Manager: FULL ACCESS (view, create, update, delete)
+ * - Driver: NO ACCESS (drivers management not visible to drivers)
  */
 class DriverController extends Controller
 {
@@ -30,6 +34,17 @@ class DriverController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
+                    // Block admin from frontend
+                    [
+                        'allow' => false,
+                        'roles' => ['admin'],
+                        'denyCallback' => function ($rule, $action) {
+                            throw new ForbiddenHttpException(
+                                'Administrators do not have access to the frontend.'
+                            );
+                        },
+                    ],
+                    // View drivers - manager only
                     [
                         'allow' => true,
                         'actions' => ['index', 'view'],
@@ -37,6 +52,7 @@ class DriverController extends Controller
                             return Yii::$app->user->can('drivers.view');
                         },
                     ],
+                    // Create drivers - manager only
                     [
                         'allow' => true,
                         'actions' => ['create'],
@@ -44,6 +60,7 @@ class DriverController extends Controller
                             return Yii::$app->user->can('drivers.create');
                         },
                     ],
+                    // Update drivers - manager only
                     [
                         'allow' => true,
                         'actions' => ['update'],
@@ -51,6 +68,7 @@ class DriverController extends Controller
                             return Yii::$app->user->can('drivers.update');
                         },
                     ],
+                    // Delete drivers - manager only
                     [
                         'allow' => true,
                         'actions' => ['delete'],

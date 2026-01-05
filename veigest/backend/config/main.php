@@ -17,7 +17,7 @@ return [
     'ruleConfig' => [
         'class' => \yii\filters\AccessRule::class,
     ],
-    'except' => ['error', 'login', 'api/*'], // Excluir todas as rotas da API
+    'except' => ['site/error', 'site/login', 'api/*'], // Excluir todas as rotas da API
     'rules' => [
 
         [
@@ -25,11 +25,27 @@ return [
             'actions' => ['login', 'error'], 
         ],
 
+        // Backend access: admin only (check user role directly)
         [
             'allow' => true,
-            'roles' => ['acessoBackend'],
+            'roles' => ['@'], // Must be logged in
+            'matchCallback' => function ($rule, $action) {
+                $user = Yii::$app->user->identity;
+                return $user && $user->role === 'admin';
+            },
         ],
     ],
+    'denyCallback' => function ($rule, $action) {
+        // If not logged in, redirect to login
+        if (Yii::$app->user->isGuest) {
+            return Yii::$app->response->redirect(['site/login']);
+        }
+        // If logged in but not admin, show 403
+        $action->controller->layout = 'blank';
+        throw new \yii\web\ForbiddenHttpException(
+            'You do not have permission to access the backend. Only administrators can access this area.'
+        );
+    },
 ],
 
 
@@ -51,14 +67,27 @@ return [
             ],
         ],
 
-       //usa a mesma sessao do front
+        // Sessão compartilhada com frontend (mesmo domínio)
+        'session' => [
+            'class' => 'yii\web\Session',
+            'name' => 'VeiGestSession',
+            'cookieParams' => [
+                'path' => '/',
+                'domain' => '.dryadlang.org', // Compartilhar entre subdomínios
+                'httpOnly' => true,
+                'secure' => true, // HTTPS
+            ],
+        ],
+
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => [
                 'name' => '_identity',   
                 'httpOnly' => true,
-                'path' => '/',           
+                'path' => '/',
+                'domain' => '.dryadlang.org', // Compartilhar entre subdomínios
+                'secure' => true, // HTTPS
             ],
         ],
 

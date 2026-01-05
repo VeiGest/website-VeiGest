@@ -31,14 +31,14 @@ use common\models\Document;
  */
 class Vehicle extends ActiveRecord
 {
-    // Tipos de combustível (Português, conforme BD)
+    // Fuel types
     const FUEL_TYPE_GASOLINA  = 'gasoline';
     const FUEL_TYPE_DIESEL    = 'diesel';
     const FUEL_TYPE_ELETRICO  = 'electric';
     const FUEL_TYPE_HIBRIDO   = 'hybrid';
     const FUEL_TYPE_OUTRO     = 'other';
 
-    // Estado (mantém labels PT, valores alinhados à BD)
+    // Status constants (English values aligned to DB)
     const STATUS_ATIVO        = 'active';
     const STATUS_MANUTENCAO   = 'maintenance';
     const STATUS_INATIVO      = 'inactive';
@@ -84,28 +84,28 @@ class Vehicle extends ActiveRecord
     {
         return [
             'id'               => 'ID',
-            'license_plate'    => 'Matrícula',
-            'brand'            => 'Marca',
-            'model'            => 'Modelo',
-            'year'             => 'Ano',
-            'fuel_type'        => 'Tipo de Combustível',
-            'mileage'          => 'Quilometragem',
-            'status'           => 'Estado',
-            'driver_id'        => 'Condutor',
-            'photo'            => 'Foto',
-            'company_id'       => 'Empresa',
-            'created_at'       => 'Criado em',
-            'updated_at'       => 'Atualizado em',
+            'license_plate'    => 'License Plate',
+            'brand'            => 'Brand',
+            'model'            => 'Model',
+            'year'             => 'Year',
+            'fuel_type'        => 'Fuel Type',
+            'mileage'          => 'Mileage',
+            'status'           => 'Status',
+            'driver_id'        => 'Driver',
+            'photo'            => 'Photo',
+            'company_id'       => 'Company',
+            'created_at'       => 'Created at',
+            'updated_at'       => 'Updated at',
             // Aliases PT
-            'matricula'        => 'Matrícula',
-            'marca'            => 'Marca',
-            'modelo'           => 'Modelo',
-            'ano'              => 'Ano',
-            'tipo_combustivel' => 'Tipo de Combustível',
-            'quilometragem'    => 'Quilometragem',
-            'estado'           => 'Estado',
-            'condutor_id'      => 'Condutor',
-            'foto'             => 'Foto',
+            'matricula'        => 'License Plate',
+            'marca'            => 'Brand',
+            'modelo'           => 'Model',
+            'ano'              => 'Year',
+            'tipo_combustivel' => 'Fuel Type',
+            'quilometragem'    => 'Mileage',
+            'estado'           => 'Status',
+            'condutor_id'      => 'Driver',
+            'foto'             => 'Photo',
         ];
     }
 
@@ -116,20 +116,20 @@ class Vehicle extends ActiveRecord
     public static function optsFuelType()
     {
         return [
-            self::FUEL_TYPE_GASOLINA => 'Gasolina',
+            self::FUEL_TYPE_GASOLINA => 'Gasoline',
             self::FUEL_TYPE_DIESEL   => 'Diesel',
-            self::FUEL_TYPE_ELETRICO => 'Elétrico',
-            self::FUEL_TYPE_HIBRIDO  => 'Híbrido',
-            self::FUEL_TYPE_OUTRO    => 'Outro',
+            self::FUEL_TYPE_ELETRICO => 'Electric',
+            self::FUEL_TYPE_HIBRIDO  => 'Hybrid',
+            self::FUEL_TYPE_OUTRO    => 'Other',
         ];
     }
 
     public static function optsStatus()
     {
         return [
-            self::STATUS_ATIVO       => 'Ativo',
-            self::STATUS_MANUTENCAO  => 'Em Manutenção',
-            self::STATUS_INATIVO     => 'Inativo',
+            self::STATUS_ATIVO       => 'Active',
+            self::STATUS_MANUTENCAO  => 'In Maintenance',
+            self::STATUS_INATIVO     => 'Inactive',
         ];
     }
 

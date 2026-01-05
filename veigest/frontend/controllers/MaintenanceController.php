@@ -8,9 +8,18 @@ use frontend\models\Vehicle;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
+/**
+ * MaintenanceController - Maintenance Management
+ * 
+ * Access Control:
+ * - Admin: NO ACCESS (frontend blocked)
+ * - Manager: FULL ACCESS (view, create, update, delete, complete)
+ * - Driver: NO ACCESS (maintenance not visible to drivers)
+ */
 class MaintenanceController extends Controller
 {
     /**
@@ -24,44 +33,46 @@ class MaintenanceController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
+                    // Block admin from frontend
+                    [
+                        'allow' => false,
+                        'roles' => ['admin'],
+                        'denyCallback' => function ($rule, $action) {
+                            throw new ForbiddenHttpException(
+                                'Administrators do not have access to the frontend.'
+                            );
+                        },
+                    ],
+                    // View maintenance - manager only
                     [
                         'actions' => ['index', 'view'],
                         'allow' => true,
-                        'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
                             return Yii::$app->user->can('maintenances.view');
                         },
                     ],
+                    // Create maintenance - manager only
                     [
                         'actions' => ['create'],
                         'allow' => true,
-                        'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
                             return Yii::$app->user->can('maintenances.create');
                         },
                     ],
+                    // Update maintenance - manager only
                     [
-                        'actions' => ['update'],
+                        'actions' => ['update', 'complete'],
                         'allow' => true,
-                        'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
                             return Yii::$app->user->can('maintenances.update');
                         },
                     ],
+                    // Delete maintenance - manager only
                     [
                         'actions' => ['delete'],
                         'allow' => true,
-                        'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
                             return Yii::$app->user->can('maintenances.delete');
-                        },
-                    ],
-                    [
-                        'actions' => ['complete'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                        'matchCallback' => function ($rule, $action) {
-                            return Yii::$app->user->can('maintenances.update');
                         },
                     ],
                 ],

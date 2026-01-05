@@ -7,11 +7,17 @@ use frontend\models\Vehicle;
 use frontend\models\Driver;
 use frontend\models\Maintenance;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\filters\AccessControl;
 use yii\data\ActiveDataProvider;
 
 /**
  * Dashboard controller
+ * 
+ * Access Control:
+ * - Admin: NO ACCESS (backend only)
+ * - Manager: FULL ACCESS
+ * - Driver: READ ONLY (limited menu items)
  */
 class DashboardController extends Controller
 {
@@ -24,9 +30,20 @@ class DashboardController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
+                    // Block admin from frontend dashboard
+                    [
+                        'allow' => false,
+                        'roles' => ['admin'],
+                        'denyCallback' => function ($rule, $action) {
+                            throw new ForbiddenHttpException(
+                                'Administrators do not have access to the frontend. Please use the backend.'
+                            );
+                        },
+                    ],
+                    // Allow manager and driver
                     [
                         'allow' => true,
-                        'roles' => ['@'], // Apenas usuários logados
+                        'roles' => ['manager', 'driver'],
                     ],
                 ],
             ],

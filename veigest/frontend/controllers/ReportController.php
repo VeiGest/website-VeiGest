@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\web\Controller;
 use yii\web\Response;
+use yii\web\ForbiddenHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use common\models\Vehicle;
@@ -15,19 +16,24 @@ use common\models\Alert;
 use common\models\User;
 
 /**
- * ReportController implementa funcionalidades de relatórios operacionais.
+ * ReportController - Operational Reports
  * 
- * Fornece relatórios de:
- * - Visão geral operacional
- * - Consumo de combustível
- * - Custos de manutenção
- * - Estado dos documentos
- * - Análise por veículo
+ * Access Control:
+ * - Admin: NO ACCESS (frontend blocked)
+ * - Manager: FULL ACCESS (view, create, export)
+ * - Driver: NO ACCESS (reports not visible to drivers)
+ * 
+ * Provides reports for:
+ * - Operational overview
+ * - Fuel consumption
+ * - Maintenance costs
+ * - Document status
+ * - Vehicle analysis
  */
 class ReportController extends Controller
 {
     /**
-     * @var string Layout do dashboard
+     * @var string Dashboard layout
      */
     public $layout = 'dashboard';
 
@@ -40,9 +46,31 @@ class ReportController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
+                    // Block admin from frontend
+                    [
+                        'allow' => false,
+                        'roles' => ['admin'],
+                        'denyCallback' => function ($rule, $action) {
+                            throw new ForbiddenHttpException(
+                                'Administrators do not have access to the frontend.'
+                            );
+                        },
+                    ],
+                    // View reports - manager only
                     [
                         'allow' => true,
-                        'roles' => ['@'], // Apenas utilizadores autenticados
+                        'actions' => ['index', 'fuel', 'maintenance', 'vehicles', 'documents'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('reports.view');
+                        },
+                    ],
+                    // Export reports - manager only
+                    [
+                        'allow' => true,
+                        'actions' => ['export-csv', 'export-pdf'],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->can('reports.export');
+                        },
                     ],
                 ],
             ],

@@ -458,6 +458,131 @@ public function actionRefresh()
 }
 ```
 
+---
+
+## Sistema RBAC - Controle de Acesso por Role
+
+### Roles Disponíveis
+
+| Role | Descrição | Frontend | Backend |
+|------|-----------|----------|---------|
+| `admin` | Administrador do Sistema | ❌ Bloqueado | ✅ Acesso Total |
+| `manager` | Gestor de Frota | ✅ Acesso Total | ❌ Bloqueado |
+| `driver` | Condutor | ✅ Leitura Apenas | ❌ Bloqueado |
+
+### Verificação de Role
+
+```php
+// Obter role do usuário atual
+$role = Yii::$app->user->identity->role;
+
+// Verificar role específica
+if ($role === 'admin') {
+    // Código para admin
+} elseif ($role === 'manager') {
+    // Código para manager  
+} elseif ($role === 'driver') {
+    // Código para driver
+}
+
+// Usar método hasRole do User model
+if (Yii::$app->user->identity->hasRole('manager')) {
+    // É manager
+}
+```
+
+### Padrão RBAC nos Controllers
+
+```php
+public function behaviors()
+{
+    return [
+        'access' => [
+            'class' => AccessControl::class,
+            'rules' => [
+                // 1. Bloquear admin do frontend
+                [
+                    'allow' => false,
+                    'roles' => ['admin'],
+                    'denyCallback' => function ($rule, $action) {
+                        throw new ForbiddenHttpException('Admin não tem acesso ao frontend.');
+                    },
+                ],
+                
+                // 2. Permitir view para quem tem permissão
+                [
+                    'allow' => true,
+                    'actions' => ['index', 'view'],
+                    'matchCallback' => function ($rule, $action) {
+                        return Yii::$app->user->can('module.view');
+                    },
+                ],
+                
+                // 3. CRUD apenas para manager
+                [
+                    'allow' => true,
+                    'actions' => ['create', 'update', 'delete'],
+                    'matchCallback' => function ($rule, $action) {
+                        return Yii::$app->user->can('module.create');
+                    },
+                ],
+            ],
+        ],
+    ];
+}
+```
+
+### Permissões RBAC Disponíveis
+
+```
+// Vehicles
+vehicles.view, vehicles.create, vehicles.update, vehicles.delete, vehicles.assign
+
+// Drivers  
+drivers.view, drivers.create, drivers.update, drivers.delete
+
+// Routes
+routes.view, routes.create, routes.update, routes.delete
+
+// Maintenance
+maintenances.view, maintenances.create, maintenances.update, maintenances.delete, maintenances.schedule
+
+// Documents
+documents.view, documents.create, documents.update, documents.delete
+
+// Fuel
+fuel.view, fuel.create, fuel.update, fuel.delete
+
+// Alerts
+alerts.view, alerts.create, alerts.resolve
+
+// Reports
+reports.view, reports.create, reports.export, reports.advanced
+
+// Dashboard
+dashboard.view, dashboard.advanced
+```
+
+### Esconder Elementos na View por Role
+
+```php
+<?php 
+$userRole = Yii::$app->user->identity->role ?? null;
+$isManager = ($userRole === 'manager');
+$isDriver = ($userRole === 'driver');
+?>
+
+<!-- Botão visível apenas para manager -->
+<?php if ($isManager): ?>
+    <?= Html::a('Create New', ['create'], ['class' => 'btn btn-success']) ?>
+<?php endif; ?>
+
+<!-- Botão visível para todos -->
+<?= Html::a('View Details', ['view', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
+```
+
+---
+
 ## Próximos Passos
 
 - [Endpoints Completos](endpoints.md)

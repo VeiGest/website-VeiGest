@@ -168,7 +168,7 @@ DashboardAsset::register($this);
             <div class="sidebar">
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="info">
-                        <a href="#" class="d-block" style="color: var(--dark-color); font-weight: 600;"><?= Yii::$app->user->identity->name ?? 'Usuário' ?></a>
+                        <a href="#" class="d-block" style="color: var(--dark-color); font-weight: 600;"><?= Yii::$app->user->identity->name ?? 'User' ?></a>
                         <?php
                         $role = Yii::$app->user->identity->role;
                         ?>
@@ -178,22 +178,32 @@ DashboardAsset::register($this);
                                 Admin
                             </span>
 
-                        <?php elseif ($role === 'gestor'): ?>
+                        <?php elseif ($role === 'manager'): ?>
                             <span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:0.75rem;font-weight:600;background-color:#09BC8A;color:white;">
-                                Gestor
+                                Manager
                             </span>
 
-                        <?php elseif ($role === 'condutor'): ?>
+                        <?php elseif ($role === 'driver'): ?>
                             <span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:0.75rem;font-weight:600;background-color:#6c757d;color:white;">
-                                Condutor
+                                Driver
                             </span>
                         <?php endif; ?>
 
                     </div>
                 </div>
 
+                <?php 
+                // Get user role for menu visibility control
+                $userRole = Yii::$app->user->identity->role ?? null;
+                $isManager = ($userRole === 'manager');
+                $isDriver = ($userRole === 'driver');
+                $isAdmin = ($userRole === 'admin');
+                ?>
+
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+                        
+                        <!-- Dashboard - All roles -->
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/index']) ?>" class="nav-link active">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -201,66 +211,83 @@ DashboardAsset::register($this);
                             </a>
                         </li>
 
+                        <!-- Fleet Section -->
                         <li class="nav-item menu-open">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-car"></i>
-                                <p>Frota <i class="right fas fa-angle-left"></i></p>
+                                <p>Fleet <i class="right fas fa-angle-left"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
+                                <!-- Vehicles - All roles (view only for driver) -->
                                 <li class="nav-item">
                                     <a href="<?= Yii::$app->urlManager->createUrl(['vehicle/index']) ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Veículos</p>
+                                        <p>Vehicles</p>
                                     </a>
                                 </li>
+                                
+                                <?php if ($isManager): ?>
+                                <!-- Drivers - Manager only -->
                                 <li class="nav-item">
                                     <a href="<?= Yii::$app->urlManager->createUrl(['driver/index']) ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Condutores</p>
+                                        <p>Drivers</p>
                                     </a>
                                 </li>
+                                <?php endif; ?>
+                                
+                                <!-- Routes - All roles (view only for driver) -->
                                 <li class="nav-item">
                                     <a href="<?= Yii::$app->urlManager->createUrl(['route/index']) ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Rotas</p>
+                                        <p>Routes</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
 
+                        <?php if ($isManager): ?>
+                        <!-- Maintenance - Manager only -->
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['maintenance/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-tools"></i>
-                                <p>Manutenção</p>
+                                <p>Maintenance</p>
                             </a>
                         </li>
 
+                        <!-- Documents - Manager only -->
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['document/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-file-alt"></i>
-                                <p>Documentos</p>
+                                <p>Documents</p>
                             </a>
                         </li>
+                        <?php endif; ?>
 
+                        <!-- Alerts - All roles (view only for driver) -->
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['alert/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-bell"></i>
-                                <p>Alertas</p>
+                                <p>Alerts</p>
                             </a>
                         </li>
 
+                        <?php if ($isManager): ?>
+                        <!-- Reports - Manager only -->
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['report/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-chart-bar"></i>
-                                <p>Relatórios</p>
+                                <p>Reports</p>
                             </a>
                         </li>
+                        <?php endif; ?>
 
-                        <li class="nav-header">CONTA</li>
+                        <li class="nav-header">ACCOUNT</li>
+                        <!-- Profile - All roles (edit allowed for all) -->
                         <li class="nav-item">
                             <a href="<?= Yii::$app->urlManager->createUrl(['profile/index']) ?>" class="nav-link">
                                 <i class="nav-icon fas fa-user-circle"></i>
-                                <p>Meu Perfil</p>
+                                <p>My Profile</p>
                             </a>
                         </li>
                     </ul>

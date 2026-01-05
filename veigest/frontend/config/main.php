@@ -22,6 +22,8 @@ return [
                 'name' => '_identity',
                 'httpOnly' => true,
                 'path' => '/',
+                'domain' => '.dryadlang.org', // Compartilhar entre subdomínios
+                'secure' => true, // HTTPS
             ],
         ],
 
@@ -30,6 +32,9 @@ return [
             'name' => 'VeiGestSession',
             'cookieParams' => [
                 'path' => '/',
+                'domain' => '.dryadlang.org', // Compartilhar entre subdomínios
+                'httpOnly' => true,
+                'secure' => true, // HTTPS
             ],
         ],
 

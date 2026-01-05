@@ -10,15 +10,21 @@ use common\models\Document;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
- * VehicleController - Gestão de Veículos
+ * VehicleController - Vehicle Management
  * 
- * Implementa os requisitos:
- * - RF-FO-004: Consulta de Veículos
- * - RF-BO-005: Gestão de Veículos
+ * Access Control:
+ * - Admin: NO ACCESS (frontend blocked)
+ * - Manager: FULL ACCESS (view, create, update, assign, delete)
+ * - Driver: READ ONLY (view vehicles only)
+ * 
+ * Requirements:
+ * - RF-FO-004: Vehicle Query
+ * - RF-BO-005: Vehicle Management
  */
 class VehicleController extends Controller
 {
@@ -33,7 +39,17 @@ class VehicleController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
-                    // RF-FO-004.1: Lista de veículos - vehicles.view
+                    // Block admin from frontend
+                    [
+                        'allow' => false,
+                        'roles' => ['admin'],
+                        'denyCallback' => function ($rule, $action) {
+                            throw new ForbiddenHttpException(
+                                'Administrators do not have access to the frontend.'
+                            );
+                        },
+                    ],
+                    // RF-FO-004.1: Vehicle list - vehicles.view (manager and driver)
                     [
                         'allow' => true,
                         'actions' => ['index'],
@@ -41,7 +57,7 @@ class VehicleController extends Controller
                             return Yii::$app->user->can('vehicles.view');
                         },
                     ],
-                    // RF-FO-004.2, RF-FO-004.3: Detalhes e estado - vehicles.view
+                    // RF-FO-004.2, RF-FO-004.3: Details and status - vehicles.view
                     [
                         'allow' => true,
                         'actions' => ['view', 'history', 'documents'],
@@ -49,7 +65,7 @@ class VehicleController extends Controller
                             return Yii::$app->user->can('vehicles.view');
                         },
                     ],
-                    // RF-BO-005.1: Registo de veículos - vehicles.create
+                    // RF-BO-005.1: Vehicle registration - vehicles.create (manager only)
                     [
                         'allow' => true,
                         'actions' => ['create'],
@@ -57,7 +73,7 @@ class VehicleController extends Controller
                             return Yii::$app->user->can('vehicles.create');
                         },
                     ],
-                    // RF-BO-005.2, RF-BO-005.3: Edição e gestão de estado - vehicles.update
+                    // RF-BO-005.2, RF-BO-005.3: Edit and status management - vehicles.update
                     [
                         'allow' => true,
                         'actions' => ['update'],
@@ -65,7 +81,7 @@ class VehicleController extends Controller
                             return Yii::$app->user->can('vehicles.update');
                         },
                     ],
-                    // RF-BO-005.5: Atribuição a condutores - vehicles.assign
+                    // RF-BO-005.5: Assign to drivers - vehicles.assign
                     [
                         'allow' => true,
                         'actions' => ['assign'],
@@ -73,7 +89,7 @@ class VehicleController extends Controller
                             return Yii::$app->user->can('vehicles.assign');
                         },
                     ],
-                    // Eliminar veículo - vehicles.delete
+                    // Delete vehicle - vehicles.delete
                     [
                         'allow' => true,
                         'actions' => ['delete'],
@@ -214,11 +230,15 @@ class VehicleController extends Controller
             'pagination' => ['pageSize' => 20],
         ]);
 
+        // Tab ativa (default: maintenance)
+        $activeTab = Yii::$app->request->get('tab', 'maintenance');
+
         return $this->render('history', [
             'model' => $model,
-            'maintenancesProvider' => $maintenancesProvider,
-            'fuelLogsProvider' => $fuelLogsProvider,
+            'maintenanceProvider' => $maintenancesProvider,
+            'fuelProvider' => $fuelLogsProvider,
             'routesProvider' => $routesProvider,
+            'activeTab' => $activeTab,
         ]);
     }
 

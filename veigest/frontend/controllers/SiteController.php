@@ -24,8 +24,9 @@ class SiteController extends Controller
 {
     public function beforeAction($action)
     {
+        // Use error layout for error pages (cleaner 403/404/500 pages)
         if ($action->id === 'error') {
-            $this->layout = 'login';
+            $this->layout = 'error';
         }
         return parent::beforeAction($action);
     }

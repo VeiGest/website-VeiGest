@@ -59,12 +59,12 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
         <div class="small-box bg-success">
             <div class="inner">
                 <h3><?= $totalDrivers ?></h3>
-                <p>Condutores Ativos</p>
+                <p>Active Drivers</p>
             </div>
             <div class="icon">
                 <i class="fas fa-user-tie"></i>
             </div>
-            <a href="<?= \yii\helpers\Url::to(['driver/index']) ?>" class="small-box-footer">Ver mais <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= \yii\helpers\Url::to(['driver/index']) ?>" class="small-box-footer">More <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
@@ -136,7 +136,7 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
                     <a href="<?= \yii\helpers\Url::to(['vehicle/create']) ?>" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i> Novo Veículo</a>
                 <?php endif; ?>
                 <?php if (\Yii::$app->user->can('drivers.create')): ?>
-                    <a href="<?= \yii\helpers\Url::to(['driver/create']) ?>" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i> Novo Condutor</a>
+                    <a href="<?= \yii\helpers\Url::to(['driver/create']) ?>" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i> New Driver</a>
                 <?php endif; ?>
                 <?php if (\Yii::$app->user->can('maintenances.create')): ?>
                     <a href="<?= \yii\helpers\Url::to(['maintenance/create']) ?>" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i> Agendar Manutenção</a>
