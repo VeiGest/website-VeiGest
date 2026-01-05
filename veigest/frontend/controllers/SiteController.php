@@ -158,7 +158,31 @@ class SiteController extends Controller
      */
     public function actionLogout()
     {
+        // Clear session and identity
         Yii::$app->user->logout();
+        
+        // Get cookie domain for cross-subdomain clearing
+        $serverHost = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+        $isLocalhost = strpos($serverHost, 'localhost') !== false || strpos($serverHost, '127.0.0.1') !== false;
+        $cookieDomain = $isLocalhost ? '' : '.dryadlang.org';
+        
+        // Clear identity cookie
+        $cookies = Yii::$app->response->cookies;
+        $cookies->remove('_identity-frontend');
+        
+        // Also expire the cookie directly in case remove doesn't work across domains
+        if ($cookieDomain) {
+            setcookie('_identity-frontend', '', time() - 3600, '/', $cookieDomain);
+            setcookie('PHPSESSID', '', time() - 3600, '/', $cookieDomain);
+            setcookie('_csrf-frontend', '', time() - 3600, '/', $cookieDomain);
+        } else {
+            setcookie('_identity-frontend', '', time() - 3600, '/');
+            setcookie('PHPSESSID', '', time() - 3600, '/');
+            setcookie('_csrf-frontend', '', time() - 3600, '/');
+        }
+        
+        // Destroy session completely
+        Yii::$app->session->destroy();
 
         return $this->goHome();
     }

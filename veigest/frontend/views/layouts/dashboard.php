@@ -149,9 +149,12 @@ DashboardAsset::register($this);
                             <i class="fas fa-key mr-2"></i> Alterar Senha
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/logout']) ?>" class="dropdown-item">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Sair
-                        </a>
+                        <?= Html::beginForm(['/site/logout'], 'post', ['id' => 'logout-form', 'style' => 'display: inline;']) ?>
+                            <?= Html::submitButton(
+                                '<i class="fas fa-sign-out-alt mr-2"></i> Sair',
+                                ['class' => 'dropdown-item', 'style' => 'border: none; background: none; width: 100%; text-align: left; cursor: pointer;']
+                            ) ?>
+                        <?= Html::endForm() ?>
                     </div>
                 </li>
             </ul>

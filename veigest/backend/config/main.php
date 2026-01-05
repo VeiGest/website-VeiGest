@@ -62,13 +62,6 @@ return [
         'request' => [
             'csrfParam' => '_csrf',
             'cookieValidationKey' => 'Yup8MeyEmKivPSYV944gTuoRjBGqKkVt',
-            'csrfCookie' => [
-                'path' => '/',
-                'domain' => '.dryadlang.org',
-                'httpOnly' => true,
-                'secure' => true,
-                'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
-            ],
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
             ],
@@ -81,9 +74,6 @@ return [
             'cookieParams' => [
                 'path' => '/',
                 'domain' => '.dryadlang.org',
-                'httpOnly' => true,
-                'secure' => true,
-                'sameSite' => 'Lax',
             ],
         ],
 
@@ -91,12 +81,10 @@ return [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => [
-                'name' => '_identity-backend',
+                'name' => '_identity-frontend', // Same as frontend to share session
                 'httpOnly' => true,
                 'path' => '/',
                 'domain' => '.dryadlang.org',
-                'secure' => true,
-                'sameSite' => \yii\web\Cookie::SAME_SITE_LAX,
             ],
         ],
 
