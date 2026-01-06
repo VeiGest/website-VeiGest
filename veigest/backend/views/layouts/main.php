@@ -185,6 +185,10 @@ $avatar = Url::to('@web/img/user-placeholder.png');
                             <li class="nav-header" style="color:#999;">ADMINISTRAÇÃO</li>
 
                             <li class="nav-item">
+                                <?= Html::a('<i class="nav-icon fas fa-building"></i><p>Gestão de Empresas</p>', ['/company/index'], ['class' => 'nav-link']) ?>
+                            </li>
+
+                            <li class="nav-item">
                                 <?= Html::a('<i class="nav-icon fas fa-users"></i><p>Gestão de Utilizadores</p>', ['/user/index'], ['class' => 'nav-link']) ?>
                             </li>
 

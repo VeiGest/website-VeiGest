@@ -1,0 +1,247 @@
+VeiGest - Especificacao do Sistema
+===================================
+
+
+REQUISITOS FUNCIONAIS DO FRONT-OFFICE
+======================================
+
+1. Autenticacao
+   - Login com username e senha
+   - Logout
+   - Recuperacao de password
+   - Perfil de utilizador
+
+2. Dashboard
+   - KPIs: Total veiculos, quilometragem, combustivel, custos manutencao
+   - Manutencoes agendadas (proximos 30 dias)
+   - Alertas ativos
+   - Custos totais do periodo
+   - Grafico de tendencias
+   - Filtro por periodo (semana, mes, 3 meses, 6 meses, ano, tudo)
+
+3. Utilizadores
+   - Listar utilizadores (drivers e managers)
+   - Criar novo utilizador
+   - Editar utilizador
+   - Eliminar utilizador
+   - Atribuir role
+
+4. Veiculos
+   - Listar veiculos da empresa
+   - Ver detalhes do veiculo
+   - Ver status (ultima manutencao, proxima manutencao, documentos expirados)
+   - Registar novo veiculo
+   - Editar veiculo
+   - Eliminar veiculo
+
+5. Combustivel
+   - Registar consumo (data, veiculo, litros, custo)
+   - Consultar historico
+   - Editar/Eliminar consumo
+
+6. Manutencoes
+   - Agendar manutencao
+   - Registar manutencao realizada
+   - Consultar historico
+   - Editar/Eliminar manutencao
+
+7. Documentos
+   - Upload de documentos (Inspecao, Seguro, Matricula, Licenca)
+   - Consultar documentos
+   - Download de ficheiros
+   - Editar/Eliminar documentos
+
+8. Rotas
+   - Listar rotas
+   - Criar rota
+   - Consultar historico de rotas
+
+9. Alertas
+   - Alertas criticos: documentos expirados, manutencoes atrasadas, licencas expiradas
+   - Alertas de aviso: documentos a expirar (30 dias), manutencoes agendadas (30 dias), licencas a expirar (30 dias)
+   - Marcar alerta como resolvida
+
+10. Relatorios
+    - Resumo operacional (KPIs, periodo configuravel)
+    - Relatorio de combustivel (consumo por veiculo, custos)
+    - Relatorio de manutencao (custos, historico)
+    - Exportar relatorios em CSV
+
+11. Condutores
+    - Listar condutores
+    - Ver dados pessoais e licenca
+    - Editar informacoes
+
+
+REQUISITOS FUNCIONAIS DO BACK-OFFICE
+=====================================
+
+1. Autenticacao Admin
+   - Login feito no front 
+   - Acesso bloqueado para outros utilizadores
+
+2. Utilizadores
+   - Listar todos utilizadores
+   - Criar novo utilizador
+   - Editar utilizador
+   - Eliminar utilizador
+   - Atribuir/Revogar roles
+
+3. Empresas
+   - Listar empresas
+   - Criar nova empresa
+   - Editar empresa
+
+4. RBAC
+   - Visualizar roles e permissoes
+   - Criar novo role
+   - Atribuir permissoes a roles
+
+5. API
+   - Endpoints RESTful para drivers
+   - Endpoints RESTful para documentos
+   - Endpoints RESTful para rotas
+   - Autenticacao via Bearer Token
+
+6. Logs do Sistema
+   - Auditoria de acoes
+   - Registo de erros
+
+
+ROLES E PERMISSOES (RBAC)
+=========================
+
+ROLES DISPONIVEIS:
+
+1. Admin
+   - Acesso: Backend 
+   - Descricao: Administrador com acesso total
+
+2. Manager
+   - Acesso: Frontend (Dashboard, Frota, Documentos, Relatorios)
+   - Descricao: Gestor de frotas com acesso completo da empresa
+
+3. Driver
+   - Acesso: Frontend (Dashboard, Veiculos, Combustivel, Rotas)
+   - Escopo: Veiculos atribuidos
+   - Descricao: Condutor com acesso limitado
+
+
+MATRIZ DE PERMISSOES:
+
+Permissao                    Admin    Manager  Driver
+-------------------------------------------------------
+dashboard.view               -        Sim      Sim
+
+users.view                   Sim      -        -
+users.create                 Sim      -        -
+users.update                 Sim      -        -
+users.delete                 Sim      -        -
+users.manage-roles           Sim      -        -
+
+vehicles.view                -        Sim      Sim
+vehicles.create              -        Sim      -
+vehicles.update              -        Sim      -
+vehicles.assign              -        Sim      -
+vehicles.delete              -        Sim      -
+
+drivers.view                 -        Sim      -
+drivers.create               -        Sim      -
+drivers.update               -        Sim      -
+drivers.delete               -        Sim      -
+
+fuel.view                    -        Sim      Sim
+fuel.create                  -        Sim      Sim
+fuel.update                  -        Sim      -
+fuel.delete                  -        Sim      -
+
+maintenances.view            -        Sim      -
+maintenances.create          -        Sim      -
+maintenances.update          -        Sim      -
+maintenances.delete          -        Sim      -
+maintenances.schedule        -        Sim      -
+
+documents.view               -        Sim      Sim
+documents.create             -        Sim      -
+documents.update             -        Sim      -
+documents.delete             -        Sim      -
+
+files.view                   -        Sim      Sim
+files.upload                 -        Sim      -
+
+routes.view                  -        Sim      Sim
+routes.create                -        Sim      -
+routes.update                -        Sim      -
+routes.delete                -        Sim      -
+
+alerts.view                  -        Sim      Sim
+alerts.create                -        Sim      -
+alerts.resolve               -        Sim      Sim
+
+reports.view                 -        Sim      -
+reports.create               -        Sim      -
+reports.export               -        Sim      -
+reports.advanced             -        Sim      -
+
+companies.view               Sim      -        -
+companies.manage             Sim      -        -
+
+system.config                Sim      -        -
+system.logs                  Sim      -        -
+
+tickets.view                 -        Sim      Sim
+tickets.create               -        Sim      Sim
+tickets.update               -        Sim      -
+tickets.delete               -        Sim      -
+
+
+CONTROLE DE ACESSO POR APLICACAO:
+
+Frontend (Gestor + Condutor):
+  Admin       - Bloqueado 
+  Manager     - Acesso Total
+  Driver      - Acesso Limitado
+
+Backend (Administrador):
+  Admin       - Acesso Total
+  Manager     - Bloqueado 
+  Driver      - Bloqueado 
+
+
+utilizadores:
+
+Username    Email                   Password      Role       Acesso
+----------------------------------------------------------------------
+admin       admin@veigest.com       admin         Admin      Backend
+manager     manager@veigest.com     manager123    Manager    Frontend
+driver1     driver1@veigest.com     driver123     Driver     Frontend
+driver2     driver2@veigest.com     driver123     Driver     Frontend
+driver3     driver3@veigest.com     driver123     Driver     Frontend
+
+
+CREDENCIAIS DE ACESSO:
+
+ADMIN (Backend)
+  Email: admin@veigest.com
+  Username: admin
+  Password: admin
+
+MANAGER (Frontend - Dashboard)
+  Email: manager@veigest.com
+  Username: manager
+  Password: manager123
+
+DRIVER 1 (Frontend - Dashboard)
+  Email: driver1@veigest.com
+  Username: driver1
+  Password: driver123
+
+DRIVER 2 (Frontend - Dashboard)
+  Email: driver2@veigest.com
+  Username: driver2
+  Password: driver123
+
+DRIVER 3 (Frontend - Dashboard)
+  Email: driver3@veigest.com
+  Username: driver3
+  Password: driver123

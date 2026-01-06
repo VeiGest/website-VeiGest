@@ -23,7 +23,6 @@ return [
                 'name' => '_identity-frontend',
                 'httpOnly' => true,
                 'path' => '/',
-                'domain' => '.dryadlang.org',
             ],
         ],
 
@@ -32,7 +31,6 @@ return [
             'name' => 'VeiGestSession',
             'cookieParams' => [
                 'path' => '/',
-                'domain' => '.dryadlang.org',
                 'httpOnly' => true,
             ],
         ],
