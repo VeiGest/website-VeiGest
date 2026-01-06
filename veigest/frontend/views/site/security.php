@@ -29,7 +29,7 @@ $this->title = 'Bem-vindo à VeiGest';
                     <span class="text-xl font-bold text-primary">VeiGest</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition">Home</a>
+                    <a href="index.html" class="text-gray-700 hover:text-primary transition">Início</a>
                     <a href="pricing.html" class="text-gray-700 hover:text-primary transition">Preços</a>
                     <a href="security.html" class="text-gray-700 hover:text-primary transition font-bold">Segurança</a>
                     <a href="support.html" class="text-gray-700 hover:text-primary transition">Suporte</a>
@@ -45,7 +45,7 @@ $this->title = 'Bem-vindo à VeiGest';
     <section class="bg-gradient-to-r from-primary to-blue-500 text-white py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Segurança em Primeiro Lugar</h1>
-            <p class="text-lg text-opacity-90">Protegemos seus dados com as melhores práticas de segurança</p>
+            <p class="text-lg text-opacity-90">Protegemos os seus dados com as melhores práticas de segurança</p>
         </div>
     </section>
 
@@ -74,7 +74,7 @@ $this->title = 'Bem-vindo à VeiGest';
                         </div>
                     </div>
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Controle de Acesso</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Controlo de Acesso</h3>
                         <p class="text-gray-600">Sistema RBAC robusto que garante que cada utilizador tenha apenas acesso aos dados que precisa.</p>
                     </div>
                 </div>

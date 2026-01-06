@@ -104,9 +104,6 @@ class Route extends ActiveRecord
             'duration_formatted' => function ($model) {
                 return $this->getDurationFormatted();
             },
-            'tickets_count' => function ($model) {
-                return $this->getTickets()->count();
-            },
             'created_at',
             'updated_at',
         ];
@@ -121,7 +118,6 @@ class Route extends ActiveRecord
             'company',
             'vehicle',
             'driver',
-            'tickets',
         ];
     }
 
@@ -147,14 +143,6 @@ class Route extends ActiveRecord
     public function getDriver()
     {
         return $this->hasOne(User::class, ['id' => 'driver_id']);
-    }
-
-    /**
-     * Get tickets relationship
-     */
-    public function getTickets()
-    {
-        return $this->hasMany(Ticket::class, ['route_id' => 'id']);
     }
 
     /**
@@ -226,13 +214,5 @@ class Route extends ActiveRecord
     {
         $this->end_time = date('Y-m-d H:i:s');
         return $this->save(false);
-    }
-
-    /**
-     * Get active tickets count
-     */
-    public function getActiveTicketsCount()
-    {
-        return $this->getTickets()->where(['status' => 'active'])->count();
     }
 }

@@ -179,12 +179,6 @@ class RouteController extends BaseApiController
     {
         $model = $this->findModel($id);
 
-        // Check for associated tickets
-        $ticketsCount = $model->getTickets()->count();
-        if ($ticketsCount > 0) {
-            return $this->errorResponse('Não é possível excluir. A rota possui ' . $ticketsCount . ' bilhete(s) associado(s).', 400);
-        }
-
         if ($model->delete()) {
             return $this->successResponse(null, 'Rota excluída com sucesso');
         }
@@ -386,22 +380,6 @@ class RouteController extends BaseApiController
             'by_vehicle' => $byVehicle,
             'per_day_last_30' => $perDay,
             'popular_routes' => $popularRoutes,
-        ]);
-    }
-
-    /**
-     * Get route tickets
-     * GET /api/routes/{id}/tickets
-     */
-    public function actionTickets($id)
-    {
-        $model = $this->findModel($id);
-
-        return new ActiveDataProvider([
-            'query' => $model->getTickets(),
-            'pagination' => [
-                'pageSize' => Yii::$app->request->get('per-page', 50),
-            ],
         ]);
     }
 

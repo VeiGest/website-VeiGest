@@ -194,6 +194,18 @@ $avatar = Url::to('@web/img/user-placeholder.png');
 
                         <?php endif; ?>
 
+                        <?php if (Yii::$app->user->can('admin') || Yii::$app->user->can('manager')): ?>
+                            <li class="nav-header" style="color:#999;">SUPORTE</li>
+
+                            <li class="nav-item">
+                                <?= Html::a(
+                                    '<i class="nav-icon fas fa-ticket-alt"></i><p>Tickets de Suporte</p>',
+                                    ['/ticket/index'],
+                                    ['class' => 'nav-link ' . (Yii::$app->controller->id == 'ticket' ? 'active' : '')]
+                                ) ?>
+                            </li>
+                        <?php endif; ?>
+
 
                     </ul>
                 </nav>

@@ -303,23 +303,35 @@ class m251121_000000_veigest_consolidated_migration extends Migration
         $this->addForeignKey('fk_routes_driver', '{{%routes}}', 'driver_id', '{{%users}}', 'id', 'RESTRICT');
 
         // ============================================================================
-        // 11. TICKETS
+        // 11. SUPPORT TICKETS
         // ============================================================================
         $this->createTable('{{%tickets}}', [
             'id' => $this->primaryKey(),
             'company_id' => $this->integer()->notNull(),
-            'route_id' => $this->integer()->notNull(),
-            'passenger_name' => $this->string(150),
-            'passenger_phone' => $this->string(20),
-            'status' => "ENUM('active','cancelled','completed') NOT NULL DEFAULT 'active'",
+            'user_id' => $this->integer()->null()->comment('NULL for guest tickets'),
+            'name' => $this->string(150)->notNull()->comment('Ticket creator name'),
+            'email' => $this->string(150)->notNull()->comment('Ticket creator email'),
+            'subject' => $this->string(255)->notNull()->comment('Ticket subject'),
+            'body' => $this->text()->notNull()->comment('Ticket description'),
+            'priority' => "ENUM('low','medium','high','urgent') NOT NULL DEFAULT 'medium'",
+            'category' => "ENUM('technical','billing','account','feature','training','other') NOT NULL DEFAULT 'other'",
+            'status' => "ENUM('open','in_progress','waiting_response','resolved','closed') NOT NULL DEFAULT 'open'",
+            'admin_response' => $this->text()->null()->comment('Admin/Manager response'),
+            'responded_by' => $this->integer()->null()->comment('Admin/Manager who responded'),
+            'responded_at' => $this->dateTime()->null()->comment('Response timestamp'),
             'created_at' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'updated_at' => $this->dateTime()->defaultExpression('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
         ], 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
 
         $this->createIndex('idx_tickets_company_id', '{{%tickets}}', 'company_id');
-        $this->createIndex('idx_tickets_route_id', '{{%tickets}}', 'route_id');
+        $this->createIndex('idx_tickets_user_id', '{{%tickets}}', 'user_id');
+        $this->createIndex('idx_tickets_status', '{{%tickets}}', 'status');
+        $this->createIndex('idx_tickets_priority', '{{%tickets}}', 'priority');
+        $this->createIndex('idx_tickets_category', '{{%tickets}}', 'category');
+        $this->createIndex('idx_tickets_created_at', '{{%tickets}}', 'created_at');
         $this->addForeignKey('fk_tickets_company', '{{%tickets}}', 'company_id', '{{%companies}}', 'id', 'CASCADE');
-        $this->addForeignKey('fk_tickets_route', '{{%tickets}}', 'route_id', '{{%routes}}', 'id', 'CASCADE');
+        $this->addForeignKey('fk_tickets_user', '{{%tickets}}', 'user_id', '{{%users}}', 'id', 'SET NULL');
+        $this->addForeignKey('fk_tickets_responded_by', '{{%tickets}}', 'responded_by', '{{%users}}', 'id', 'SET NULL');
 
         // ============================================================================
         // VIEWS
@@ -507,11 +519,12 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             ['routes.update', 2, 'Edit routes', $time, $time],
             ['routes.delete', 2, 'Delete routes', $time, $time],
             
-            // Tickets
-            ['tickets.view', 2, 'View tickets', $time, $time],
-            ['tickets.create', 2, 'Create tickets', $time, $time],
-            ['tickets.update', 2, 'Edit tickets', $time, $time],
-            ['tickets.delete', 2, 'Delete tickets', $time, $time],
+            // Support Tickets
+            ['tickets.view', 2, 'View support tickets', $time, $time],
+            ['tickets.create', 2, 'Create support tickets (any logged user)', $time, $time],
+            ['tickets.update', 2, 'Update/respond to support tickets', $time, $time],
+            ['tickets.delete', 2, 'Delete support tickets', $time, $time],
+            ['tickets.respond', 2, 'Respond to support tickets', $time, $time],
         ];
 
         $this->batchInsert('{{%auth_item}}', 
@@ -543,7 +556,7 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             ['manager', 'reports.view'], ['manager', 'reports.create'], ['manager', 'reports.export'], ['manager', 'reports.advanced'],
             ['manager', 'dashboard.view'], ['manager', 'dashboard.advanced'],
             ['manager', 'routes.view'], ['manager', 'routes.create'], ['manager', 'routes.update'], ['manager', 'routes.delete'],
-            ['manager', 'tickets.view'], ['manager', 'tickets.create'], ['manager', 'tickets.update'], ['manager', 'tickets.delete'],
+            ['manager', 'tickets.view'], ['manager', 'tickets.create'], ['manager', 'tickets.update'], ['manager', 'tickets.delete'], ['manager', 'tickets.respond'],
         ]);
 
         // Driver
@@ -680,15 +693,22 @@ class m251121_000000_veigest_consolidated_migration extends Migration
             [4, 1, 1, 5, 'Lisbon Airport', 'Faro Terminal', '2025-11-28 06:00:00', '2025-11-28 18:00:00', date('Y-m-d H:i:s')], // Maria Santos
         ]);
 
-        // Sample tickets
+        // Sample support tickets
         $this->batchInsert('{{%tickets}}', [
-            'id', 'company_id', 'route_id', 'passenger_name', 'passenger_phone', 'status', 'created_at'
+            'id', 'company_id', 'user_id', 'name', 'email', 'subject', 'body', 'priority', 'category', 'status', 'created_at'
         ], [
-            [1, 1, 1, 'Manuel Rodrigues', '+351967890123', 'completed', date('Y-m-d H:i:s')],
-            [2, 1, 1, 'Sofia Almeida', '+351978901234', 'active', date('Y-m-d H:i:s')],
-            [3, 1, 2, 'Pedro Gomes', '+351989012345', 'active', date('Y-m-d H:i:s')],
-            [4, 1, 3, 'Luisa Pereira', '+351990123456', 'cancelled', date('Y-m-d H:i:s')],
-            [5, 1, 4, 'Antonio Silva', '+351901234567', 'active', date('Y-m-d H:i:s')],
+            [1, 1, 5, 'Maria Santos', 'driver1@veigest.com', 'Problema ao registar combustível', 
+             'Estou a ter dificuldades para registar o abastecimento do veículo. O sistema apresenta um erro quando tento guardar.', 
+             'high', 'technical', 'open', date('Y-m-d H:i:s', strtotime('-2 days'))],
+            [2, 1, 6, 'Pedro Gomes', 'driver2@veigest.com', 'Dúvida sobre funcionalidades', 
+             'Gostaria de saber como posso ver o histórico de manutenções do veículo que me foi atribuído.', 
+             'low', 'other', 'open', date('Y-m-d H:i:s', strtotime('-1 day'))],
+            [3, 1, 2, 'Carlos Ferreira', 'manager@veigest.com', 'Solicitação de novo relatório', 
+             'Precisamos de um relatório que mostre o consumo de combustível por condutor. É possível adicionar esta funcionalidade?', 
+             'medium', 'feature', 'in_progress', date('Y-m-d H:i:s', strtotime('-3 days'))],
+            [4, 1, null, 'João Visitante', 'joao@exemplo.com', 'Informações sobre o sistema', 
+             'Gostaria de obter mais informações sobre os planos disponíveis e funcionalidades do VeiGest.', 
+             'low', 'other', 'open', date('Y-m-d H:i:s')],
         ]);
 
         // Sample activity logs

@@ -40,7 +40,6 @@ class ActivityLog extends ActiveRecord
     const ENTITY_ALERT = 'alert';
     const ENTITY_FILE = 'file';
     const ENTITY_ROUTE = 'route';
-    const ENTITY_TICKET = 'ticket';
     const ENTITY_COMPANY = 'company';
 
     /**
@@ -175,7 +174,6 @@ class ActivityLog extends ActiveRecord
             self::ENTITY_ALERT => 'Alerta',
             self::ENTITY_FILE => 'Arquivo',
             self::ENTITY_ROUTE => 'Rota',
-            self::ENTITY_TICKET => 'Bilhete',
             self::ENTITY_COMPANY => 'Empresa',
         ];
         return $labels[$entity] ?? ucfirst($entity);
@@ -254,7 +252,6 @@ class ActivityLog extends ActiveRecord
             self::ENTITY_ALERT => 'Alerta',
             self::ENTITY_FILE => 'Arquivo',
             self::ENTITY_ROUTE => 'Rota',
-            self::ENTITY_TICKET => 'Bilhete',
             self::ENTITY_COMPANY => 'Empresa',
         ];
     }

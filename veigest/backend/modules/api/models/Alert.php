@@ -2,7 +2,9 @@
 
 namespace backend\modules\api\models;
 
+use Yii;
 use yii\db\ActiveRecord;
+use backend\modules\api\components\MqttPublisher;
 
 /**
  * Alert API model
@@ -221,7 +223,14 @@ class Alert extends ActiveRecord
     {
         $this->status = self::STATUS_RESOLVED;
         $this->resolved_at = date('Y-m-d H:i:s');
-        return $this->save(false);
+        $result = $this->save(false);
+        
+        // Publicar no MQTT
+        if ($result) {
+            $this->publishToMqtt(MqttPublisher::EVENT_RESOLVED);
+        }
+        
+        return $result;
     }
 
     /**
@@ -230,7 +239,46 @@ class Alert extends ActiveRecord
     public function ignore()
     {
         $this->status = self::STATUS_IGNORED;
-        return $this->save(false);
+        $result = $this->save(false);
+        
+        // Publicar no MQTT
+        if ($result) {
+            $this->publishToMqtt(MqttPublisher::EVENT_IGNORED);
+        }
+        
+        return $result;
+    }
+
+    /**
+     * After save - publicar novo alerta no MQTT
+     * 
+     * @param bool $insert Se é inserção
+     * @param array $changedAttributes Atributos alterados
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        
+        // Publicar apenas novos alertas (insert)
+        if ($insert) {
+            $this->publishToMqtt(MqttPublisher::EVENT_NEW);
+        }
+    }
+
+    /**
+     * Publicar alerta no broker MQTT
+     * 
+     * @param string $event Tipo de evento
+     */
+    protected function publishToMqtt($event)
+    {
+        try {
+            $mqtt = new MqttPublisher();
+            $mqtt->publishAlert($this->company_id, $this->toArray(), $event);
+        } catch (\Exception $e) {
+            // Log error but don't break the application
+            Yii::error("MQTT publish error: " . $e->getMessage(), 'mqtt');
+        }
     }
 
     /**

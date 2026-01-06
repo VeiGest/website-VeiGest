@@ -2,7 +2,7 @@
 
 ## 📋 Visão Geral
 
-A API VeiGest agora inclui **6 módulos principais** completos com endpoints CRUD e funcionalidades avançadas:
+A API VeiGest agora inclui **7 módulos principais** completos com endpoints CRUD e funcionalidades avançadas:
 
 - **🔐 Autenticação** - Login, tokens, segurança
 - **🏢 Empresas** - Gestão de empresas e estatísticas
@@ -10,6 +10,7 @@ A API VeiGest agora inclui **6 módulos principais** completos com endpoints CRU
 - **👥 Usuários** - Gestão de usuários e condutores
 - **🔧 Manutenções** - Registros e agendamento de manutenções
 - **⛽ Abastecimentos** - Controle de combustível e eficiência
+- **🚨 Alertas + MQTT** - Sistema de alertas com messaging em tempo real
 
 ## 🔐 Autenticação
 
@@ -100,7 +101,69 @@ GET    /api/vehicles/{id}/stats        # Estatísticas por veículo (consumo, cu
 GET    /api/vehicles/by-status/{status}# Filtrar por status (active, maintenance, inactive)
 ```
 
-## 📄 Documentos e Ficheiros (Document / File)
+## � Alertas + Messaging MQTT (Alert)
+
+### Endpoints CRUD
+```
+GET    /api/alerts                      # Listar alertas (filtros: type, status, priority)
+GET    /api/alerts/{id}                 # Ver detalhe do alerta
+POST   /api/alerts                      # Criar novo alerta (publica MQTT automaticamente)
+PUT    /api/alerts/{id}                 # Atualizar alerta
+DELETE /api/alerts/{id}                 # Remover alerta
+```
+
+### Endpoints de Gestão
+```
+POST   /api/alerts/{id}/resolve         # Resolver alerta (publica MQTT)
+POST   /api/alerts/{id}/ignore          # Ignorar alerta (publica MQTT)
+POST   /api/alerts/bulk-resolve         # Resolver múltiplos alertas
+```
+
+### Endpoints de Consulta
+```
+GET    /api/alerts/by-type/{type}       # Filtrar por tipo (maintenance, document, fuel, other)
+GET    /api/alerts/by-priority/{priority} # Filtrar por prioridade (low, medium, high, critical)
+GET    /api/alerts/count                # Contagem de alertas ativos
+GET    /api/alerts/stats                # Estatísticas completas de alertas
+GET    /api/alerts/types                # Lista de tipos disponíveis
+GET    /api/alerts/priorities           # Lista de prioridades disponíveis
+```
+
+### Endpoints MQTT (Messaging)
+```
+POST   /api/alerts/{id}/broadcast       # Broadcast manual de alerta via MQTT
+GET    /api/alerts/mqtt-info            # Informação sobre canais MQTT disponíveis
+```
+
+### Canais MQTT Disponíveis
+
+| Canal | Descrição |
+|-------|-----------|
+| `veigest/alerts/{company_id}` | Todos os alertas da empresa |
+| `veigest/alerts/{company_id}/new` | Novos alertas criados |
+| `veigest/alerts/{company_id}/resolved` | Alertas resolvidos |
+| `veigest/alerts/{company_id}/critical` | Alertas de prioridade crítica |
+| `veigest/alerts/{company_id}/high` | Alertas de alta prioridade |
+
+**Exemplo - Criar Alerta (dispara MQTT automaticamente):**
+```bash
+curl -X POST http://localhost:21080/api/alerts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "type": "maintenance",
+    "title": "Revisão Obrigatória",
+    "description": "Veículo atingiu 50.000 km",
+    "priority": "high"
+  }'
+```
+
+**Exemplo - Subscrever MQTT (mosquitto_sub):**
+```bash
+mosquitto_sub -h localhost -p 1883 -t "veigest/alerts/1/#" -v
+```
+
+## �📄 Documentos e Ficheiros (Document / File)
 
 ```
 GET    /api/documents                   # Listar documentos (filtros: vehicle_id, driver_id, status)
@@ -110,15 +173,18 @@ POST   /api/files                       # Upload de ficheiros
 GET    /api/files/{id}/download         # Download de ficheiro
 ```
 
-## 🧭 Rotas, Tickets e Outros
+## 🧭 Rotas
 
 ```
 GET    /api/routes                      # Listar rotas
 POST   /api/routes                      # Criar rota
-GET    /api/tickets                     # Listar tickets
-POST   /api/tickets                     # Criar ticket
-POST   /api/tickets/{id}/cancel         # Cancelar bilhete
-POST   /api/tickets/{id}/complete       # Marcar bilhete como completo
+GET    /api/routes/{id}                 # Ver rota
+PUT    /api/routes/{id}                 # Atualizar rota
+DELETE /api/routes/{id}                 # Excluir rota
+POST   /api/routes/{id}/complete        # Concluir rota
+GET    /api/routes/active               # Rotas ativas
+GET    /api/routes/scheduled            # Rotas agendadas
+GET    /api/routes/stats                # Estatísticas de rotas
 ```
 
 ## 🔐 Autenticação / Token

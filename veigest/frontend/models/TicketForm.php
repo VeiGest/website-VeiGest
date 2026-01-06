@@ -4,9 +4,11 @@ namespace frontend\models;
 
 use Yii;
 use yii\base\Model;
+use common\models\SupportTicket;
 
 /**
  * TicketForm is the model behind the ticket form.
+ * Now saves to database instead of sending email.
  */
 class TicketForm extends Model
 {
@@ -33,9 +35,11 @@ class TicketForm extends Model
             // priority must be one of the valid values
             ['priority', 'in', 'range' => ['low', 'medium', 'high', 'urgent']],
             // category must be one of the valid values
-            ['category', 'in', 'range' => ['technical', 'billing', 'account', 'feature', 'other']],
-            // verifyCode needs to be entered correctly
-            ['verifyCode', 'captcha'],
+            ['category', 'in', 'range' => ['technical', 'billing', 'account', 'feature', 'training', 'other']],
+            // verifyCode needs to be entered correctly (only for guests)
+            ['verifyCode', 'captcha', 'when' => function($model) {
+                return Yii::$app->user->isGuest;
+            }],
         ];
     }
 
@@ -56,26 +60,79 @@ class TicketForm extends Model
     }
 
     /**
-     * Sends an email to the specified email address using the information collected by this model.
+     * Saves the ticket to database.
      *
-     * @param string $email the target email address
-     * @return bool whether the email was sent
+     * @return SupportTicket|null The saved ticket or null on failure
      */
-    public function sendEmail($email)
+    public function saveTicket()
     {
-        return Yii::$app->mailer->compose()
-            ->setTo($email)
-            ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->params['senderName']])
-            ->setReplyTo([$this->email => $this->name])
-            ->setSubject('Novo Ticket de Suporte: ' . $this->subject)
-            ->setTextBody($this->body)
-            ->setHtmlBody('<p><strong>Nome:</strong> ' . $this->name . '</p>' .
-                         '<p><strong>Email:</strong> ' . $this->email . '</p>' .
-                         '<p><strong>Prioridade:</strong> ' . $this->getPriorityLabel() . '</p>' .
-                         '<p><strong>Categoria:</strong> ' . $this->getCategoryLabel() . '</p>' .
-                         '<p><strong>Assunto:</strong> ' . $this->subject . '</p>' .
-                         '<p><strong>Descrição:</strong></p><p>' . nl2br($this->body) . '</p>')
-            ->send();
+        $ticket = new SupportTicket();
+        
+        // Get company_id from logged user or use default company (1)
+        $companyId = 1;
+        $userId = null;
+        
+        if (!Yii::$app->user->isGuest) {
+            $user = Yii::$app->user->identity;
+            $companyId = $user->company_id ?? 1;
+            $userId = $user->id;
+        }
+        
+        $ticket->company_id = $companyId;
+        $ticket->user_id = $userId;
+        $ticket->name = $this->name;
+        $ticket->email = $this->email;
+        $ticket->subject = $this->subject;
+        $ticket->body = $this->body;
+        $ticket->priority = $this->priority;
+        $ticket->category = $this->category;
+        $ticket->status = SupportTicket::STATUS_OPEN;
+        
+        if ($ticket->save()) {
+            // Optionally send notification email to admin
+            $this->sendNotificationEmail($ticket);
+            return $ticket;
+        }
+        
+        // Copy errors to form
+        foreach ($ticket->getErrors() as $attribute => $errors) {
+            foreach ($errors as $error) {
+                $this->addError($attribute, $error);
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Sends notification email to admin about new ticket.
+     *
+     * @param SupportTicket $ticket
+     * @return bool
+     */
+    protected function sendNotificationEmail($ticket)
+    {
+        try {
+            return Yii::$app->mailer->compose()
+                ->setTo(Yii::$app->params['adminEmail'] ?? 'admin@veigest.com')
+                ->setFrom([Yii::$app->params['senderEmail'] ?? 'noreply@veigest.com' => Yii::$app->params['senderName'] ?? 'VeiGest'])
+                ->setReplyTo([$this->email => $this->name])
+                ->setSubject('[VeiGest] Novo Ticket #' . $ticket->id . ': ' . $this->subject)
+                ->setHtmlBody(
+                    '<h2>Novo Ticket de Suporte</h2>' .
+                    '<p><strong>Ticket #:</strong> ' . $ticket->id . '</p>' .
+                    '<p><strong>Nome:</strong> ' . $this->name . '</p>' .
+                    '<p><strong>Email:</strong> ' . $this->email . '</p>' .
+                    '<p><strong>Prioridade:</strong> ' . $this->getPriorityLabel() . '</p>' .
+                    '<p><strong>Categoria:</strong> ' . $this->getCategoryLabel() . '</p>' .
+                    '<p><strong>Assunto:</strong> ' . $this->subject . '</p>' .
+                    '<p><strong>Descrição:</strong></p><p>' . nl2br($this->body) . '</p>'
+                )
+                ->send();
+        } catch (\Exception $e) {
+            Yii::error('Failed to send ticket notification email: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -84,13 +141,8 @@ class TicketForm extends Model
      */
     public function getPriorityLabel()
     {
-        $labels = [
-            'low' => 'Baixa',
-            'medium' => 'Média',
-            'high' => 'Alta',
-            'urgent' => 'Urgente',
-        ];
-        return isset($labels[$this->priority]) ? $labels[$this->priority] : $this->priority;
+        $labels = SupportTicket::getPriorityOptions();
+        return $labels[$this->priority] ?? $this->priority;
     }
 
     /**
@@ -99,13 +151,19 @@ class TicketForm extends Model
      */
     public function getCategoryLabel()
     {
-        $labels = [
-            'technical' => 'Problema Técnico',
-            'billing' => 'Faturamento',
-            'account' => 'Conta/Usuário',
-            'feature' => 'Solicitação de Funcionalidade',
-            'other' => 'Outro',
-        ];
-        return isset($labels[$this->category]) ? $labels[$this->category] : $this->category;
+        $labels = SupportTicket::getCategoryOptions();
+        return $labels[$this->category] ?? $this->category;
+    }
+    
+    /**
+     * Pre-fill form with logged user data
+     */
+    public function loadUserData()
+    {
+        if (!Yii::$app->user->isGuest) {
+            $user = Yii::$app->user->identity;
+            $this->name = $user->name ?? '';
+            $this->email = $user->email ?? '';
+        }
     }
 }

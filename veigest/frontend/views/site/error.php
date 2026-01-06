@@ -11,7 +11,7 @@ $this->title = $name;
 
 // Extract error code
 $errorCode = 500;
-if (isset($exception) && method_exists($exception, 'statusCode')) {
+if (isset($exception) && $exception instanceof \yii\web\HttpException) {
     $errorCode = $exception->statusCode;
 } elseif (preg_match('/(\d{3})/', $name, $matches)) {
     $errorCode = (int)$matches[1];

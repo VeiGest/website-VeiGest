@@ -14,7 +14,10 @@ Esta documentação completa da API RESTful VeiGest fornece guias detalhados sob
 ### 🔧 Configuração e Setup
 - **[CONFIGURACAO_AMBIENTE.md](CONFIGURACAO_AMBIENTE.md)** - Como configurar o ambiente de desenvolvimento
 
-### 🔄 Desenvolvimento e Manutenção
+### � Messaging MQTT
+- **[MQTT_MESSAGING.md](MQTT_MESSAGING.md)** - Sistema de messaging com Mosquitto (Alertas em tempo real)
+
+### �🔄 Desenvolvimento e Manutenção
 - **[FUTURAS_MODIFICACOES.md](FUTURAS_MODIFICACOES.md)** - Plano de melhorias e expansões
 
 ### 🚨 Troubleshooting
@@ -62,6 +65,8 @@ curl -X POST http://localhost:21080/api/auth/login \
 | RBAC Básico | ✅ Completo | v1.0 |
 | CRUD Veículos | ✅ Básico | v1.0 |
 | CRUD Usuários | ✅ Básico | v1.0 |
+| CRUD Alertas | ✅ Completo | v1.0 |
+| **Messaging MQTT** | ✅ Completo | v1.0 |
 | Testes Automatizados | ✅ Completo | v1.0 |
 | Documentação | ✅ Completo | v1.0 |
 | Docker Setup | ✅ Completo | v1.0 |
@@ -71,6 +76,9 @@ curl -X POST http://localhost:21080/api/auth/login \
 - ✅ Isolamento de dados por empresa (multi-tenancy)
 - ✅ Controle básico de permissões
 - ✅ Endpoints RESTful para veículos e usuários
+- ✅ **Sistema de Alertas com Messaging MQTT (Mosquitto)**
+- ✅ Publicação automática de alertas via MQTT
+- ✅ Canais segmentados por empresa e prioridade
 - ✅ Validação de dados e tratamento de erros
 - ✅ Testes automatizados com JavaScript
 - ✅ Configuração completa com Docker

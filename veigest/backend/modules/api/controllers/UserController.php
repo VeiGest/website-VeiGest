@@ -50,13 +50,13 @@ class UserController extends BaseApiController
 
         $query = User::find()
             ->where(['company_id' => $companyId])
-            ->andWhere(['estado' => 'ativo']);
+            ->andWhere(['status' => 'active']);
 
         // Filtros opcionais
         $request = Yii::$app->request;
         
-        if ($tipo = $request->get('tipo')) {
-            $query->andWhere(['tipo' => $tipo]);
+        if ($role = $request->get('role')) {
+            $query->andWhere(['like', 'roles', $role]);
         }
         
         if ($status = $request->get('status')) {
@@ -102,7 +102,7 @@ class UserController extends BaseApiController
         $model->scenario = 'create';
         $model->load(Yii::$app->request->bodyParams, '');
         $model->company_id = $companyId; // Forçar company_id do token
-        $model->estado = 'ativo';
+        $model->status = 'active';
         
         // Gerar auth_key se não fornecido
         if (!$model->auth_key) {
@@ -167,8 +167,8 @@ class UserController extends BaseApiController
 
         $query = User::find()
             ->where(['company_id' => $companyId])
-            ->andWhere(['estado' => 'ativo'])
-            ->andWhere(['tipo' => 'condutor']);
+            ->andWhere(['status' => 'active'])
+            ->andWhere(['like', 'roles', 'driver']);
 
         return new ActiveDataProvider([
             'query' => $query,
@@ -192,9 +192,10 @@ class UserController extends BaseApiController
             $company = \backend\modules\api\models\Company::findOne($user->company_id);
         }
 
-        // Obter veículos associados ao condutor
+        // Obter veículos associados ao condutor (verificar se tem role driver)
         $vehicles = [];
-        if ($user->tipo === 'condutor') {
+        $userRoles = explode(',', $user->roles ?? '');
+        if (in_array('driver', $userRoles)) {
             $vehicles = \backend\modules\api\models\Vehicle::find()
                 ->where(['driver_id' => $user->id])
                 ->all();
@@ -204,13 +205,13 @@ class UserController extends BaseApiController
             'user' => [
                 'id' => $user->id,
                 'username' => $user->username,
-                'name' => $user->name ?? $user->nome,
+                'name' => $user->name,
                 'email' => $user->email,
-                'phone' => $user->phone ?? $user->telefone,
-                'tipo' => $user->tipo ?? 'user',
+                'phone' => $user->phone,
+                'roles' => $user->roles,
                 'license_number' => $user->license_number ?? null,
                 'license_expiry' => $user->license_expiry ?? null,
-                'status' => $user->estado ?? $user->status,
+                'status' => $user->status,
                 'company_id' => $user->company_id,
                 'photo' => $user->photo ?? null,
             ],

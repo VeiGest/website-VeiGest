@@ -101,7 +101,7 @@ class AuthController extends Controller
         }
 
         // Verificar se usuário está ativo
-        if ($user->estado !== 'ativo' && $user->status !== 'active') {
+        if ($user->status !== 'active') {
             throw new UnauthorizedHttpException('Conta de usuário inativa');
         }
 
@@ -157,7 +157,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
-                    'status' => $user->estado,
+                    'status' => $user->status,
                     'company_id' => $user->company_id,
                 ],
                 'company' => $company ? [
@@ -204,7 +204,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'phone' => $user->phone,
-                    'status' => $user->estado,
+                    'status' => $user->status,
                     'company_id' => $user->company_id,
                 ],
                 'company' => $company ? [

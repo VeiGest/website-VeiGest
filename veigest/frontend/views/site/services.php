@@ -10,7 +10,7 @@ $this->title = 'Bem-vindo à VeiGest';
     <section class="bg-gradient-to-r from-primary to-blue-500 text-white py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-4xl md:text-5xl font-bold mb-4 text-black">Segurança em Primeiro Lugar</h1>
-            <p class="text-lg text-opacity-90 text-black">Protegemos seus dados com as melhores práticas de segurança</p>
+            <p class="text-lg text-opacity-90 text-black">Protegemos os seus dados com as melhores práticas de segurança</p>
         </div>
     </section>
 
@@ -39,7 +39,7 @@ $this->title = 'Bem-vindo à VeiGest';
                         </div>
                     </div>
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Controle de Acesso</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Controlo de Acesso</h3>
                         <p class="text-gray-600">Sistema RBAC robusto que garante que cada utilizador tenha apenas acesso aos dados que precisa.</p>
                     </div>
                 </div>
@@ -110,8 +110,8 @@ $this->title = 'Bem-vindo à VeiGest';
                             </div>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Monitoramento 24/7</h3>
-                            <p class="text-gray-600">Sistema de monitoramento contínuo que detecta e responde a ameaças em tempo real, com alertas automáticos para a equipe de segurança.</p>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Monitorização 24/7</h3>
+                            <p class="text-gray-600">Sistema de monitorização contínuo que deteta e responde a ameaças em tempo real, com alertas automáticos para a equipa de segurança.</p>
                         </div>
                     </div>
 
@@ -124,7 +124,7 @@ $this->title = 'Bem-vindo à VeiGest';
                         </div>
                         <div>
                             <h3 class="text-2xl font-bold text-gray-900 mb-2">Autenticação Multifator</h3>
-                            <p class="text-gray-600">MFA obrigatório para todos os usuários, com suporte a aplicativos autenticadores, SMS e tokens de hardware para máxima segurança.</p>
+                            <p class="text-gray-600">MFA obrigatório para todos os utilizadores, com suporte a aplicações de autenticação, SMS e tokens de hardware para máxima segurança.</p>
                         </div>
                     </div>
 
@@ -136,8 +136,8 @@ $this->title = 'Bem-vindo à VeiGest';
                             </div>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Backup Seguro</h3>
-                            <p class="text-gray-600">Backups automáticos criptografados armazenados em múltiplas localizações geográficas, com testes regulares de recuperação.</p>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Cópia de Segurança</h3>
+                            <p class="text-gray-600">Cópias de segurança automáticas encriptadas armazenadas em múltiplas localizações geográficas, com testes regulares de recuperação.</p>
                         </div>
                     </div>
 
@@ -149,8 +149,8 @@ $this->title = 'Bem-vindo à VeiGest';
                             </div>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Treinamento Contínuo</h3>
-                            <p class="text-gray-600">Programas de conscientização em segurança para usuários, com treinamentos regulares sobre melhores práticas e reconhecimento de ameaças.</p>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Formação Contínua</h3>
+                            <p class="text-gray-600">Programas de sensibilização em segurança para utilizadores, com formações regulares sobre melhores práticas e reconhecimento de ameaças.</p>
                         </div>
                     </div>
                 </div>
@@ -199,8 +199,8 @@ $this->title = 'Bem-vindo à VeiGest';
                                     <i class="fas fa-check-circle text-primary text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Logs de Auditoria</h3>
-                                    <p class="text-gray-600">Registro completo de todas as ações do sistema, com retenção de logs por 7 anos conforme requisitos legais.</p>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Registos de Auditoria</h3>
+                                    <p class="text-gray-600">Registo completo de todas as ações do sistema, com retenção de registos por 7 anos conforme requisitos legais.</p>
                                 </div>
                             </div>
                             <div class="flex gap-4">
@@ -224,7 +224,7 @@ $this->title = 'Bem-vindo à VeiGest';
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-bold text-gray-900 mb-2">Centro de Segurança 24/7</h3>
-                                    <p class="text-gray-600">Equipe dedicada de especialistas em segurança disponível 24 horas por dia, 7 dias por semana.</p>
+                                    <p class="text-gray-600">Equipa dedicada de especialistas em segurança disponível 24 horas por dia, 7 dias por semana.</p>
                                 </div>
                             </div>
                             <div class="flex gap-4">

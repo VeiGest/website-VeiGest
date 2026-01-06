@@ -8,7 +8,7 @@ $this->title = 'Bem-vindo à VeiGest';
     <section class="bg-gradient-to-r from-primary to-blue-500 text-white py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-4xl md:text-5xl font-bold mb-4 text-black">Planos e Preços</h1>
-            <p class="text-lg text-opacity-90 text-black">Escolha o plano ideal para sua empresa</p>
+            <p class="text-lg text-opacity-90 text-black">Escolha o plano ideal para a sua empresa</p>
         </div>
     </section>
 
@@ -18,9 +18,9 @@ $this->title = 'Bem-vindo à VeiGest';
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-gray-900 mb-6">Simplifique a Gestão da Sua Frota</h2>
                 <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
-                    A VeiGest é a plataforma completa para gestão inteligente de frotas. Controle todos os aspectos da sua frota
-                    em um só lugar: documentos, manutenções, alertas, relatórios e muito mais. Aumente a produtividade,
-                    reduza custos e mantenha sua frota sempre em dia.
+                    A VeiGest é a plataforma completa para gestão inteligente de frotas. Controle todos os aspetos da sua frota
+                    num só lugar: documentos, manutenções, alertas, relatórios e muito mais. Aumente a produtividade,
+                    reduza custos e mantenha a sua frota sempre em dia.
                 </p>
                 <div class="grid md:grid-cols-3 gap-8 mt-12">
                     <div class="text-center">
@@ -112,13 +112,13 @@ $this->title = 'Bem-vindo à VeiGest';
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl font-bold text-gray-900 mb-4">Perguntas Frequentes</h2>
-                <p class="text-lg text-gray-600">Tire suas dúvidas sobre nossos planos</p>
+                <p class="text-lg text-gray-600">Esclareça as suas dúvidas sobre os nossos planos</p>
             </div>
 
             <div class="space-y-6">
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-lg font-bold text-gray-900 mb-2">Posso mudar de plano a qualquer momento?</h3>
-                    <p class="text-gray-600">Sim! Você pode fazer upgrade ou downgrade do seu plano a qualquer momento. As alterações entram em vigor no próximo ciclo de cobrança.</p>
+                    <p class="text-gray-600">Sim! Pode fazer upgrade ou downgrade do seu plano a qualquer momento. As alterações entram em vigor no próximo ciclo de faturação.</p>
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md p-6">
@@ -133,7 +133,7 @@ $this->title = 'Bem-vindo à VeiGest';
 
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <h3 class="text-lg font-bold text-gray-900 mb-2">Posso cancelar a qualquer momento?</h3>
-                    <p class="text-gray-600">Sim, você pode cancelar sua assinatura a qualquer momento. Não há taxas de cancelamento ou contratos de longo prazo.</p>
+                    <p class="text-gray-600">Sim, pode cancelar a sua subscrição a qualquer momento. Não há taxas de cancelamento ou contratos de longo prazo.</p>
                 </div>
             </div>
         </div>
@@ -204,7 +204,7 @@ $this->title = 'Bem-vindo à VeiGest';
     <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">O que nossos clientes dizem</h2>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">O que os nossos clientes dizem</h2>
                 <p class="text-lg text-gray-600">Histórias de sucesso de empresas que confiam na VeiGest</p>
             </div>
 
@@ -219,7 +219,7 @@ $this->title = 'Bem-vindo à VeiGest';
                             <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <p class="text-gray-600 mb-4">"A VeiGest revolucionou nossa gestão de frota. Conseguimos reduzir custos em 30% e aumentar a produtividade da equipe."</p>
+                    <p class="text-gray-600 mb-4">"A VeiGest revolucionou a nossa gestão de frota. Conseguimos reduzir custos em 30% e aumentar a produtividade da equipa."</p>
                     <div class="font-bold text-gray-900">Maria Silva</div>
                     <div class="text-sm text-gray-600">Diretora de Operações, Transportes Silva</div>
                 </div>
@@ -236,7 +236,7 @@ $this->title = 'Bem-vindo à VeiGest';
                     </div>
                     <p class="text-gray-600 mb-4">"Excelente plataforma! O suporte é incrível e as funcionalidades atendem perfeitamente às nossas necessidades."</p>
                     <div class="font-bold text-gray-900">João Santos</div>
-                    <div class="text-sm text-gray-600">Gerente de Frota, Logística Express</div>
+                    <div class="text-sm text-gray-600">Gestor de Frota, Logística Express</div>
                 </div>
 
                 <div class="bg-white rounded-lg shadow-md p-6">
@@ -249,7 +249,7 @@ $this->title = 'Bem-vindo à VeiGest';
                             <i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <p class="text-gray-600 mb-4">"Desde que implementamos a VeiGest, nossa frota está mais organizada e segura. Recomendo para todas as empresas!"</p>
+                    <p class="text-gray-600 mb-4">"Desde que implementámos a VeiGest, a nossa frota está mais organizada e segura. Recomendo a todas as empresas!"</p>
                     <div class="font-bold text-gray-900">Ana Costa</div>
                     <div class="text-sm text-gray-600">Coordenadora de Frotas, Distribuidora Nacional</div>
                 </div>
@@ -261,7 +261,7 @@ $this->title = 'Bem-vindo à VeiGest';
     <section class="py-20 bg-gradient-to-r from-primary to-blue-500 text-white">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl font-bold mb-4">Pronto para começar?</h2>
-            <p class="text-lg text-opacity-90 mb-8">Junte-se a centenas de empresas que já confiam na VeiGest para gerenciar suas frotas</p>
+            <p class="text-lg text-opacity-90 mb-8">Junte-se a centenas de empresas que já confiam na VeiGest para gerir as suas frotas</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="/site/signup" class="bg-white text-primary px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition border-primary">
                     Começar Teste Gratuito

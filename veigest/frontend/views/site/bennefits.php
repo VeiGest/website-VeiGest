@@ -8,7 +8,7 @@ $this->title = 'Bem-vindo à VeiGest';
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-primary to-blue-500 text-white py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-black">Nossos Serviços</h1>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-black">Os Nossos Serviços</h1>
             <p class="text-lg text-opacity-90 text-black">Soluções completas para gestão eficiente de frotas</p>
         </div>
     </section>
@@ -91,7 +91,7 @@ $this->title = 'Bem-vindo à VeiGest';
                     </div>
                     <div class="text-center">
                         <div class="text-4xl font-bold text-primary mb-2">24/7</div>
-                        <p class="text-gray-600">Monitoramento contínuo</p>
+                        <p class="text-gray-600">Monitorização contínua</p>
                     </div>
                 </div>
             </div>
@@ -119,7 +119,7 @@ $this->title = 'Bem-vindo à VeiGest';
                         </div>
                     </div>
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Aplicativo Mobile</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Aplicação Móvel</h3>
                         <p class="text-gray-600">Acesso completo via smartphone para condutores e gestores, com funcionalidades offline.</p>
                     </div>
                 </div>
@@ -132,8 +132,8 @@ $this->title = 'Bem-vindo à VeiGest';
                         </div>
                     </div>
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Backup Automático</h3>
-                        <p class="text-gray-600">Sincronização automática de dados na nuvem com backup redundante e recuperação de desastres.</p>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Cópia de Segurança Automática</h3>
+                        <p class="text-gray-600">Sincronização automática de dados na nuvem com cópia de segurança redundante e recuperação de desastres.</p>
                     </div>
                 </div>
 
@@ -146,7 +146,7 @@ $this->title = 'Bem-vindo à VeiGest';
                     </div>
                     <div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-2">Segurança Avançada</h3>
-                        <p class="text-gray-600">Criptografia de dados, controle de acesso baseado em funções e conformidade com GDPR.</p>
+                        <p class="text-gray-600">Encriptação de dados, controlo de acesso baseado em funções e conformidade com RGPD.</p>
                     </div>
                 </div>
             </div>
@@ -155,13 +155,13 @@ $this->title = 'Bem-vindo à VeiGest';
             <div class="bg-white border border-gray-200 rounded-lg p-8 mb-16">
                 <div class="text-center mb-8">
                     <h3 class="text-2xl font-bold text-gray-900 mb-4">Casos de Uso</h3>
-                    <p class="text-gray-600">A VeiGest se adapta às necessidades de diferentes tipos de empresas</p>
+                    <p class="text-gray-600">A VeiGest adapta-se às necessidades de diferentes tipos de empresas</p>
                 </div>
                 <div class="grid md:grid-cols-3 gap-6">
                     <div class="text-center p-6 border border-gray-100 rounded-lg">
                         <i class="fas fa-truck text-3xl text-primary mb-4"></i>
                         <h4 class="text-lg font-bold text-gray-900 mb-2">Transportadoras</h4>
-                        <p class="text-gray-600 text-sm">Gestão de frotas de caminhões, controle de rotas e documentação obrigatória do transporte rodoviário.</p>
+                        <p class="text-gray-600 text-sm">Gestão de frotas de camiões, controlo de rotas e documentação obrigatória do transporte rodoviário.</p>
                     </div>
                     <div class="text-center p-6 border border-gray-100 rounded-lg">
                         <i class="fas fa-building text-3xl text-primary mb-4"></i>
@@ -190,7 +190,7 @@ $this->title = 'Bem-vindo à VeiGest';
                     </div>
                     <div class="text-center">
                         <i class="fas fa-file-invoice-dollar text-3xl text-primary mb-2"></i>
-                        <p class="font-medium text-gray-900">Sistemas Contábeis</p>
+                        <p class="font-medium text-gray-900">Sistemas Contabilísticos</p>
                         <p class="text-sm text-gray-600">Integração financeira</p>
                     </div>
                     <div class="text-center">
@@ -218,11 +218,11 @@ $this->title = 'Bem-vindo à VeiGest';
                             </li>
                             <li class="flex items-start gap-3">
                                 <i class="fas fa-check-circle text-primary mt-1"></i>
-                                <span>Proteção de dados pessoais (GDPR compliance)</span>
+                                <span>Proteção de dados pessoais (conformidade com RGPD)</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <i class="fas fa-check-circle text-primary mt-1"></i>
-                                <span>Criptografia end-to-end de dados sensíveis</span>
+                                <span>Encriptação ponto-a-ponto de dados sensíveis</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <i class="fas fa-check-circle text-primary mt-1"></i>
@@ -239,7 +239,7 @@ $this->title = 'Bem-vindo à VeiGest';
                             </li>
                             <li class="flex items-start gap-3">
                                 <i class="fas fa-check-circle text-primary mt-1"></i>
-                                <span>Treinamento completo da equipe</span>
+                                <span>Formação completa da equipa</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <i class="fas fa-check-circle text-primary mt-1"></i>

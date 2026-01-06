@@ -15,7 +15,7 @@ $this->title = 'Bem-vindo à VeiGest';
                     <span class="text-xl font-bold text-primary">VeiGest</span>
                 </div>
                 <div class="hidden md:flex space-x-8">
-                    <a href="index.html" class="text-gray-700 hover:text-primary transition">Home</a>
+                    <a href="index.html" class="text-gray-700 hover:text-primary transition">Início</a>
                     <a href="documentation.html" class="text-gray-700 hover:text-primary transition">Documentação</a>
                     <a href="blog.html" class="text-gray-700 hover:text-primary transition font-bold">Blog</a>
                     <a href="support.html" class="text-gray-700 hover:text-primary transition">Suporte</a>
@@ -31,7 +31,7 @@ $this->title = 'Bem-vindo à VeiGest';
     <section class="bg-gradient-to-r from-primary to-blue-500 text-white py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-4xl md:text-5xl font-bold mb-4">Blog VeiGest</h1>
-            <p class="text-lg text-opacity-90">Artigos e dicas para otimizar sua gestão de frotas</p>
+            <p class="text-lg text-opacity-90">Artigos e dicas para otimizar a sua gestão de frotas</p>
         </div>
     </section>
 

@@ -122,7 +122,7 @@ DashboardAsset::register($this);
                     </a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/index']) ?>" class="nav-link">Home</a>
+                    <a href="<?= Yii::$app->urlManager->createUrl(['dashboard/index']) ?>" class="nav-link">Início</a>
                 </li>
             </ul>
 
@@ -146,7 +146,7 @@ DashboardAsset::register($this);
                             <i class="fas fa-user mr-2"></i> Meu Perfil
                         </a>
                         <a href="<?= Yii::$app->urlManager->createUrl(['profile/change-password']) ?>" class="dropdown-item">
-                            <i class="fas fa-key mr-2"></i> Alterar Senha
+                            <i class="fas fa-key mr-2"></i> Alterar Palavra-passe
                         </a>
                         <div class="dropdown-divider"></div>
                         <?= Html::beginForm(['/site/logout'], 'post', ['id' => 'logout-form', 'style' => 'display: inline;']) ?>
@@ -178,17 +178,17 @@ DashboardAsset::register($this);
 
                         <?php if ($role === 'admin'): ?>
                             <span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:0.75rem;font-weight:600;background-color:#dc3545;color:white;">
-                                Admin
+                                Administrador
                             </span>
 
                         <?php elseif ($role === 'manager'): ?>
                             <span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:0.75rem;font-weight:600;background-color:#09BC8A;color:white;">
-                                Manager
+                                Gestor
                             </span>
 
                         <?php elseif ($role === 'driver'): ?>
                             <span style="display:inline-block;padding:4px 8px;border-radius:4px;font-size:0.75rem;font-weight:600;background-color:#6c757d;color:white;">
-                                Driver
+                                Condutor
                             </span>
                         <?php endif; ?>
 
@@ -284,6 +284,21 @@ DashboardAsset::register($this);
                             </a>
                         </li>
                         <?php endif; ?>
+
+                        <li class="nav-header">SUPORTE</li>
+                        <!-- Support Tickets - All roles -->
+                        <li class="nav-item">
+                            <a href="<?= Yii::$app->urlManager->createUrl(['site/my-tickets']) ?>" class="nav-link">
+                                <i class="nav-icon fas fa-ticket-alt"></i>
+                                <p>Meus Tickets</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?= Yii::$app->urlManager->createUrl(['site/ticket']) ?>" class="nav-link">
+                                <i class="nav-icon fas fa-plus-circle"></i>
+                                <p>Novo Ticket</p>
+                            </a>
+                        </li>
 
                         <li class="nav-header">CONTA</li>
                         <!-- Profile - All roles (edit allowed for all) -->

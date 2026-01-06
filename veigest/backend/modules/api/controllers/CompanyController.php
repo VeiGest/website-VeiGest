@@ -242,14 +242,14 @@ class CompanyController extends BaseApiController
             'vehicles_count' => $company->getVehicles()->count(),
             'active_vehicles' => $company->getActiveVehiclesCount(),
             'users_count' => $company->getTotalUsersCount(),
-            'drivers_count' => $company->getUsers()->where(['tipo' => 'condutor'])->count(),
+            'drivers_count' => $company->getUsers()->where(['LIKE', 'roles', 'driver'])->count(),
             'maintenance_stats' => [
                 'total_maintenances' => $company->getVehicles()
                     ->joinWith('maintenances')
                     ->count(),
                 'pending_maintenances' => $company->getVehicles()
                     ->joinWith(['maintenances' => function($query) {
-                        $query->where(['estado' => 'agendada']);
+                        $query->where(['status' => 'scheduled']);
                     }])
                     ->count(),
             ],
@@ -259,7 +259,7 @@ class CompanyController extends BaseApiController
                     ->count(),
                 'total_fuel_cost' => $company->getVehicles()
                     ->joinWith('fuelLogs')
-                    ->sum('{{%fuel_logs}}.custo_total') ?? 0,
+                    ->sum('{{%fuel_logs}}.value') ?? 0,
             ],
         ];
     }

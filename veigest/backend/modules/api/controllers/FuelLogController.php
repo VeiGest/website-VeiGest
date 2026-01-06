@@ -60,18 +60,17 @@ class FuelLogController extends BaseApiController
         }
         
         if ($startDate = $request->get('start_date')) {
-            $query->andWhere(['>=', 'data_abastecimento', $startDate]);
+            $query->andWhere(['>=', 'date', $startDate]);
         }
         
         if ($endDate = $request->get('end_date')) {
-            $query->andWhere(['<=', 'data_abastecimento', $endDate]);
+            $query->andWhere(['<=', 'date', $endDate]);
         }
 
         if ($search = $request->get('search')) {
             $query->andWhere([
                 'or',
-                ['like', 'local', $search],
-                ['like', 'observacoes', $search]
+                ['like', 'notes', $search]
             ]);
         }
 
@@ -82,14 +81,14 @@ class FuelLogController extends BaseApiController
                 'page' => $request->get('page', 1) - 1,
             ],
             'sort' => [
-                'defaultOrder' => ['data_abastecimento' => SORT_DESC],
+                'defaultOrder' => ['date' => SORT_DESC],
                 'attributes' => [
                     'id', 
-                    'data_abastecimento', 
-                    'litros', 
-                    'custo_total', 
-                    'quilometragem', 
-                    'preco_por_litro',
+                    'date', 
+                    'liters', 
+                    'value', 
+                    'current_mileage', 
+                    'price_per_liter',
                     'created_at'
                 ]
             ],
@@ -180,16 +179,16 @@ class FuelLogController extends BaseApiController
         // Filtros opcionais
         $request = Yii::$app->request;
         if ($startDate = $request->get('start_date')) {
-            $query->andWhere(['>=', 'data_abastecimento', $startDate]);
+            $query->andWhere(['>=', 'date', $startDate]);
         }
         if ($endDate = $request->get('end_date')) {
-            $query->andWhere(['<=', 'data_abastecimento', $endDate]);
+            $query->andWhere(['<=', 'date', $endDate]);
         }
 
         return new ActiveDataProvider([
             'query' => $query,
             'pagination' => ['pageSize' => $request->get('per-page', 20)],
-            'sort' => ['defaultOrder' => ['data_abastecimento' => SORT_DESC]],
+            'sort' => ['defaultOrder' => ['date' => SORT_DESC]],
         ]);
     }
 
@@ -221,18 +220,18 @@ class FuelLogController extends BaseApiController
         // Filtro de período
         $startDate = $this->getStartDateByPeriod($period);
         if ($startDate) {
-            $query->andWhere(['>=', 'data_abastecimento', $startDate]);
+            $query->andWhere(['>=', 'date', $startDate]);
         }
 
-        $fuelLogs = $query->orderBy(['data_abastecimento' => SORT_ASC])->all();
+        $fuelLogs = $query->orderBy(['date' => SORT_ASC])->all();
 
         return [
             'period' => $period,
             'vehicle_id' => $vehicleId,
             'summary' => [
                 'total_fuel_logs' => count($fuelLogs),
-                'total_liters' => array_sum(array_map(function($f) { return $f->litros; }, $fuelLogs)),
-                'total_cost' => array_sum(array_map(function($f) { return $f->custo_total; }, $fuelLogs)),
+                'total_liters' => array_sum(array_map(function($f) { return $f->liters; }, $fuelLogs)),
+                'total_cost' => array_sum(array_map(function($f) { return $f->value; }, $fuelLogs)),
                 'average_price_per_liter' => $this->calculateAveragePricePerLiter($fuelLogs),
                 'fuel_efficiency' => $this->calculateFuelEfficiency($fuelLogs),
                 'cost_per_km' => $this->calculateCostPerKm($fuelLogs),
@@ -266,12 +265,12 @@ class FuelLogController extends BaseApiController
             // Último abastecimento
             $lastFuelLog = FuelLog::find()
                 ->where(['vehicle_id' => $vehicle->id])
-                ->orderBy(['data_abastecimento' => SORT_DESC])
+                ->orderBy(['date' => SORT_DESC])
                 ->one();
 
             if ($lastFuelLog) {
-                $daysSinceLastFuel = floor((time() - strtotime($lastFuelLog->data_abastecimento)) / (24 * 60 * 60));
-                $kmSinceLastFuel = $vehicle->mileage - ($lastFuelLog->quilometragem ?? 0);
+                $daysSinceLastFuel = floor((time() - strtotime($lastFuelLog->date)) / (24 * 60 * 60));
+                $kmSinceLastFuel = $vehicle->mileage - ($lastFuelLog->current_mileage ?? 0);
 
                 // Critérios para alerta (customizáveis)
                 $maxDaysWithoutFuel = 30;
@@ -286,7 +285,7 @@ class FuelLogController extends BaseApiController
                             'brand' => $vehicle->brand,
                             'model' => $vehicle->model,
                         ],
-                        'last_fuel_date' => $lastFuelLog->data_abastecimento,
+                        'last_fuel_date' => $lastFuelLog->date,
                         'days_since_last_fuel' => $daysSinceLastFuel,
                         'km_since_last_fuel' => $kmSinceLastFuel,
                         'message' => "Veículo {$vehicle->license_plate} pode estar com baixo combustível",
@@ -336,9 +335,9 @@ class FuelLogController extends BaseApiController
         $query = FuelLog::find()
             ->joinWith('vehicle')
             ->where(['{{%vehicles}}.company_id' => $companyId])
-            ->andWhere(['between', 'data_abastecimento', $startDate, $endDate]);
+            ->andWhere(['between', 'date', $startDate, $endDate]);
 
-        $fuelLogs = $query->orderBy(['vehicle_id' => SORT_ASC, 'data_abastecimento' => SORT_ASC])->all();
+        $fuelLogs = $query->orderBy(['vehicle_id' => SORT_ASC, 'date' => SORT_ASC])->all();
 
         $vehicleEfficiency = $this->calculateVehicleEfficiency($fuelLogs);
 
@@ -349,8 +348,8 @@ class FuelLogController extends BaseApiController
             ],
             'summary' => [
                 'total_vehicles' => count($vehicleEfficiency),
-                'total_fuel_cost' => array_sum(array_map(function($f) { return $f->custo_total; }, $fuelLogs)),
-                'total_liters' => array_sum(array_map(function($f) { return $f->litros; }, $fuelLogs)),
+                'total_fuel_cost' => array_sum(array_map(function($f) { return $f->value; }, $fuelLogs)),
+                'total_liters' => array_sum(array_map(function($f) { return $f->liters; }, $fuelLogs)),
                 'fleet_average_efficiency' => $this->calculateFleetAverageEfficiency($vehicleEfficiency),
             ],
             'vehicle_efficiency' => $vehicleEfficiency,
@@ -416,8 +415,8 @@ class FuelLogController extends BaseApiController
     {
         if (empty($fuelLogs)) return 0;
 
-        $totalCost = array_sum(array_map(function($f) { return $f->custo_total; }, $fuelLogs));
-        $totalLiters = array_sum(array_map(function($f) { return $f->litros; }, $fuelLogs));
+        $totalCost = array_sum(array_map(function($f) { return $f->value; }, $fuelLogs));
+        $totalLiters = array_sum(array_map(function($f) { return $f->liters; }, $fuelLogs));
 
         return $totalLiters > 0 ? round($totalCost / $totalLiters, 3) : 0;
     }
@@ -439,11 +438,11 @@ class FuelLogController extends BaseApiController
             $current = $fuelLogs[$i];
             $previous = $fuelLogs[$i - 1];
 
-            if ($current->quilometragem && $previous->quilometragem) {
-                $distance = $current->quilometragem - $previous->quilometragem;
+            if ($current->current_mileage && $previous->current_mileage) {
+                $distance = $current->current_mileage - $previous->current_mileage;
                 if ($distance > 0) {
                     $totalDistance += $distance;
-                    $totalFuel += $current->litros;
+                    $totalFuel += $current->liters;
                 }
             }
         }
@@ -462,14 +461,14 @@ class FuelLogController extends BaseApiController
         if (count($fuelLogs) < 2) return 0;
 
         $totalDistance = 0;
-        $totalCost = array_sum(array_map(function($f) { return $f->custo_total; }, $fuelLogs));
+        $totalCost = array_sum(array_map(function($f) { return $f->value; }, $fuelLogs));
 
         for ($i = 1; $i < count($fuelLogs); $i++) {
             $current = $fuelLogs[$i];
             $previous = $fuelLogs[$i - 1];
 
-            if ($current->quilometragem && $previous->quilometragem) {
-                $distance = $current->quilometragem - $previous->quilometragem;
+            if ($current->current_mileage && $previous->current_mileage) {
+                $distance = $current->current_mileage - $previous->current_mileage;
                 if ($distance > 0) {
                     $totalDistance += $distance;
                 }
@@ -507,8 +506,8 @@ class FuelLogController extends BaseApiController
                 ];
             }
 
-            $grouped[$vehicleId]['total_liters'] += $fuelLog->litros;
-            $grouped[$vehicleId]['total_cost'] += $fuelLog->custo_total;
+            $grouped[$vehicleId]['total_liters'] += $fuelLog->liters;
+            $grouped[$vehicleId]['total_cost'] += $fuelLog->value;
             $grouped[$vehicleId]['fuel_logs_count']++;
             $grouped[$vehicleId]['fuel_logs'][] = $fuelLog;
         }
@@ -527,7 +526,7 @@ class FuelLogController extends BaseApiController
         $monthly = [];
 
         foreach ($fuelLogs as $fuelLog) {
-            $month = date('Y-m', strtotime($fuelLog->data_abastecimento));
+            $month = date('Y-m', strtotime($fuelLog->date));
             
             if (!isset($monthly[$month])) {
                 $monthly[$month] = [
@@ -538,8 +537,8 @@ class FuelLogController extends BaseApiController
                 ];
             }
 
-            $monthly[$month]['total_liters'] += $fuelLog->litros;
-            $monthly[$month]['total_cost'] += $fuelLog->custo_total;
+            $monthly[$month]['total_liters'] += $fuelLog->liters;
+            $monthly[$month]['total_cost'] += $fuelLog->value;
             $monthly[$month]['fuel_logs_count']++;
         }
 
@@ -563,7 +562,7 @@ class FuelLogController extends BaseApiController
             if (count($vehicleFuelLogs) >= 2) {
                 // Ordenar por data
                 usort($vehicleFuelLogs, function($a, $b) {
-                    return strtotime($a->data_abastecimento) - strtotime($b->data_abastecimento);
+                    return strtotime($a->date) - strtotime($b->date);
                 });
 
                 $efficiency[] = [

@@ -39,7 +39,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup', 'ticket'],
+                'only' => ['logout', 'signup', 'my-tickets', 'ticket-view'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -52,9 +52,9 @@ class SiteController extends Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['ticket'],
+                        'actions' => ['my-tickets', 'ticket-view'],
                         'allow' => true,
-                        'roles' => ['@'], // Qualquer utilizador autenticado
+                        'roles' => ['@'], // Apenas utilizadores autenticados podem ver os seus tickets
                     ],
                 ],
             ],
@@ -348,17 +348,23 @@ class SiteController extends Controller
 
     /**
      * Displays ticket page.
+     * Any user (logged or guest) can create a support ticket.
      *
      * @return mixed
      */
     public function actionTicket()
     {
         $model = new TicketForm();
+        
+        // Pre-fill form with logged user data
+        $model->loadUserData();
+        
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-                Yii::$app->session->setFlash('success', 'Obrigado por entrar em contato. Responderemos o mais breve possível.');
+            $ticket = $model->saveTicket();
+            if ($ticket) {
+                Yii::$app->session->setFlash('success', 'O seu ticket #' . $ticket->id . ' foi criado com sucesso! Entraremos em contacto brevemente.');
             } else {
-                Yii::$app->session->setFlash('error', 'Ocorreu um erro ao enviar sua mensagem.');
+                Yii::$app->session->setFlash('error', 'Ocorreu um erro ao criar o seu ticket. Por favor, tente novamente.');
             }
 
             return $this->refresh();
@@ -366,6 +372,52 @@ class SiteController extends Controller
 
         return $this->render('ticket', [
             'model' => $model,
+        ]);
+    }
+
+    /**
+     * Displays user's own tickets.
+     * Requires authentication.
+     *
+     * @return mixed
+     */
+    public function actionMyTickets()
+    {
+        $this->layout = 'dashboard';
+        
+        $userId = Yii::$app->user->id;
+        $tickets = \common\models\SupportTicket::find()
+            ->where(['user_id' => $userId])
+            ->orderBy(['created_at' => SORT_DESC])
+            ->all();
+        
+        return $this->render('my-tickets', [
+            'tickets' => $tickets,
+        ]);
+    }
+
+    /**
+     * Displays a specific ticket for the logged user.
+     * Requires authentication.
+     *
+     * @param int $id
+     * @return mixed
+     */
+    public function actionTicketView($id)
+    {
+        $this->layout = 'dashboard';
+        
+        $userId = Yii::$app->user->id;
+        $ticket = \common\models\SupportTicket::find()
+            ->where(['id' => $id, 'user_id' => $userId])
+            ->one();
+        
+        if (!$ticket) {
+            throw new \yii\web\NotFoundHttpException('O ticket solicitado não foi encontrado.');
+        }
+        
+        return $this->render('ticket-view', [
+            'ticket' => $ticket,
         ]);
     }
 

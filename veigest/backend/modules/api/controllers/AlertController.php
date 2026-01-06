@@ -7,12 +7,14 @@ use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
 use backend\modules\api\models\Alert;
+use backend\modules\api\components\MqttPublisher;
 
 /**
  * Alert API Controller
  * 
  * Fornece operações CRUD para alertas com multi-tenancy
  * Implementa filtragem automática por company_id
+ * Suporta publicação MQTT para atualização dinâmica de clientes
  * 
  * .
  */
@@ -354,6 +356,106 @@ class AlertController extends BaseApiController
             'resolved_count' => $resolved,
             'total_requested' => count($ids),
         ], "Resolvidos $resolved de " . count($ids) . " alertas");
+    }
+
+    /**
+     * Broadcast alert via MQTT
+     * POST /api/alerts/{id}/broadcast
+     * 
+     * Permite enviar manualmente um alerta existente para os clientes via MQTT
+     */
+    public function actionBroadcast($id)
+    {
+        $model = $this->findModel($id);
+        
+        try {
+            $mqtt = new MqttPublisher();
+            $event = $model->status === Alert::STATUS_ACTIVE 
+                ? MqttPublisher::EVENT_NEW 
+                : MqttPublisher::EVENT_UPDATED;
+            
+            $result = $mqtt->publishAlert($model->company_id, $model->toArray(), $event);
+            
+            if ($result) {
+                return $this->successResponse([
+                    'alert_id' => $model->id,
+                    'event' => $event,
+                    'topics' => [
+                        MqttPublisher::TOPIC_PREFIX . "/{$model->company_id}",
+                        MqttPublisher::TOPIC_PREFIX . "/{$model->company_id}/{$event}",
+                    ],
+                ], 'Alerta publicado via MQTT com sucesso');
+            }
+            
+            return $this->errorResponse('Falha ao publicar no broker MQTT', 503);
+            
+        } catch (\Exception $e) {
+            Yii::error("MQTT broadcast error: " . $e->getMessage(), 'mqtt');
+            return $this->errorResponse('Erro ao conectar ao broker MQTT: ' . $e->getMessage(), 503);
+        }
+    }
+
+    /**
+     * Get MQTT channel information
+     * GET /api/alerts/mqtt-info
+     * 
+     * Retorna informação sobre os canais MQTT disponíveis para subscrição
+     */
+    public function actionMqttInfo()
+    {
+        $companyId = $this->getCompanyId();
+        $baseTopic = MqttPublisher::TOPIC_PREFIX . "/{$companyId}";
+        
+        return $this->successResponse([
+            'broker' => [
+                'host' => 'mosquitto',
+                'port' => 1883,
+                'protocol' => 'mqtt',
+            ],
+            'channels' => [
+                [
+                    'topic' => $baseTopic,
+                    'description' => 'Todos os alertas da empresa',
+                    'events' => ['new', 'resolved', 'ignored', 'updated'],
+                ],
+                [
+                    'topic' => "{$baseTopic}/new",
+                    'description' => 'Novos alertas criados',
+                ],
+                [
+                    'topic' => "{$baseTopic}/resolved",
+                    'description' => 'Alertas resolvidos',
+                ],
+                [
+                    'topic' => "{$baseTopic}/ignored",
+                    'description' => 'Alertas ignorados',
+                ],
+                [
+                    'topic' => "{$baseTopic}/critical",
+                    'description' => 'Alertas de prioridade crítica',
+                ],
+                [
+                    'topic' => "{$baseTopic}/high",
+                    'description' => 'Alertas de alta prioridade',
+                ],
+            ],
+            'payload_format' => [
+                'event' => 'Tipo de evento (new, resolved, ignored, updated)',
+                'timestamp' => 'Data/hora ISO 8601',
+                'data' => 'Objeto com dados do alerta',
+            ],
+            'example_payload' => [
+                'event' => 'new',
+                'timestamp' => date('c'),
+                'data' => [
+                    'id' => 1,
+                    'type' => 'maintenance',
+                    'title' => 'Manutenção Agendada',
+                    'priority' => 'high',
+                    'status' => 'active',
+                ],
+            ],
+        ]);
     }
 
     /**

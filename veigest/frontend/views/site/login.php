@@ -80,7 +80,7 @@ $this->title = 'Login';
 
                 <a href="<?= \yii\helpers\Url::to(['site/request-password-reset']) ?>"
                     class="text-sm font-medium text-primary hover:underline">
-                    Esqueceu a senha?
+                    Esqueceu a palavra-passe?
                 </a>
 
             </div>

@@ -15,7 +15,7 @@ use yii\web\ForbiddenHttpException;
  * 
  * Access Control:
  * - Admin: FULL ACCESS
- * - Manager: NO ACCESS (403 Forbidden)
+ * - Manager: LIMITED ACCESS (dashboard, tickets)
  * - Driver: NO ACCESS (403 Forbidden)
  */
 class SiteController extends Controller
@@ -31,7 +31,13 @@ class SiteController extends Controller
                         'actions' => ['login', 'error'],
                         'allow' => true,
                     ],
-                    // Backend access: admin only
+                    // Dashboard: admin and manager
+                    [
+                        'actions' => ['index', 'logout'],
+                        'allow' => true,
+                        'roles' => ['admin', 'manager'],
+                    ],
+                    // Other backend actions: admin only
                     [
                         'allow' => true,
                         'roles' => ['admin'],
@@ -41,7 +47,7 @@ class SiteController extends Controller
                 'denyCallback' => function ($rule, $action) {
                     $action->controller->layout = 'blank';
                     throw new ForbiddenHttpException(
-                        'You do not have permission to access the backend. Only administrators can access this area.'
+                        'Não tem permissão para aceder ao backend. Apenas administradores e gestores podem aceder a esta área.'
                     );
                 },
             ],

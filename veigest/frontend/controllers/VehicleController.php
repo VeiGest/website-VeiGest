@@ -103,7 +103,6 @@ class VehicleController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['post'],
-                    'assign' => ['post'],
                 ],
             ],
         ];
@@ -250,14 +249,14 @@ class VehicleController extends Controller
     {
         $model = $this->findModel($id);
 
-        $documentsProvider = new ActiveDataProvider([
+        $documentProvider = new ActiveDataProvider([
             'query' => $model->getDocuments(),
             'pagination' => ['pageSize' => 20],
         ]);
 
         return $this->render('documents', [
             'model' => $model,
-            'documentsProvider' => $documentsProvider,
+            'documentProvider' => $documentProvider,
         ]);
     }
 
@@ -283,24 +282,34 @@ class VehicleController extends Controller
     }
 
     /**
-     * RF-BO-005.5: Atribuição a condutores (via POST)
+     * RF-BO-005.5: Atribuição a condutores
+     * GET: Mostrar formulário de atribuição
+     * POST: Processar atribuição
      * @param int $id
      */
     public function actionAssign($id)
     {
         $model = $this->findModel($id);
-        $driverId = Yii::$app->request->post('driver_id');
 
-        if ($driverId !== null) {
+        // Se POST, processar atribuição
+        if (Yii::$app->request->isPost) {
+            $driverId = Yii::$app->request->post('driver_id');
             $model->driver_id = $driverId ?: null;
             if ($model->save(false, ['driver_id'])) {
                 Yii::$app->session->setFlash('success', 'Condutor atribuído com sucesso.');
             } else {
                 Yii::$app->session->setFlash('error', 'Erro ao atribuir condutor.');
             }
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->redirect(['view', 'id' => $model->id]);
+        // GET: Mostrar formulário
+        $drivers = Vehicle::getAvailableDrivers($model->company_id);
+
+        return $this->render('assign', [
+            'model' => $model,
+            'drivers' => $drivers,
+        ]);
     }
 
     /**

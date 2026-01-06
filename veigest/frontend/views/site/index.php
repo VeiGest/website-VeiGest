@@ -40,7 +40,7 @@ $this->title = 'Bem-vindo à VeiGest';
     <section id="services" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Nossos Serviços</h2>
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Os Nossos Serviços</h2>
                 <p class="text-xl text-gray-600">Soluções completas para gestão eficiente da sua frota</p>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
@@ -153,7 +153,7 @@ $this->title = 'Bem-vindo à VeiGest';
                     </div>
                     <div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Fácil de Usar</h3>
-                        <p class="text-gray-600">Interface intuitiva que não requer treinamento especializado para operadores.</p>
+                        <p class="text-gray-600">Interface intuitiva que não requer formação especializada para operadores.</p>
                     </div>
                 </div>
             </div>
@@ -164,7 +164,7 @@ $this->title = 'Bem-vindo à VeiGest';
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl md:text-4xl font-bold mb-6">Comece a Otimizar Sua Frota Hoje</h2>
             <p class="text-lg mb-8 text-opacity-90">
-                Junte-se a centenas de empresas que já confiam em VeiGest para gerir suas operações
+                Junte-se a centenas de empresas que já confiam em VeiGest para gerir as suas operações
             </p>
             <?= yii\bootstrap5\Html::a('Aceder ao Sistema', ['/site/login'], [
                 'class' => 'inline-block bg-white text-primary px-10 py-4 rounded-lg font-bold hover:bg-gray-100 transition text-lg',

@@ -59,12 +59,12 @@ $monthlyCost = (float)\Yii::$app->db->createCommand(
         <div class="small-box bg-success">
             <div class="inner">
                 <h3><?= $totalDrivers ?></h3>
-                <p>Active Drivers</p>
+                <p>Condutores Ativos</p>
             </div>
             <div class="icon">
                 <i class="fas fa-user-tie"></i>
             </div>
-            <a href="<?= \yii\helpers\Url::to(['driver/index']) ?>" class="small-box-footer">More <i class="fas fa-arrow-circle-right"></i></a>
+            <a href="<?= \yii\helpers\Url::to(['driver/index']) ?>" class="small-box-footer">Ver mais <i class="fas fa-arrow-circle-right"></i></a>
         </div>
     </div>
 

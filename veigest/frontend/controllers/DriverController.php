@@ -341,12 +341,14 @@ class DriverController extends Controller
      */
     protected function findModel($id)
     {
+        // Buscar condutor que tenha role 'driver' no RBAC (auth_assignment)
         $model = Driver::find()
+            ->innerJoin('auth_assignment', 'auth_assignment.user_id = users.id')
             ->where([
-                'id' => $id,
-                'company_id' => $this->getCompanyId(),
+                'users.id' => $id,
+                'users.company_id' => $this->getCompanyId(),
             ])
-            ->andWhere(['like', 'roles', 'condutor'])
+            ->andWhere(['auth_assignment.item_name' => 'driver'])
             ->one();
 
         if ($model !== null && $model->status != Driver::STATUS_INACTIVE) {

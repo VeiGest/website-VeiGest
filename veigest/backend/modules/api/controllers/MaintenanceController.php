@@ -59,20 +59,19 @@ class MaintenanceController extends BaseApiController
             $query->andWhere(['vehicle_id' => $vehicleId]);
         }
         
-        if ($tipo = $request->get('tipo')) {
-            $query->andWhere(['tipo' => $tipo]);
+        if ($type = $request->get('type')) {
+            $query->andWhere(['type' => $type]);
         }
         
-        if ($estado = $request->get('estado')) {
-            $query->andWhere(['estado' => $estado]);
+        if ($status = $request->get('status')) {
+            $query->andWhere(['status' => $status]);
         }
 
         if ($search = $request->get('search')) {
             $query->andWhere([
                 'or',
-                ['like', 'descricao', $search],
-                ['like', 'fornecedor', $search],
-                ['like', 'observacoes', $search]
+                ['like', 'description', $search],
+                ['like', 'workshop', $search]
             ]);
         }
 
@@ -83,8 +82,8 @@ class MaintenanceController extends BaseApiController
                 'page' => $request->get('page', 1) - 1,
             ],
             'sort' => [
-                'defaultOrder' => ['data_manutencao' => SORT_DESC],
-                'attributes' => ['id', 'data_manutencao', 'custo', 'tipo', 'estado', 'created_at']
+                'defaultOrder' => ['date' => SORT_DESC],
+                'attributes' => ['id', 'date', 'cost', 'type', 'status', 'created_at']
             ],
         ]);
 
@@ -172,17 +171,17 @@ class MaintenanceController extends BaseApiController
         
         // Filtros opcionais
         $request = Yii::$app->request;
-        if ($tipo = $request->get('tipo')) {
-            $query->andWhere(['tipo' => $tipo]);
+        if ($type = $request->get('type')) {
+            $query->andWhere(['type' => $type]);
         }
-        if ($estado = $request->get('estado')) {
-            $query->andWhere(['estado' => $estado]);
+        if ($status = $request->get('status')) {
+            $query->andWhere(['status' => $status]);
         }
 
         return new ActiveDataProvider([
             'query' => $query,
             'pagination' => ['pageSize' => $request->get('per-page', 20)],
-            'sort' => ['defaultOrder' => ['data_manutencao' => SORT_DESC]],
+            'sort' => ['defaultOrder' => ['date' => SORT_DESC]],
         ]);
     }
 
@@ -203,12 +202,12 @@ class MaintenanceController extends BaseApiController
         $query = Maintenance::find()
             ->joinWith('vehicle')
             ->where(['{{%vehicles}}.company_id' => $companyId])
-            ->andWhere(['{{%maintenances}}.estado' => $estado]);
+            ->andWhere(['{{%maintenances}}.status' => $estado]);
 
         return new ActiveDataProvider([
             'query' => $query,
             'pagination' => ['pageSize' => Yii::$app->request->get('per-page', 20)],
-            'sort' => ['defaultOrder' => ['data_manutencao' => SORT_DESC]],
+            'sort' => ['defaultOrder' => ['date' => SORT_DESC]],
         ]);
     }
 
@@ -225,19 +224,18 @@ class MaintenanceController extends BaseApiController
         $scheduleData = Yii::$app->request->bodyParams;
         
         if (isset($scheduleData['scheduled_date'])) {
-            $model->data_manutencao = $scheduleData['scheduled_date'];
+            $model->date = $scheduleData['scheduled_date'];
         }
         
-        if (isset($scheduleData['priority'])) {
-            $model->observacoes = ($model->observacoes ? $model->observacoes . '; ' : '') 
-                                . 'Prioridade: ' . $scheduleData['priority'];
+        if (isset($scheduleData['next_date'])) {
+            $model->next_date = $scheduleData['next_date'];
         }
         
-        if (isset($scheduleData['assigned_technician'])) {
-            $model->fornecedor = $scheduleData['assigned_technician'];
+        if (isset($scheduleData['assigned_workshop'])) {
+            $model->workshop = $scheduleData['assigned_workshop'];
         }
 
-        $model->estado = 'agendada';
+        $model->status = 'scheduled';
 
         if ($model->save()) {
             return $model;
@@ -269,7 +267,7 @@ class MaintenanceController extends BaseApiController
         $query = Maintenance::find()
             ->joinWith('vehicle')
             ->where(['{{%vehicles}}.company_id' => $companyId])
-            ->andWhere(['between', 'data_manutencao', $startDate, $endDate]);
+            ->andWhere(['between', 'date', $startDate, $endDate]);
 
         $maintenances = $query->all();
 
@@ -282,7 +280,7 @@ class MaintenanceController extends BaseApiController
             ],
             'summary' => [
                 'total_maintenances' => count($maintenances),
-                'total_cost' => array_sum(array_map(function($m) { return $m->custo; }, $maintenances)),
+                'total_cost' => array_sum(array_map(function($m) { return $m->cost; }, $maintenances)),
                 'by_type' => $this->groupMaintenancesByType($maintenances),
                 'by_status' => $this->groupMaintenancesByStatus($maintenances),
             ],
@@ -310,7 +308,7 @@ class MaintenanceController extends BaseApiController
         $query = Maintenance::find()
             ->joinWith('vehicle')
             ->where(['{{%vehicles}}.company_id' => $companyId])
-            ->andWhere(['between', 'data_manutencao', $startDate, $endDate]);
+            ->andWhere(['between', 'date', $startDate, $endDate]);
 
         $maintenances = $query->all();
 
@@ -320,8 +318,8 @@ class MaintenanceController extends BaseApiController
                 'end_date' => $endDate,
             ],
             'costs' => [
-                'total_cost' => array_sum(array_map(function($m) { return $m->custo; }, $maintenances)),
-                'average_cost' => count($maintenances) > 0 ? array_sum(array_map(function($m) { return $m->custo; }, $maintenances)) / count($maintenances) : 0,
+                'total_cost' => array_sum(array_map(function($m) { return $m->cost; }, $maintenances)),
+                'average_cost' => count($maintenances) > 0 ? array_sum(array_map(function($m) { return $m->cost; }, $maintenances)) / count($maintenances) : 0,
                 'by_vehicle' => $this->groupMaintenancesByVehicle($maintenances),
                 'by_type' => $this->groupMaintenancesCostByType($maintenances),
             ],
@@ -347,20 +345,20 @@ class MaintenanceController extends BaseApiController
             ->where(['{{%vehicles}}.company_id' => $companyId]);
 
         $pendingQuery = clone $totalQuery;
-        $pendingQuery->andWhere(['estado' => 'agendada']);
+        $pendingQuery->andWhere(['status' => 'scheduled']);
 
         $completedQuery = clone $totalQuery;
-        $completedQuery->andWhere(['estado' => 'concluida']);
+        $completedQuery->andWhere(['status' => 'completed']);
 
         return [
             'total_maintenances' => $totalQuery->count(),
             'pending_maintenances' => $pendingQuery->count(),
             'completed_maintenances' => $completedQuery->count(),
-            'total_cost' => $totalQuery->sum('custo') ?? 0,
-            'average_cost' => $totalQuery->average('custo') ?? 0,
+            'total_cost' => $totalQuery->sum('cost') ?? 0,
+            'average_cost' => $totalQuery->average('cost') ?? 0,
             'maintenances_by_type' => $this->getMaintenancesByType($companyId),
             'recent_maintenances' => $totalQuery
-                ->orderBy(['data_manutencao' => SORT_DESC])
+                ->orderBy(['date' => SORT_DESC])
                 ->limit(10)
                 ->all(),
         ];
@@ -404,7 +402,7 @@ class MaintenanceController extends BaseApiController
     {
         $grouped = [];
         foreach ($maintenances as $maintenance) {
-            $type = $maintenance->tipo;
+            $type = $maintenance->type;
             if (!isset($grouped[$type])) {
                 $grouped[$type] = 0;
             }
@@ -423,7 +421,7 @@ class MaintenanceController extends BaseApiController
     {
         $grouped = [];
         foreach ($maintenances as $maintenance) {
-            $status = $maintenance->estado;
+            $status = $maintenance->status;
             if (!isset($grouped[$status])) {
                 $grouped[$status] = 0;
             }
@@ -455,7 +453,7 @@ class MaintenanceController extends BaseApiController
                     'maintenance_count' => 0,
                 ];
             }
-            $grouped[$vehicleId]['total_cost'] += $maintenance->custo;
+            $grouped[$vehicleId]['total_cost'] += $maintenance->cost;
             $grouped[$vehicleId]['maintenance_count']++;
         }
         return array_values($grouped);
@@ -471,14 +469,14 @@ class MaintenanceController extends BaseApiController
     {
         $grouped = [];
         foreach ($maintenances as $maintenance) {
-            $type = $maintenance->tipo;
+            $type = $maintenance->type;
             if (!isset($grouped[$type])) {
                 $grouped[$type] = [
                     'total_cost' => 0,
                     'count' => 0,
                 ];
             }
-            $grouped[$type]['total_cost'] += $maintenance->custo;
+            $grouped[$type]['total_cost'] += $maintenance->cost;
             $grouped[$type]['count']++;
         }
         
@@ -499,11 +497,11 @@ class MaintenanceController extends BaseApiController
     private function getMaintenancesByType($companyId)
     {
         $query = "
-            SELECT m.tipo, COUNT(*) as count, COALESCE(SUM(m.custo), 0) as total_cost
+            SELECT m.type, COUNT(*) as count, COALESCE(SUM(m.cost), 0) as total_cost
             FROM {{%maintenances}} m
             JOIN {{%vehicles}} v ON m.vehicle_id = v.id
             WHERE v.company_id = :companyId
-            GROUP BY m.tipo
+            GROUP BY m.type
         ";
 
         return Yii::$app->db->createCommand($query, [':companyId' => $companyId])->queryAll();

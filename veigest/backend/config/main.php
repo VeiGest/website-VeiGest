@@ -122,7 +122,7 @@ return [
                 ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/alert'], 'pluralize' => false],
                 ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/activity-log'], 'pluralize' => false],
                 ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/route'], 'pluralize' => false],
-                ['class' => 'yii\\rest\\UrlRule', 'controller' => ['api/ticket'], 'pluralize' => false],
+
                 
                 // Custom endpoints for companies
                 'GET api/companies/<id:\d+>/vehicles' => 'api/company/vehicles',
@@ -170,10 +170,14 @@ return [
                 // Custom endpoints for alerts
                 'POST api/alerts/<id:\d+>/resolve' => 'api/alert/resolve',
                 'POST api/alerts/<id:\d+>/ignore' => 'api/alert/ignore',
+                'POST api/alerts/<id:\d+>/broadcast' => 'api/alert/broadcast',
+                'GET api/alerts/mqtt-info' => 'api/alert/mqtt-info',
                 'GET api/alerts/by-type/<type:\w+>' => 'api/alert/by-type',
                 'GET api/alerts/by-priority/<priority:\w+>' => 'api/alert/by-priority',
                 'GET api/alerts/count' => 'api/alert/count',
                 'GET api/alerts/stats' => 'api/alert/stats',
+                'GET api/alerts/types' => 'api/alert/types',
+                'GET api/alerts/priorities' => 'api/alert/priorities',
                 'POST api/alerts/bulk-resolve' => 'api/alert/bulk-resolve',
                 
                 // Custom endpoints for activity logs
@@ -191,17 +195,6 @@ return [
                 'GET api/routes/active' => 'api/route/active',
                 'GET api/routes/scheduled' => 'api/route/scheduled',
                 'GET api/routes/stats' => 'api/route/stats',
-                'GET api/routes/<id:\d+>/tickets' => 'api/route/tickets',
-                
-                // Custom endpoints for tickets
-                'POST api/tickets/<id:\d+>/cancel' => 'api/ticket/cancel',
-                'POST api/tickets/<id:\d+>/complete' => 'api/ticket/complete',
-                'GET api/tickets/by-route/<route_id:\d+>' => 'api/ticket/by-route',
-                'GET api/tickets/by-status/<status:\w+>' => 'api/ticket/by-status',
-                'GET api/tickets/stats' => 'api/ticket/stats',
-                'GET api/tickets/statuses' => 'api/ticket/statuses',
-                'POST api/tickets/bulk-cancel' => 'api/ticket/bulk-cancel',
-                'POST api/tickets/bulk-complete' => 'api/ticket/bulk-complete',
             ],
         ],
     ],

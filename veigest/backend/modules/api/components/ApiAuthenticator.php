@@ -64,7 +64,7 @@ class ApiAuthenticator extends AuthMethod
         }
         
         // Verificar se usuário está ativo
-        if ($identity->estado !== 'ativo' && $identity->status !== 'active') {
+        if ($identity->status !== 'active') {
             throw new UnauthorizedHttpException('Usuário inativo');
         }
         

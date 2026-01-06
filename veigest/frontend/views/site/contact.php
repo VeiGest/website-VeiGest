@@ -125,7 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= $form->field($model, 'name')->textInput([
                         'autofocus' => true,
                         'class' => 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary',
-                        'placeholder' => 'Seu nome'
+                        'placeholder' => 'O seu nome'
                     ])->label('Nome', ['class' => 'block text-sm font-medium text-gray-700 mb-2']) ?>
 
                     <?= $form->field($model, 'email')->textInput([
@@ -184,7 +184,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Newsletter</h3>
                         <p class="text-gray-600 mb-6">Mantenha-se atualizado com as últimas novidades da VeiGest</p>
                         <div class="flex gap-4">
-                            <input type="email" placeholder="Seu email" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary">
+                            <input type="email" placeholder="O seu email" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary">
                             <button class="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-90 transition">
                                 Subscrever
                             </button>

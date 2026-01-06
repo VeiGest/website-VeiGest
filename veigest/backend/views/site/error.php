@@ -11,10 +11,10 @@ $this->title = $name;
 
 // Extract error code from exception or name
 $errorCode = 403;
-if (isset($exception) && method_exists($exception, 'statusCode')) {
+if (isset($exception) && $exception instanceof \yii\web\HttpException) {
     $errorCode = $exception->statusCode;
 } elseif (preg_match('/(\d{3})/', $name, $matches)) {
-    $errorCode = $matches[1];
+    $errorCode = (int)$matches[1];
 }
 
 // Determine error type for styling
