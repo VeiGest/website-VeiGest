@@ -4,4 +4,6 @@ bootstrap: false
 modules:
     enabled:
         - Yii2:
-            part: fixtures
+            part: [orm, fixtures]
+            configFile: 'config/codeception-local.php'
+

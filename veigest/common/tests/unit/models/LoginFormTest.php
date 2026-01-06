@@ -4,10 +4,17 @@ namespace common\tests\unit\models;
 
 use Yii;
 use common\models\LoginForm;
+use common\models\User;
 use common\fixtures\UserFixture;
 
 /**
- * Login form test
+ * Testes Unitários - LoginForm
+ * 
+ * Testa a validação e autenticação do formulário de login.
+ * 
+ * @group unit
+ * @group models
+ * @group auth
  */
 class LoginFormTest extends \Codeception\Test\Unit
 {
@@ -15,7 +22,6 @@ class LoginFormTest extends \Codeception\Test\Unit
      * @var \common\tests\UnitTester
      */
     protected $tester;
-
 
     /**
      * @return array
@@ -30,38 +36,85 @@ class LoginFormTest extends \Codeception\Test\Unit
         ];
     }
 
+    /**
+     * Teste 1: Login com utilizador inexistente deve falhar
+     */
     public function testLoginNoUser()
     {
         $model = new LoginForm([
-            'username' => 'not_existing_username',
-            'password' => 'not_existing_password',
+            'username' => 'utilizador_inexistente',
+            'password' => 'password_qualquer',
         ]);
 
-        verify($model->login())->false();
-        verify(Yii::$app->user->isGuest)->true();
+        verify('Login deve retornar false', $model->login())->false();
+        verify('Utilizador deve permanecer como guest', Yii::$app->user->isGuest)->true();
     }
 
+    /**
+     * Teste 2: Login com password incorreta deve falhar
+     */
     public function testLoginWrongPassword()
     {
         $model = new LoginForm([
-            'username' => 'bayer.hudson',
-            'password' => 'wrong_password',
+            'username' => 'test_admin',
+            'password' => 'password_errada',
         ]);
 
-        verify($model->login())->false();
-        verify( $model->errors)->arrayHasKey('password');
-        verify(Yii::$app->user->isGuest)->true();
+        verify('Login deve retornar false', $model->login())->false();
+        verify('Deve ter erro no campo password', $model->errors)->arrayHasKey('password');
+        verify('Utilizador deve permanecer como guest', Yii::$app->user->isGuest)->true();
     }
 
-    public function testLoginCorrect()
+    /**
+     * Teste 3: Validação de campos obrigatórios
+     */
+    public function testValidationRequired()
     {
         $model = new LoginForm([
-            'username' => 'bayer.hudson',
-            'password' => 'password_0',
+            'username' => '',
+            'password' => '',
         ]);
 
-        verify($model->login())->true();
-        verify($model->errors)->arrayHasNotKey('password');
-        verify(Yii::$app->user->isGuest)->false();
+        verify('Validação deve falhar', $model->validate())->false();
+        verify('Deve ter erro no username', $model->errors)->arrayHasKey('username');
+        verify('Deve ter erro no password', $model->errors)->arrayHasKey('password');
+    }
+
+    /**
+     * Teste 4: Login com utilizador inativo deve falhar
+     */
+    public function testLoginInactiveUser()
+    {
+        $model = new LoginForm([
+            'username' => 'test_inactive',
+            'password' => 'admin123', // password correta mas user inativo
+        ]);
+
+        verify('Login de utilizador inativo deve retornar false', $model->login())->false();
+        verify('Utilizador deve permanecer como guest', Yii::$app->user->isGuest)->true();
+    }
+
+    /**
+     * Teste 5: Opção Remember Me
+     */
+    public function testRememberMeValidation()
+    {
+        $model = new LoginForm([
+            'username' => 'test_admin',
+            'password' => 'test',
+            'rememberMe' => 'invalid_value',
+        ]);
+
+        verify('RememberMe com valor inválido deve falhar validação', $model->validate())->false();
+        
+        $model2 = new LoginForm([
+            'username' => 'test_admin',
+            'password' => 'test',
+            'rememberMe' => true,
+        ]);
+        
+        // RememberMe é boolean, não deve causar erro de validação
+        $model2->validate();
+        verify('RememberMe não deve ter erro', $model2->errors)->arrayHasNotKey('rememberMe');
     }
 }

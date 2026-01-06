@@ -1,0 +1,10 @@
+suite_namespace: frontend\tests\functional
+actor: FunctionalTester
+bootstrap: false
+modules:
+    enabled:
+        - Yii2:
+            part: [init, fixtures, orm]
+            entryScript: web/index-test.php
+            entryUrl: http://localhost:20080/index-test.php
+            cleanup: true
