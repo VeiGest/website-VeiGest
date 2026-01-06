@@ -10,6 +10,9 @@ use yii\bootstrap5\ActiveForm;
 $this->title = 'Login';
 ?>
 
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
 <style>
     :root {
         --color-primary: #09BC8A;
@@ -28,6 +31,27 @@ $this->title = 'Login';
     .input-focus:focus {
         border-color: var(--color-primary);
         box-shadow: 0 0 0 3px rgba(9, 188, 138, 0.1);
+    }
+
+    #togglePassword {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: transparent;
+        border: none;
+        padding: 0 12px;
+        cursor: pointer;
+        color: #6b7280;
+        transition: color 0.2s;
+    }
+
+    #togglePassword:hover {
+        color: #111827;
+    }
+
+    #togglePassword:focus {
+        outline: none;
     }
 </style>
 
@@ -53,6 +77,8 @@ $this->title = 'Login';
             <div>
                 <?= $form->field($model, 'username')->textInput([
                     'autofocus' => true,
+                    'autocomplete' => 'new-password',
+                    'value' => '',
                     'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
                     'placeholder' => 'Nome de Utilizador',
                 ])->label('Nome de Utilizador', ['class' => 'text-sm font-medium text-gray-900']) ?>
@@ -60,10 +86,22 @@ $this->title = 'Login';
 
             <!-- Password -->
             <div>
-                <?= $form->field($model, 'password')->passwordInput([
-                    'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 placeholder-gray-400 text-gray-900',
-                    'placeholder' => '••••••••',
-                ])->label('Palavra-passe', ['class' => 'text-sm font-medium text-gray-900']) ?>
+                <label class="text-sm font-medium text-gray-900">Palavra-passe</label>
+                <div class="relative">
+                    <?= Html::activePasswordInput($model, 'password', [
+                        'autocomplete' => 'new-password',
+                        'value' => '',
+                        'id' => 'loginform-password',
+                        'class' => 'bg-white border border-gray-300 rounded-lg block w-full p-2.5 pr-10 placeholder-gray-400 text-gray-900',
+                        'placeholder' => '••••••••',
+                    ]) ?>
+                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 hover:text-gray-900">
+                        <i class="bi bi-eye-slash" id="eyeIcon"></i>
+                    </button>
+                </div>
+                <?php if ($model->hasErrors('password')): ?>
+                    <div class="text-red-600 text-sm mt-1"><?= $model->getFirstError('password') ?></div>
+                <?php endif; ?>
             </div>
 
             <!-- Remember & Forgot -->
@@ -89,12 +127,8 @@ $this->title = 'Login';
             <!-- Login Button -->
             <div>
                 <?= Html::submitButton('Entrar', [
-                    'class' => '
-                w-full text-white font-semibold text-sm py-3 rounded-lg
-                bg-gradient-to-r from-emerald-500 to-teal-500
-                hover:from-emerald-600 hover:to-teal-600
-                transition-all duration-300
-                shadow-md hover:shadow-xl hover:scale-[1.02]',
+                    'class' => 'w-full py-3 px-4 bg-primary text-white font-semibold rounded-lg hover:opacity-90 transition-all duration-300',
+                    'style' => 'background-color: #09BC8A;'
                 ]) ?>
             </div>
             <?php ActiveForm::end(); ?>
@@ -135,3 +169,29 @@ $this->title = 'Login';
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var usernameField = document.querySelector('input[name="LoginForm[username]"]');
+    var passwordField = document.querySelector('input[name="LoginForm[password]"]');
+    
+    if (usernameField) usernameField.value = '';
+    if (passwordField) passwordField.value = '';
+
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('loginform-password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.remove('bi-eye-slash');
+            eyeIcon.classList.add('bi-eye');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.remove('bi-eye');
+            eyeIcon.classList.add('bi-eye-slash');
+        }
+    });
+});
+</script>

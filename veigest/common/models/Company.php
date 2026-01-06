@@ -9,15 +9,13 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property string $code
- * @property string $nome
- * @property string $email
- * @property string|null $telefone
- * @property string|null $nif
- * @property string|null $morada
- * @property string|null $cidade
- * @property string|null $codigo_postal
- * @property string|null $pais
- * @property string $estado
+ * @property string $name
+ * @property string $tax_id
+ * @property string|null $email
+ * @property string|null $phone
+ * @property string $status
+ * @property string $plan
+ * @property mixed|null $settings
  * @property string $created_at
  * @property string|null $updated_at
  *
@@ -42,17 +40,17 @@ class Company extends ActiveRecord
     public function rules()
     {
         return [
-            [['nome', 'email'], 'required'],
-            [['nome'], 'string', 'max' => 150],
+            [['name', 'tax_id'], 'required'],
+            [['name'], 'string', 'max' => 200],
+            [['tax_id'], 'string', 'max' => 20],
             [['email'], 'email'],
-            [['telefone'], 'string', 'max' => 20],
-            [['nif'], 'string', 'max' => 50],
-            [['morada', 'cidade'], 'string', 'max' => 200],
-            [['codigo_postal'], 'string', 'max' => 20],
-            [['pais'], 'string', 'max' => 100],
-            [['code'], 'string', 'max' => 10],
-            [['estado'], 'in', 'range' => ['ativo', 'inativo']],
-            [['estado'], 'default', 'value' => 'ativo'],
+            [['email'], 'string', 'max' => 150],
+            [['phone'], 'string', 'max' => 20],
+            [['status'], 'in', 'range' => ['active', 'suspended', 'inactive']],
+            [['status'], 'default', 'value' => 'active'],
+            [['plan'], 'in', 'range' => ['basic', 'professional', 'enterprise']],
+            [['plan'], 'default', 'value' => 'basic'],
+            [['settings'], 'safe'],
             [['created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -65,15 +63,13 @@ class Company extends ActiveRecord
         return [
             'id' => 'ID',
             'code' => 'Código',
-            'nome' => 'Nome',
+            'name' => 'Nome',
+            'tax_id' => 'NIF',
             'email' => 'Email',
-            'telefone' => 'Telefone',
-            'nif' => 'NIF',
-            'morada' => 'Morada',
-            'cidade' => 'Cidade',
-            'codigo_postal' => 'Código Postal',
-            'pais' => 'País',
-            'estado' => 'Estado',
+            'phone' => 'Telefone',
+            'status' => 'Estado',
+            'plan' => 'Plano',
+            'settings' => 'Configurações',
             'created_at' => 'Criado em',
             'updated_at' => 'Atualizado em',
         ];

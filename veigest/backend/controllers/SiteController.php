@@ -3,6 +3,11 @@
 namespace backend\controllers;
 
 use common\models\LoginForm;
+use common\models\User;
+use common\models\Company;
+use frontend\models\Vehicle;
+use frontend\models\Maintenance;
+use frontend\models\FuelLog;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -69,7 +74,57 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        // Estatísticas do sistema
+        $totalUsers = User::find()->count();
+        $totalCompanies = Company::find()->count();
+        $totalVehicles = Vehicle::find()->count();
+        $activeVehicles = Vehicle::find()->where(['status' => 'active'])->count();
+        $maintenanceAlerts = Maintenance::find()
+            ->where(['status' => 'scheduled'])
+            ->andWhere(['<', 'date', date('Y-m-d')])
+            ->count();
+        
+        // Consumo de combustível últimos 6 meses
+        $fuelData = FuelLog::find()
+            ->select(['DATE(date) as date', 'SUM(liters) as total_liters', 'SUM(value) as total_cost'])
+            ->where(['>=', 'date', date('Y-m-d', strtotime('-6 months'))])
+            ->groupBy('DATE(date)')
+            ->orderBy('date ASC')
+            ->asArray()
+            ->all();
+        
+        $fuelLabels = [];
+        $fuelValues = [];
+        foreach ($fuelData as $row) {
+            $fuelLabels[] = date('d/m', strtotime($row['date']));
+            $fuelValues[] = (float)$row['total_liters'];
+        }
+        
+        // Distribuição de veículos por estado
+        $vehiclesByStatus = Vehicle::find()
+            ->select(['status', 'COUNT(*) as count'])
+            ->groupBy('status')
+            ->asArray()
+            ->all();
+        
+        $statusLabels = [];
+        $statusValues = [];
+        foreach ($vehiclesByStatus as $row) {
+            $statusLabels[] = ucfirst($row['status']);
+            $statusValues[] = $row['count'];
+        }
+        
+        return $this->render('index', [
+            'totalUsers' => $totalUsers,
+            'totalCompanies' => $totalCompanies,
+            'totalVehicles' => $totalVehicles,
+            'activeVehicles' => $activeVehicles,
+            'maintenanceAlerts' => $maintenanceAlerts,
+            'fuelLabels' => json_encode($fuelLabels),
+            'fuelValues' => json_encode($fuelValues),
+            'statusLabels' => json_encode($statusLabels),
+            'statusValues' => json_encode($statusValues),
+        ]);
     }
 
     /**
