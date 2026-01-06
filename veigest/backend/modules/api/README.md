@@ -2,294 +2,196 @@
 
 Esta é a implementação oficial da API RESTful para o sistema VeiGest, seguindo rigorosamente os padrões REST e as melhores práticas de desenvolvimento de APIs.
 
+## 📚 Documentação Completa
+
+👉 **[Consulte a Documentação Completa da API](API_DOCUMENTATION.md)**
+
+A documentação inclui:
+- ✅ Todos os endpoints detalhados com exemplos
+- ✅ Guia completo de autenticação
+- ✅ Configuração passo a passo
+- ✅ Códigos de status HTTP
+- ✅ Exemplos de uso com cURL
+- ✅ Troubleshooting e resolução de problemas
+
+## 🚀 Quick Start
+
+### 1. Fazer Login
+
+```bash
+curl -X POST http://localhost:8002/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin"}'
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "data": {
+    "access_token": "eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImFkbWluIi4uLg==",
+    "token_type": "Bearer",
+    "expires_in": 86400
+  }
+}
+```
+
+### 2. Usar Token nas Requisições
+
+```bash
+curl -X GET http://localhost:8002/api/vehicle \
+  -H "Authorization: Bearer {seu_token}"
+```
+
 ## 🏗️ Arquitetura da API
 
-A API foi reestruturada para seguir um padrão arquitetural sólido:
-
 ### Estrutura de Diretórios
+
 ```
 backend/modules/api/
 ├── Module.php                     # Módulo principal da API
 ├── components/
-│   └── ApiAuthenticator.php      # Autenticação personalizada Bearer Token
+│   ├── ApiAuthenticator.php      # Autenticação Bearer Token
+│   └── MqttPublisher.php         # Integração MQTT para alertas
 ├── controllers/
-│   ├── BaseApiController.php     # Controlador base com comportamentos comuns
-│   ├── AuthController.php        # Endpoints de autenticação
+│   ├── BaseApiController.php     # Controlador base com CORS e auth
+│   ├── AuthController.php        # Autenticação (login, logout, me)
+│   ├── CompanyController.php     # Gestão de empresas
 │   ├── VehicleController.php     # CRUD de veículos
-│   └── UserController.php        # CRUD de usuários/condutores
+│   ├── UserController.php        # Gestão de usuários/condutores
+│   ├── MaintenanceController.php # Manutenções e relatórios
+│   ├── FuelLogController.php     # Abastecimentos e estatísticas
+│   ├── RouteController.php       # Gestão de rotas
+│   ├── AlertController.php       # Alertas com MQTT
+│   ├── DocumentController.php    # Gestão documental
+│   └── ActivityLogController.php # Log de atividades
 └── models/
     ├── Company.php               # Modelo de empresa
     ├── Vehicle.php               # Modelo de veículo
     ├── Maintenance.php           # Modelo de manutenção
-    └── FuelLog.php               # Modelo de abastecimento
+    ├── FuelLog.php               # Modelo de abastecimento
+    ├── Route.php                 # Modelo de rota
+    ├── Alert.php                 # Modelo de alerta
+    ├── Document.php              # Modelo de documento
+    └── ActivityLog.php           # Modelo de log
 ```
 
-### Controladores Principais
+## 📡 Módulos Disponíveis
 
-  - Configurações CORS automáticas
-  - Autenticação Bearer Token
-  - Respostas padronizadas (success/error)
-  - Verificações de multi-tenancy
-  - Content negotiation (JSON/XML)
+### 🔐 Autenticação
+- `POST /auth/login` - Login com username/password
+- `GET /auth/me` - Perfil do usuário autenticado
+- `POST /auth/refresh` - Renovar token
+- `POST /auth/logout` - Logout
+- `GET /auth/info` - Informações da API
 
-  - `POST /api/auth/login` — Login com username/password
-  - `GET /api/auth/me` — Informações do usuário autenticado
-  - `POST /api/auth/refresh` — Renovação de token
-  - `POST /api/auth/logout` — Logout
-  - `GET /api/auth/info` — Informações da API
+### 🏢 Empresas
+- CRUD completo de empresas
+- Listagem de veículos e usuários por empresa
+- Estatísticas detalhadas (veículos, manutenções, combustível)
 
-  - CRUD completo com filtragem por empresa
-  - Endpoints personalizados para manutenções e abastecimentos
-  - Estatísticas de consumo e custos
+### 🚗 Veículos
+- CRUD completo com multi-tenancy
+- Listagem de manutenções e abastecimentos por veículo
+- Estatísticas de consumo e custos
+- Filtros por status, marca, tipo de combustível
 
-### Novos Módulos / Endpoints (resumo)
+### 👥 Usuários
+- CRUD de usuários e condutores
+- Gestão de perfil e foto
+- Listagem por empresa e função
+- Controle de acesso RBAC
 
-- **MaintenanceController** — CRUD de manutenções e endpoints de relatórios:
-  - `GET /api/maintenance`, `POST /api/maintenance`, `PUT /api/maintenance/{id}`, `DELETE /api/maintenance/{id}`
-  - `GET /api/maintenance/by-vehicle/{vehicle_id}`
-  - `GET /api/maintenance/by-status/{estado}`
-  - `POST /api/maintenance/{id}/schedule`
-  - Relatórios: `GET /api/maintenance/reports/monthly`, `GET /api/maintenance/reports/costs`
+### 🔧 Manutenções
+- CRUD completo
+- Agendamento de manutenções
+- Relatórios mensais e de custos
+- Filtros por veículo, tipo e status
 
-- **FuelLogController** — Gestão de abastecimentos, estatísticas e relatórios de eficiência:
-  - `GET /api/fuel-log`, `POST /api/fuel-log`, `PUT /api/fuel-log/{id}`
-  - `GET /api/fuel-log/stats`, `GET /api/fuel-log/efficiency-report`, `GET /api/fuel-log/alerts`
+### ⛽ Abastecimentos
+- CRUD de registros de abastecimento
+- Estatísticas de consumo e eficiência
+- Alertas de consumo anormal
+- Relatórios de custos e km/litro
 
-- **CompanyController** — Endpoints avançados de empresa e estatísticas por empresa:
-  - `GET /api/company/{id}/vehicles`, `GET /api/company/{id}/users`, `GET /api/company/{id}/stats`
+### 📍 Rotas
+- CRUD de rotas
+- Gestão de trajetos por veículo e condutor
+- Estatísticas de distância e duração
 
-- **DocumentController / FileController** — Upload, listagem e download de ficheiros/documentos com multi-tenancy.
+### 🚨 Alertas
+- CRUD de alertas
+- Priorização (low, medium, high, critical)
+- Integração MQTT para notificações em tempo real
+- Geração automática de alertas de manutenção
 
-Consulte `API_ENDPOINTS_COMPLETE.md` para a lista completa e exemplos de requests/response.
+### 📄 Documentos
+- CRUD de documentos com upload
+- Gestão de documentos por veículo/condutor
+- Alertas de documentos próximos ao vencimento
 
-- **UserController** — Gestão de usuários:
-  - CRUD com controle de permissões RBAC
-  - Filtragem por empresa (multi-tenancy)
-  - Perfil do usuário e gestão de condutores
+## ⚙️ Características Principais
 
-As rotas REST são configuradas automaticamente em `backend/config/main.php`.
+- ✅ **RESTful** - Seguindo padrões REST
+- ✅ **Multi-tenancy** - Isolamento automático por empresa
+- ✅ **RBAC** - Controle de acesso baseado em funções
+- ✅ **CORS** - Configurado para cross-origin requests
+- ✅ **Autenticação** - Bearer Token (Base64)
+- ✅ **Validação** - Validação completa de dados
+- ✅ **Paginação** - Suporte em todas as listagens
+- ✅ **Filtros** - Filtros avançados via query params
+- ✅ **MQTT** - Mensageria em tempo real para alertas
+- ✅ **Auditoria** - Log de todas as atividades
 
-## 🚀 Endpoints Principais
+## 🧪 Testes
 
-### Autenticação
-- `POST /api/auth/login` — Login de usuário
-- `GET /api/auth/me` — Perfil do usuário autenticado  
-- `POST /api/auth/refresh` — Renovar token
-- `POST /api/auth/logout` — Logout
-- `GET /api/auth/info` — Informações da API
+Execute os testes automatizados:
 
-### Veículos
-- `GET /api/vehicles` — Listar veículos da empresa
-- `POST /api/vehicles` — Criar novo veículo
-- `GET /api/vehicles/{id}` — Detalhes do veículo
-- `PUT /api/vehicles/{id}` — Atualizar veículo
-- `DELETE /api/vehicles/{id}` — Deletar veículo
-- `GET /api/vehicles/{id}/maintenances` — Manutenções do veículo
-- `GET /api/vehicles/{id}/fuel-logs` — Abastecimentos do veículo
-- `GET /api/vehicles/{id}/stats` — Estatísticas do veículo
-- `GET /api/vehicles/by-status/{status}` — Filtrar por status
+```bash
+cd backend/modules/api-tests
 
-### Usuários
-- `GET /api/users` — Listar usuários da empresa
-- `POST /api/users` — Criar novo usuário
-- `GET /api/users/{id}` — Detalhes do usuário
-- `PUT /api/users/{id}` — Atualizar usuário
-- `DELETE /api/users/{id}` — Deletar usuário
-- `GET /api/users/drivers` — Listar apenas condutores
-- `GET /api/users/profile` — Perfil completo do usuário
-- `PUT /api/users/{id}/photo` — Atualizar foto do usuário
+# Teste de conectividade básica
+node test-connectivity-complete.js
 
-Todos os endpoints (exceto autenticação) requerem header: `Authorization: Bearer <access_token>`
+# Suite completa de testes
+npm test
 
-## 🔐 Sistema de Autenticação
-
-A API implementa um sistema robusto de autenticação Bearer Token com Base64 encoding:
-
-### Fluxo de Autenticação
-1. **Login**: Cliente envia `POST /api/auth/login` com `username` e `password`
-2. **Geração de Token**: Sistema gera token Base64 contendo:
-   - `user_id` — ID do usuário
-   - `company_id` — ID da empresa (multi-tenancy)
-   - `roles` — Papéis RBAC do usuário
-   - `permissions` — Permissões específicas
-   - `expires_at` — Timestamp de expiração (24h)
-3. **Uso**: Cliente inclui `Authorization: Bearer <token>` em requisições
-4. **Validação**: Sistema decodifica e valida o token em cada requisição
-
-### Estrutura do Token (Base64)
-```json
-{
-  "user_id": 123,
-  "username": "admin",
-  "company_id": 1,
-  "company_code": "ACME001",
-  "roles": ["manager", "user"],
-  "permissions": ["manage_vehicles", "view_reports"],
-  "expires_at": 1703123456,
-  "issued_at": 1703037056
-}
+# Testes individuais
+npm run test:auth
+npm run test:vehicles
+npm run test:maintenance
 ```
 
-### Multi-tenancy e RBAC
-- **Multi-tenancy**: Cada empresa tem acesso apenas aos seus dados
-- **RBAC**: Controle granular de permissões por papel
-- **Filtragem Automática**: Todos os recursos são filtrados por `company_id`
+## 🔧 Configuração
 
-### Recursos de Segurança:
-- **Tokens com Expiração**: 24 horas de validade
-- **Validação de Estado**: Usuários inativos são rejeitados
-- **CORS Configurado**: Headers de segurança automáticos  
-- **HTTPS Recomendado**: Para ambientes de produção
-- **Rate Limiting**: Configurável por controlador
+### Registrar Módulo
 
-## 📊 Formatos de Resposta
+Em `backend/config/main.php`:
 
-### Resposta de Sucesso
-```json
-{
-  "success": true,
-  "data": { ... },
-  "message": "Operação realizada com sucesso",
-  "timestamp": "2025-12-17T10:30:00Z"
-}
-```
-
-### Resposta de Erro
-```json
-{
-  "success": false,
-  "message": "Descrição do erro",
-  "errors": { ... },
-  "timestamp": "2025-12-17T10:30:00Z"
-}
-```
-
-## 🛠️ Configuração e Uso
-
-### Requisitos
-- PHP 7.4+
-- Yii2 Framework
-- Base de dados configurada
-- Extensão JSON habilitada
-
-### Configuração em main.php
 ```php
 'modules' => [
     'api' => [
         'class' => 'backend\modules\api\Module',
     ],
 ],
-'urlManager' => [
-    'enablePrettyUrl' => true,
-    'showScriptName' => false,
-    'rules' => [
-        ['class' => 'yii\rest\UrlRule', 'controller' => 'api/auth'],
-        ['class' => 'yii\rest\UrlRule', 'controller' => 'api/vehicle'],
-        ['class' => 'yii\rest\UrlRule', 'controller' => 'api/user'],
-    ],
-],
 ```
 
-## 🧪 Testes
+### Configurar Rotas
 
-A API inclui uma suite completa de testes JavaScript:
-- Testes de autenticação
-- Testes de CRUD para todos os recursos
-- Validação de multi-tenancy
-- Verificação de permissões RBAC
+Veja detalhes completos em [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
 
-Execute os testes:
-```bash
-cd backend/modules/api/v1/api-tests
-node run-all-tests.js
-```
+## 📖 Documentos Relacionados
 
-## 📚 Documentação Completa
-
-Para documentação detalhada de cada endpoint, consulte:
-- `API_ENDPOINTS.md` — Documentação completa da API
-- `API_REQUIREMENTS_GUIDE.md` — Guia de desenvolvimento
-- `api-tests/README.md` — Guia de testes
-
-## 🔄 Versionamento
-
-A API suporta versionamento através da URL:
-- Versão atual: `/api/` (sem versão = v1)
-- Futuras versões: `/api/v2/`, `/api/v3/`, etc.
+- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** - Documentação completa dos endpoints
+- **[docs/MQTT_MESSAGING.md](docs/MQTT_MESSAGING.md)** - Documentação do sistema MQTT
 
 ## 📞 Suporte
 
-Para dúvidas ou problemas:
-1. Consulte a documentação completa
-2. Execute os testes para validar a instalação  
-3. Verifique os logs do Yii2 em `runtime/logs/`
+- **Documentação:** [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
+- **Testes:** `backend/modules/api-tests/`
+- **Logs:** `backend/runtime/logs/app.log`
 
 ---
 
-**VeiGest API v1.0** — Sistema de Gestão de Veículos
-- Em produção, não use `auth_key` simples sem expiração. Prefira JWTs (com assinatura e claims) ou uma tabela separada de tokens com `expires_at` e `revoked`.
-- Limite origens permitidas no CORS em vez de liberar '*' globalmente.
-- Use HTTPS sempre.
-
-## Como modificar / estender a API
-
-### Adicionar um novo controller em v1
-1. Criar o arquivo `backend/modules/api/v1/controllers/NomeController.php` com namespace `backend\\modules\\api\\v1\\controllers`.
-2. Estender `yii\\rest\\ActiveController` (ou `yii\\rest\\Controller` para endpoints customizados).
-3. Se o endpoint deve exigir autenticação, adicione o comportamento de autenticação no método `behaviors()` do controller, por exemplo:
-
-```php
-public function behaviors()
-{
-    $behaviors = parent::behaviors();
-    // CORS
-    $behaviors['corsFilter'] = [ 'class' => \yii\filters\Cors::class ];
-    // Bearer auth
-    $behaviors['authenticator'] = [
-        'class' => \yii\filters\auth\CompositeAuth::class,
-        'authMethods' => [\yii\filters\auth\HttpBearerAuth::class],
-    ];
-    return $behaviors;
-}
-```
-
-### Criar uma nova versão (v2)
-1. Criar nova pasta `backend/modules/api/v2` e adicionar `Module.php` com `controllerNamespace = 'backend\\modules\\api\\v2\\controllers'`.
-2. Criar controllers em `backend/modules/api/v2/controllers`.
-3. Registrar o submódulo `v2` no `backend/config/main.php` sob `'modules' => ['api' => ['modules' => ['v2' => ['class' => 'backend\\\\modules\\\\api\\\\v2\\\\Module']]]]`.
-4. Adicionar/atualizar regras `yii\\rest\\UrlRule` se quiser rotas diferentes.
-
-### Alterar formato de resposta / comportamento global
-- Para alterar behaviors globais (por ex. serialização, autenticação padrão), você pode editar os controllers base ou criar um componente/base controller comum que os controllers da API estendam.
-
-## Exemplos de testes (PowerShell)
-
-1) Login (gera token):
-
-```powershell
-$body = @{ username = 'seu_usuario'; password = 'sua_senha' } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri 'http://localhost:21080/api/v1/auth/login' -Body $body -ContentType 'application/json'
-```
-
-2) Acessar lista de usuários com token:
-
-```powershell
-$token = 'SEU_TOKEN_AQUI'
-Invoke-RestMethod -Method Get -Uri 'http://localhost:21080/api/v1/user' -Headers @{ Authorization = "Bearer $token" }
-```
-
-Exemplo com curl:
-
-```bash
-curl -X POST http://localhost:21080/api/v1/auth/login -H "Content-Type: application/json" -d '{"username":"user","password":"pass"}'
-curl -X GET http://localhost:21080/api/v1/user -H "Authorization: Bearer SEU_TOKEN"
-```
-
-## Dicas de debugging
-- Verifique logs em `backend/runtime/logs` para erros de execução.
-- Se não conseguir acessar rotas, confirme que o servidor está rodando e que o `urlManager` está corretamente configurado (e que o servidor permite reescrita de URL quando necessário).
-
-## Próximos passos sugeridos
-- Implementar expiração e revogação de tokens (tabela `access_tokens` ou JWT com expiração).
-- Adicionar testes automatizados (Codeception) para os endpoints de autenticação e acesso protegido.
-- Restringir CORS e adicionar rate limiting para endpoints sensíveis.
+**Versão:** 1.0  
+**Última Atualização:** 06/01/2026
