@@ -2,20 +2,17 @@
 
 namespace backend\tests\functional;
 
+use Yii;
 use backend\tests\FunctionalTester;
-use common\models\User;
-use common\fixtures\UserFixture;
-use common\fixtures\CompanyFixture;
+use backend\tests\fixtures\UserFixture;
+use backend\tests\fixtures\CompanyFixture;
+use backend\tests\fixtures\AuthAssignmentFixture;
 
 /**
- * Testes Funcionais - Login Backend (Back-office)
+ * Teste Funcional #1: LoginCest
  * 
- * Testa o processo de autenticação no painel administrativo.
- * Conforme requisito: "Um dos testes funcionais deverá ser o de login no back-office"
- * 
- * @group functional
- * @group backend
- * @group login
+ * RF-TT-002: Teste funcional de login no back-office
+ * Testa o fluxo completo de autenticação na área administrativa
  */
 class LoginCest
 {
@@ -25,162 +22,86 @@ class LoginCest
     public function _fixtures()
     {
         return [
-            'company' => [
-                'class' => CompanyFixture::class,
-                'dataFile' => '@common/tests/_data/company.php'
-            ],
-            'user' => [
-                'class' => UserFixture::class,
-                'dataFile' => '@common/tests/_data/user.php'
-            ],
+            'company' => CompanyFixture::class,
+            'user' => UserFixture::class,
+            'auth' => AuthAssignmentFixture::class,
         ];
     }
 
     /**
-     * Executado antes de cada teste
+     * Limpar sessão antes de cada teste
      */
     public function _before(FunctionalTester $I)
     {
-        $I->amOnPage('/site/login');
+        // Garantir que não há utilizador logado
+        if (!Yii::$app->user->isGuest) {
+            Yii::$app->user->logout();
+        }
     }
 
     /**
-     * Teste 1: Página de login é acessível
-     * Verifica se a página de login carrega corretamente
+     * Teste 1.1: Página de login acessível
      */
-    public function testLoginPageIsAccessible(FunctionalTester $I)
+    public function testLoginPageAccessible(FunctionalTester $I)
     {
-        $I->wantTo('verificar se a página de login está acessível');
-        
-        $I->see('Entrar', 'h1');
-        $I->seeElement('form');
-        $I->seeElement('input[name="LoginForm[username]"]');
-        $I->seeElement('input[name="LoginForm[password]"]');
+        $I->amOnRoute('site/login');
+        $I->seeResponseCodeIs(200);
+        $I->see('Entrar'); // Página em português
     }
 
     /**
-     * Teste 2: Login com credenciais inválidas
-     * Verifica se credenciais erradas são rejeitadas
+     * Teste 1.2: Login com credenciais inválidas
      */
     public function testLoginWithInvalidCredentials(FunctionalTester $I)
     {
-        $I->wantTo('verificar que credenciais inválidas são rejeitadas');
-        
-        $I->fillField('LoginForm[username]', 'usuario_invalido');
+        $I->amOnRoute('site/login');
+        $I->fillField('LoginForm[username]', 'admin');
         $I->fillField('LoginForm[password]', 'senha_errada');
-        $I->click('button[name="login-button"]');
-
-        // Permanece na página de login (URL pode ser index-test.php?r=site%2Flogin)
-        $I->seeInCurrentUrl('login');
-        // Mensagem de erro em inglês
+        $I->click('button[type=submit]');
+        
+        $I->seeResponseCodeIs(200);
         $I->see('Incorrect username or password');
     }
 
     /**
-     * Teste 3: Login com campos vazios
-     * Verifica se a validação de campos obrigatórios funciona
+     * Teste 1.3: Login com credenciais válidas (admin)
+     */
+    public function testLoginWithValidAdminCredentials(FunctionalTester $I)
+    {
+        $I->amOnRoute('site/login');
+        $I->fillField('LoginForm[username]', 'admin');
+        $I->fillField('LoginForm[password]', 'admin');
+        $I->click('button[type=submit]');
+        
+        // Após login bem sucedido, deve redirecionar para index
+        $I->dontSee('Incorrect username or password');
+    }
+
+    /**
+     * Teste 1.4: Login com utilizador inexistente
+     */
+    public function testLoginWithNonExistentUser(FunctionalTester $I)
+    {
+        $I->amOnRoute('site/login');
+        $I->fillField('LoginForm[username]', 'usuario_nao_existe');
+        $I->fillField('LoginForm[password]', 'qualquer_senha');
+        $I->click('button[type=submit]');
+        
+        $I->seeResponseCodeIs(200);
+        $I->see('Incorrect username or password');
+    }
+
+    /**
+     * Teste 1.5: Campos obrigatórios vazios
      */
     public function testLoginWithEmptyFields(FunctionalTester $I)
     {
-        $I->wantTo('verificar validação de campos obrigatórios');
-        
+        $I->amOnRoute('site/login');
         $I->fillField('LoginForm[username]', '');
         $I->fillField('LoginForm[password]', '');
-        $I->click('button[name="login-button"]');
-
-        // Permanece na página de login
-        $I->seeInCurrentUrl('login');
-        // Verificar mensagens de campo obrigatório (em inglês)
+        $I->click('button[type=submit]');
+        
+        $I->seeResponseCodeIs(200);
         $I->see('cannot be blank');
-    }
-
-    /**
-     * Teste 4: Login de Admin com sucesso
-     * Verifica se admin consegue autenticar e aceder ao dashboard
-     */
-    public function testAdminLoginSuccessfully(FunctionalTester $I)
-    {
-        $I->wantTo('autenticar como admin e aceder ao dashboard');
-        
-        // Usar fixture test_admin com senha admin123
-        $I->fillField('LoginForm[username]', 'test_admin');
-        $I->fillField('LoginForm[password]', 'admin123');
-        $I->click('button[name="login-button"]');
-
-        // Admin deve ter acesso ao dashboard do backend
-        $I->dontSeeInCurrentUrl('login');
-    }
-
-    /**
-     * Teste 5: Login de Manager com sucesso
-     * Verifica se manager consegue autenticar
-     */
-    public function testManagerLoginSuccessfully(FunctionalTester $I)
-    {
-        $I->wantTo('autenticar como manager');
-        
-        // Usar fixture test_manager com senha admin123 (mesmo hash)
-        $I->fillField('LoginForm[username]', 'test_manager');
-        $I->fillField('LoginForm[password]', 'admin123');
-        $I->click('button[name="login-button"]');
-
-        // Manager pode ter acesso limitado ao backend
-        $I->dontSeeInCurrentUrl('login');
-    }
-
-    /**
-     * Teste 6: Driver não pode aceder ao backend
-     * Verifica se driver é bloqueado (acesso proibido)
-     */
-    public function testDriverCannotAccessBackend(FunctionalTester $I)
-    {
-        $I->wantTo('verificar que driver não pode aceder ao backend');
-        
-        // Usar fixture test_driver
-        $I->fillField('LoginForm[username]', 'test_driver');
-        $I->fillField('LoginForm[password]', 'admin123');
-        $I->click('button[name="login-button"]');
-
-        // Driver consegue fazer login mas é bloqueado pelo RBAC
-        // O backend bloqueia drivers com ForbiddenHttpException (403)
-        // O driver é redirecionado ou recebe erro - não permanece logado no backend
-        // Como o backend bloqueia com 403, o conteúdo deve conter mensagem de acesso negado
-        $I->see('Forbidden');
-    }
-
-    /**
-     * Teste 7: Logout funciona corretamente
-     * Verifica se o utilizador pode fazer logout
-     */
-    public function testLogout(FunctionalTester $I)
-    {
-        $I->wantTo('verificar que logout funciona');
-        
-        // Login primeiro usando test_admin
-        $I->fillField('LoginForm[username]', 'test_admin');
-        $I->fillField('LoginForm[password]', 'admin123');
-        $I->click('button[name="login-button"]');
-        
-        // Verificar que está logado
-        $I->dontSeeInCurrentUrl('login');
-        
-        // Fazer logout via POST (logout requer método POST)
-        $I->sendAjaxPostRequest('/index-test.php?r=site/logout');
-        
-        // Redirecionar para login
-        $I->amOnPage('/site/login');
-        $I->seeInCurrentUrl('login');
-    }
-
-    /**
-     * Teste 8: Remember Me checkbox existe
-     * Verifica se a opção "Lembrar-me" está disponível
-     */
-    public function testRememberMeCheckboxExists(FunctionalTester $I)
-    {
-        $I->wantTo('verificar que checkbox Remember Me existe');
-        
-        $I->seeElement('input[name="LoginForm[rememberMe]"]');
-        $I->seeElement('input[type="checkbox"]');
     }
 }

@@ -171,13 +171,13 @@ $this->params['breadcrumbs'][] = 'Documentos';
                                                     <?php endif; ?>
 
                                                     <div class="btn-group btn-group-sm">
-                                                        <?php if ($document->file_path && file_exists(Yii::getAlias('@frontend/web' . $document->file_path))): ?>
-                                                            <?= Html::a('<i class="fas fa-download"></i>', $document->file_path, [
+                                                        <?php if ($document->file && $document->file->path && file_exists(Yii::getAlias('@frontend/web' . $document->file->path))): ?>
+                                                            <?= Html::a('<i class="fas fa-download"></i>', $document->file->path, [
                                                                 'class' => 'btn btn-primary',
                                                                 'title' => 'Download',
                                                                 'target' => '_blank',
                                                             ]) ?>
-                                                            <?= Html::a('<i class="fas fa-eye"></i>', $document->file_path, [
+                                                            <?= Html::a('<i class="fas fa-eye"></i>', $document->file->path, [
                                                                 'class' => 'btn btn-info',
                                                                 'title' => 'Visualizar',
                                                                 'target' => '_blank',

@@ -1,48 +1,28 @@
 <?php
 return [
     'id' => 'app-frontend-tests',
+    'bootstrap' => [\frontend\components\TestDbAligner::class],
+    'homeUrl' => 'site/index',
     'components' => [
         'assetManager' => [
-            'basePath' => '@runtime/assets',
-            'baseUrl' => '/assets',
-            'appendTimestamp' => false,
+            'basePath' => __DIR__ . '/../web/assets',
         ],
         'urlManager' => [
             'showScriptName' => true,
             'enablePrettyUrl' => false,
+            'rules' => [
+                'index-test.php' => 'site/index',
+                '/index-test.php' => 'site/index',
+            ],
         ],
         'request' => [
             'cookieValidationKey' => 'test',
-            'scriptUrl' => '/index-test.php',
-            'scriptFile' => __DIR__ . '/../web/index-test.php',
-            'hostInfo' => 'http://localhost',
-            'csrfCookie' => [
-                'path' => '/',
-                'domain' => 'localhost',
-                'httpOnly' => true,
-            ],
-        ],
-        'session' => [
-            'class' => 'yii\web\Session',
-            'name' => 'VeiGestSessionTest',
-            'cookieParams' => [
-                'path' => '/',
-                'domain' => 'localhost',
-                'httpOnly' => true,
-            ],
-        ],
-        'user' => [
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
-            'identityCookie' => [
-                'name' => '_identity-test',
-                'httpOnly' => true,
-                'path' => '/',
-                'domain' => 'localhost',
-            ],
         ],
         'mailer' => [
             'messageClass' => \yii\symfonymailer\Message::class
+        ],
+        'testDbAligner' => [
+            'class' => \frontend\components\TestDbAligner::class,
         ],
         'log' => [
             'traceLevel' => 3,

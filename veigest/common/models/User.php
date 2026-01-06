@@ -36,6 +36,7 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     public $password;
+    public $tempRole; // Propriedade temporária para receber role do formulário
 
 
     /**
@@ -68,17 +69,21 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['username', 'name', 'email', 'company_id'], 'required'],
-            ['role', 'required', 'on' => 'adminCreate'],
-            ['role', 'safe'], 
-
+            ['username', 'unique', 'message' => 'Este nome de utilizador já está em uso.'],
+            ['email', 'unique', 'message' => 'Este email já está registado no sistema.'],
+            ['tempRole', 'required', 'on' => 'adminCreate', 'message' => 'Por favor selecione um papel.'],
+            ['tempRole', 'safe'],
             ['password', 'required', 'on' => ['create', 'adminCreate']],
-
-            ['email', 'email'],
+            ['password', 'string', 'min' => 3, 'message' => 'A palavra-passe deve ter pelo menos 3 caracteres.'],
+            ['email', 'email', 'message' => 'Por favor insira um email válido.'],
             ['username', 'string', 'max' => 255],
-            ['username', 'unique'],
-
-            ['role', 'in', 'range' => ['admin', 'manager', 'driver']],
+            ['name', 'string', 'max' => 255],
+            ['phone', 'string', 'max' => 20],
+            ['tempRole', 'in', 'range' => ['admin', 'manager', 'driver'], 'message' => 'Papel inválido.'],
             ['status', 'in', 'range' => ['active', 'inactive']],
+            ['status', 'default', 'value' => 'active'],
+            ['company_id', 'integer'],
+            ['company_id', 'exist', 'targetClass' => Company::class, 'targetAttribute' => 'id', 'message' => 'Empresa inválida.'],
         ];
     }
 
@@ -105,8 +110,9 @@ class User extends ActiveRecord implements IdentityInterface
             'email',
             'company_id',
             'password',
-            'role',
-            'status'
+            'tempRole',
+            'status',
+            'phone'
         ];
 
         // Update scenario → password optional
@@ -116,8 +122,9 @@ class User extends ActiveRecord implements IdentityInterface
             'email',
             'company_id',
             'password',
-            'role',
-            'status'
+            'tempRole',
+            'status',
+            'phone'
         ];
 
         $scenarios['signup'] = [
@@ -374,6 +381,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return array_merge(parent::attributes(), [
             'password',
+            'tempRole',
         ]);
     }
 }

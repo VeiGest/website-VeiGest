@@ -2,37 +2,70 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\ArrayHelper;
+use common\models\Company;
 
 /** @var $this yii\web\View */
-/** @var $model backend\models\Users */
+/** @var $model common\models\User */
 /** @var $form yii\widgets\ActiveForm */
+/** @var $roles array */
+
+// Obter lista de empresas
+$companies = ArrayHelper::map(Company::find()->all(), 'id', 'name');
 ?>
 
-<div class="users-form">
+<div class="user-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'company_id')->textInput() ?>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->field($model, 'company_id')->dropDownList($companies, [
+                'prompt' => 'Selecione uma empresa...'
+            ])->label('Empresa') ?>
+        </div>
+        <div class="col-md-6">
+            <?= $form->field($model, 'tempRole')->dropDownList($roles, [
+                'prompt' => 'Selecione um papel...'
+            ])->label('Papel') ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
+        </div>
+        <div class="col-md-6">
+            <?= $form->field($model, 'name')->textInput(['maxlength' => true])->label('Nome Completo') ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->field($model, 'email')->textInput(['maxlength' => true, 'type' => 'email']) ?>
+        </div>
+        <div class="col-md-6">
+            <?= $form->field($model, 'phone')->textInput(['maxlength' => true])->label('Telefone') ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'password')->passwordInput() ?>
-
-    <?= $form->field($model, 'role')->dropDownList($roles, [
-        'prompt' => 'Selecione um papel...'
-    ])->label('Papel') ?>
-
-    <?= $form->field($model, 'status')->dropDownList([
-        'active' => 'Ativo',
-        'inactive' => 'Inativo',
-    ], ['prompt' => 'Selecione o estado...']) ?>
+    <div class="row">
+        <div class="col-md-6">
+            <?= $form->field($model, 'password')->passwordInput(['maxlength' => true])->hint(
+                $model->isNewRecord ? 'Palavra-passe deve ter pelo menos 3 caracteres' : 'Deixe em branco para manter a palavra-passe atual'
+            ) ?>
+        </div>
+        <div class="col-md-6">
+            <?= $form->field($model, 'status')->dropDownList([
+                'active' => 'Ativo',
+                'inactive' => 'Inativo',
+            ], ['prompt' => 'Selecione o estado...']) ?>
+        </div>
+    </div>
 
     <div class="form-group">
-        <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton($model->isNewRecord ? 'Criar' : 'Guardar', ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Cancelar', ['index'], ['class' => 'btn btn-secondary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

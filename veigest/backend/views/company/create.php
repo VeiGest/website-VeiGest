@@ -17,6 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-body">
                     <?php $form = ActiveForm::begin(); ?>
 
+                    <?= $form->field($model, 'code')->textInput(['maxlength' => true, 'placeholder' => 'Gerado automaticamente se deixado vazio'])->hint('Código único da empresa (gerado automaticamente se não preenchido)') ?>
+
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'tax_id')->textInput(['maxlength' => true]) ?>
