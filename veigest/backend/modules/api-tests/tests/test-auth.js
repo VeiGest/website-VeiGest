@@ -8,8 +8,8 @@ const { apiRequest, formatTestResult, decodeToken } = require('../utils/http-cli
 // Credenciais de teste
 const TEST_CREDENTIALS = {
     admin: {
-        username: 'apiadmin',
-        password: 'password'
+        username: 'admin',
+        password: 'admin'
     },
     manager: {
         username: 'gestor',

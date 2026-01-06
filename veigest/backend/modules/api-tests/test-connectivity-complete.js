@@ -17,16 +17,25 @@ const endpoints = [
     { method: 'GET', path: '/company/1', name: 'Visualizar Empresa', needsAuth: true },
     
     // Veículos  
-    { method: 'GET', path: '/vehicles', name: 'Listar Veículos', needsAuth: true },
+    { method: 'GET', path: '/vehicle', name: 'Listar Veículos', needsAuth: true },
     
     // Usuários
-    { method: 'GET', path: '/users', name: 'Listar Usuários', needsAuth: true },
+    { method: 'GET', path: '/user', name: 'Listar Usuários', needsAuth: true },
     
     // Manutenções
     { method: 'GET', path: '/maintenance', name: 'Listar Manutenções', needsAuth: true },
     
     // Abastecimentos
-    { method: 'GET', path: '/fuel-logs', name: 'Listar Abastecimentos', needsAuth: true },
+    { method: 'GET', path: '/fuel-log', name: 'Listar Abastecimentos', needsAuth: true },
+    
+    // Rotas
+    { method: 'GET', path: '/route', name: 'Listar Rotas', needsAuth: true },
+    
+    // Alertas
+    { method: 'GET', path: '/alert', name: 'Listar Alertas', needsAuth: true },
+    
+    // Documentos
+    { method: 'GET', path: '/document', name: 'Listar Documentos', needsAuth: true },
 ];
 
 let globalToken = null;
@@ -43,8 +52,8 @@ async function testEndpoint(endpoint) {
     // Se for login, enviar credenciais
     if (endpoint.path === '/auth/login') {
         body = JSON.stringify({
-            username: 'apiadmin',
-            password: 'password'
+            username: 'admin',
+            password: 'admin'
         });
     }
     
@@ -72,8 +81,8 @@ async function testEndpoint(endpoint) {
                 console.log(`✅ ${endpoint.name}: OK (${response.status})`);
                 
                 // Se for login bem-sucedido, salvar token
-                if (endpoint.path === '/auth/login' && data.data && data.data.token) {
-                    globalToken = data.data.token;
+                if (endpoint.path === '/auth/login' && data.data && data.data.access_token) {
+                    globalToken = data.data.access_token;
                     console.log(`   🔑 Token obtido: ${globalToken.substring(0, 30)}...`);
                 }
                 
@@ -171,7 +180,6 @@ async function runConnectivityTests() {
         console.log('   • URL base incorreta');
         console.log('   • Módulos da API não estão carregados');
         console.log('\n🔧 Troubleshooting:');
-        console.log('   • Consulte: TROUBLESHOOTING.md');
         console.log('   • Verifique logs: docker-compose logs backend');
         console.log('   • Teste manual: curl http://localhost:21080/api/auth/info');
     }
