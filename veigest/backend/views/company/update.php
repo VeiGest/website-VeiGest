@@ -18,6 +18,8 @@ $this->params['breadcrumbs'][] = 'Editar';
                 <div class="card-body">
                     <?php $form = ActiveForm::begin(); ?>
 
+                    <?= $form->field($model, 'code')->textInput(['maxlength' => true, 'readonly' => true])->hint('Código único da empresa (não pode ser alterado)') ?>
+
                     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
                     <?= $form->field($model, 'tax_id')->textInput(['maxlength' => true]) ?>

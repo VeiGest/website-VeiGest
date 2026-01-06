@@ -2,77 +2,101 @@
 
 namespace frontend\tests\functional;
 
+use Yii;
 use frontend\tests\FunctionalTester;
-use common\fixtures\UserFixture;
-use common\fixtures\CompanyFixture;
+use frontend\tests\fixtures\UserFixture;
+use frontend\tests\fixtures\CompanyFixture;
+use frontend\tests\fixtures\VehicleFixture;
+use frontend\tests\fixtures\MaintenanceFixture;
 
 /**
- * Testes Funcionais - Registro e Tickets
+ * Maintenance Management Functional Test
  * 
- * Testa as funcionalidades de registro de usuário e criação de tickets
- * disponíveis para visitantes (não autenticados).
- * 
- * Nota: O controle de acesso a manutenções usa RBAC com roles específicas
- * (manager) que requerem configuração de authManager.
- * Estes testes verificam funcionalidades de registro e suporte.
- * 
- * @group functional
- * @group frontend
- * @group registration
+ * RF-TT-002: Teste funcional de gestão de manutenções
+ * Testa as funcionalidades de visualização e gestão de manutenções
  */
 class MaintenanceCest
 {
     /**
-     * Fixtures necessárias para os testes
+     * Load fixtures before tests
      */
     public function _fixtures()
     {
         return [
-            'company' => [
-                'class' => CompanyFixture::class,
-                'dataFile' => '@common/tests/_data/company.php'
-            ],
-            'user' => [
-                'class' => UserFixture::class,
-                'dataFile' => '@common/tests/_data/user.php'
-            ],
+            'company' => CompanyFixture::class,
+            'user' => UserFixture::class,
+            'vehicle' => VehicleFixture::class,
+            'maintenance' => MaintenanceFixture::class,
         ];
     }
 
     /**
-     * Teste 1: Página de registro está acessível
+     * Preparação: login como manager antes de cada teste
      */
-    public function testSignupPageIsAccessible(FunctionalTester $I)
+    public function _before(FunctionalTester $I)
     {
-        $I->wantTo('verificar que página de registro está acessível');
-        
-        // Clicar no link "Registar" da homepage para ir para signup
-        $I->amOnPage('/');
-        $I->click('Registar');
-        $I->seeResponseCodeIs(200);
+        $I->amOnPage(['site/login']);
+        $I->fillField('LoginForm[username]', 'manager');
+        $I->fillField('LoginForm[password]', 'manager123');
+        $I->click('button[type="submit"]');
     }
 
     /**
-     * Teste 2: Página de criação de tickets está acessível
+     * Teste 1: Acesso à lista de manutenções
+     * Verifica que a página de manutenções está acessível
      */
-    public function testCreateTicketPageIsAccessible(FunctionalTester $I)
+    public function testMaintenanceListAccessible(FunctionalTester $I)
     {
-        $I->wantTo('verificar que página de criação de tickets está acessível');
+        $I->amOnPage(['maintenance/index']);
         
-        $I->amOnPage('/site/create-ticket');
-        $I->seeResponseCodeIs(200);
+        $I->see('Manutenções');
     }
 
     /**
-     * Teste 3: Formulário de contato mostra campos corretos
+     * Teste 2: Visualizar detalhes de manutenção
+     * Verifica que é possível ver detalhes de uma manutenção específica
      */
-    public function testContactFormHasRequiredFields(FunctionalTester $I)
+    public function testViewMaintenanceDetails(FunctionalTester $I)
     {
-        $I->wantTo('verificar que formulário de contato está acessível');
+        $I->amOnPage(['maintenance/view', 'id' => 1]);
         
-        // Navegar para contato através do menu
-        $I->amOnPage('/');
-        $I->click('Contactos');
-        $I->seeResponseCodeIs(200);
+        // Deve ver informações da manutenção
+        $I->see('Revisão geral');
+        $I->see('250'); // Custo
+    }
+
+    /**
+     * Teste 3: Filtrar manutenções por status
+     * Verifica funcionalidade de filtro
+     */
+    public function testFilterMaintenancesByStatus(FunctionalTester $I)
+    {
+        $I->amOnPage(['maintenance/index', 'status' => 'scheduled']);
+        
+        // Deve ver manutenções agendadas
+        $I->see('Manutenções');
+    }
+
+    /**
+     * Teste 4: Verificar manutenção concluída
+     */
+    public function testViewCompletedMaintenance(FunctionalTester $I)
+    {
+        $I->amOnPage(['maintenance/view', 'id' => 2]); // Troca de travões - concluída
+        
+        $I->see('travões');
+        $I->see('450'); // Custo
+    }
+
+    /**
+     * Teste 5: Acesso à página de criar manutenção
+     */
+    public function testCreateMaintenancePageAccessible(FunctionalTester $I)
+    {
+        $I->amOnPage(['maintenance/create']);
+        
+        // Deve ver formulário de criação
+        $I->see('Agendar Manutenção');
+        $I->seeElement('form');
     }
 }

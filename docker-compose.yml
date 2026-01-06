@@ -1,37 +1,5 @@
 services:
 
-  frontend:
-    build:
-      context: ./veigest/frontend
-      dockerfile: Dockerfile
-    container_name: veigest_frontend
-    ports:
-      - "20080:80"
-    volumes:
-      - ./veigest:/app:delegated
-    networks:
-      - veigest-network
-
-  backend:
-    build:
-      context: ./veigest/backend
-      dockerfile: Dockerfile
-    container_name: veigest_backend
-    ports:
-      - "21080:80"
-    volumes:
-      - ./veigest:/app:delegated
-    environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_NAME=${MYSQL_DATABASE}
-      - DB_USER=${MYSQL_USER}
-      - DB_PASSWORD=${MYSQL_PASSWORD}
-    depends_on:
-      - db
-    networks:
-      - veigest-network
-
   db:
     image: mysql:5.7
     container_name: veigest_db

@@ -2,86 +2,108 @@
 
 namespace frontend\tests\functional;
 
+use Yii;
 use frontend\tests\FunctionalTester;
-use common\fixtures\UserFixture;
-use common\fixtures\CompanyFixture;
+use frontend\tests\fixtures\UserFixture;
+use frontend\tests\fixtures\CompanyFixture;
+use frontend\tests\fixtures\VehicleFixture;
 
 /**
- * Testes Funcionais - Páginas de Serviços
+ * Vehicle Management Functional Test
  * 
- * Testa as páginas públicas de informação do frontend:
- * - Página de serviços
- * - Página de benefícios
- * - Página de preços
- * 
- * Nota: O controle de acesso a veículos usa RBAC com roles específicas
- * (manager, driver) que requerem configuração de authManager.
- * Estes testes verificam páginas públicas disponíveis para visitantes.
- * 
- * @group functional
- * @group frontend
- * @group services
+ * RF-TT-002: Teste funcional de gestão de veículos
+ * Testa as funcionalidades de visualização e gestão de veículos
  */
 class VehicleCest
 {
     /**
-     * Fixtures necessárias para os testes
+     * Load fixtures before tests
      */
     public function _fixtures()
     {
         return [
-            'company' => [
-                'class' => CompanyFixture::class,
-                'dataFile' => '@common/tests/_data/company.php'
-            ],
-            'user' => [
-                'class' => UserFixture::class,
-                'dataFile' => '@common/tests/_data/user.php'
-            ],
+            'company' => CompanyFixture::class,
+            'user' => UserFixture::class,
+            'vehicle' => VehicleFixture::class,
         ];
     }
 
     /**
-     * Teste 1: Página de serviços está acessível
+     * Preparação: login como manager antes de cada teste
      */
-    public function testServicesPageIsAccessible(FunctionalTester $I)
+    public function _before(FunctionalTester $I)
     {
-        $I->wantTo('verificar que página de serviços está acessível');
-        
-        $I->amOnPage('/site/services');
-        $I->seeResponseCodeIs(200);
+        // Login como manager para ter acesso aos veículos
+        $I->amOnPage(['site/login']);
+        $I->fillField('LoginForm[username]', 'manager');
+        $I->fillField('LoginForm[password]', 'manager123');
+        $I->click('button[type="submit"]');
     }
 
     /**
-     * Teste 2: Página de benefícios está acessível
+     * Teste 1: Acesso à lista de veículos
+     * Verifica que a página de veículos está acessível após login
      */
-    public function testBenefitsPageIsAccessible(FunctionalTester $I)
+    public function testVehicleListAccessible(FunctionalTester $I)
     {
-        $I->wantTo('verificar que página de benefícios está acessível');
+        $I->amOnPage(['vehicle/index']);
         
-        $I->amOnPage('/site/benefits');
-        $I->seeResponseCodeIs(200);
+        // Deve ver a página de veículos
+        $I->see('Veículos');
+        // Deve ver dados da fixture
+        $I->see('AA-00-AA'); // Matrícula do veículo 1
     }
 
     /**
-     * Teste 3: Página de preços está acessível
+     * Teste 2: Visualizar detalhes de um veículo
+     * Verifica que é possível ver os detalhes de um veículo específico
      */
-    public function testPricingPageIsAccessible(FunctionalTester $I)
+    public function testViewVehicleDetails(FunctionalTester $I)
     {
-        $I->wantTo('verificar que página de preços está acessível');
+        $I->amOnPage(['vehicle/view', 'id' => 1]);
         
-        $I->amOnPage('/site/pricing');
-        $I->seeResponseCodeIs(200);
+        // Deve ver detalhes do veículo
+        $I->see('Volkswagen');
+        $I->see('Golf');
+        $I->see('AA-00-AA');
     }
 
     /**
-     * Teste 4: Página de contactos está acessível
+     * Teste 3: Filtrar veículos por status
+     * Verifica funcionalidade de filtro de veículos
      */
-    public function testContactPageIsAccessible(FunctionalTester $I)
+    public function testFilterVehiclesByStatus(FunctionalTester $I)
     {
-        $I->wantTo('verificar que página de contactos está acessível');
+        $I->amOnPage(['vehicle/index', 'status' => 'active']);
         
-        $I->amOnPage('/site/contact');
-        $I->seeResponseCodeIs(200);
+        // Deve ver veículos ativos
+        $I->see('AA-00-AA'); // Veículo ativo
+        $I->see('CC-22-CC'); // Veículo ativo (Tesla)
+    }
+
+    /**
+     * Teste 4: Verificar informações de veículo em manutenção
+     */
+    public function testVehicleInMaintenance(FunctionalTester $I)
+    {
+        $I->amOnPage(['vehicle/view', 'id' => 2]); // Renault em manutenção
+        
+        $I->see('Renault');
+        $I->see('Megane');
+        $I->see('BB-11-BB');
+    }
+
+    /**
+     * Teste 5: Acesso negado para usuário não logado
+     */
+    public function testVehicleAccessDeniedWithoutLogin(FunctionalTester $I)
+    {
+        // Fazer logout
+        Yii::$app->user->logout();
+        
+        $I->amOnPage(['vehicle/index']);
+        
+        // Deve redirecionar para login
+        $I->seeInCurrentUrl('login');
     }
 }

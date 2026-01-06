@@ -3,47 +3,48 @@ return [
     'id' => 'app-backend-tests',
     'components' => [
         'assetManager' => [
-            'basePath' => '@runtime/assets',
-            'baseUrl' => '/assets',
-            'appendTimestamp' => false,
+            'basePath' => __DIR__ . '/../web/assets',
         ],
         'urlManager' => [
             'showScriptName' => true,
-            'enablePrettyUrl' => false,
         ],
         'request' => [
             'cookieValidationKey' => 'test',
-            'scriptUrl' => '/index-test.php',
-            'scriptFile' => __DIR__ . '/../web/index-test.php',
-            'hostInfo' => 'http://localhost',
             'parsers' => [
                 'application/json' => 'yii\web\JsonParser',
             ],
             'csrfCookie' => [
                 'path' => '/',
-                'domain' => 'localhost',
+                'domain' => '',
                 'httpOnly' => true,
+                'secure' => false,
             ],
         ],
         'session' => [
             'class' => 'yii\web\Session',
-            'name' => 'VeiGestSessionTest',
             'cookieParams' => [
+                'lifetime' => 0,
                 'path' => '/',
-                'domain' => 'localhost',
-                'httpOnly' => true,
+                'domain' => '',
+                'secure' => false,
+                'httponly' => true,
             ],
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
             'identityCookie' => [
                 'name' => '_identity-test',
                 'httpOnly' => true,
                 'path' => '/',
-                'domain' => 'localhost',
+                'domain' => '',
+                'secure' => false,
             ],
         ],
-        // DB config is in common/config/test-local.php
+        'db' => [
+            'class' => \yii\db\Connection::class,
+            'dsn' => 'mysql:host=127.0.0.1;port=3306;dbname=veigest_db',
+            'username' => 'veigest_user',
+            'password' => 'secret',
+            'charset' => 'utf8mb4',
+        ],
     ],
 ];

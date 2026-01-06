@@ -55,38 +55,36 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
-        
         $model = new User(['scenario' => 'adminCreate']);
 
         $roles = [
-            'admin'    => 'Admin',
-            'gestor'   => 'Gestor',
-            'condutor' => 'Condutor',
+            'admin'    => 'Administrador',
+            'manager'   => 'Gestor',
+            'driver' => 'Condutor',
         ];
 
-        if (Yii::$app->request->isPost) {
-            $post = Yii::$app->request->post();
-            $role = $post['User']['role'] ?? null;
-            unset($post['User']['role']);
-            $model->role = $role;
-
-            if ($model->load($post) && $model->save()) {
-
-                // RBAC: atribuir role 
+        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
+            if ($model->validate() && $model->save()) {
+                // RBAC: atribuir role
                 $auth = Yii::$app->authManager;
 
-                // remover roles antigas 
+                // Remover roles antigas (se existirem)
                 $auth->revokeAll($model->id);
 
-                // atribuir nova role
-                if ($role) {
-                    $roleObj = $auth->getRole($role);
+                // Atribuir nova role baseada em tempRole
+                if (!empty($model->tempRole)) {
+                    $roleObj = $auth->getRole($model->tempRole);
                     if ($roleObj) {
                         $auth->assign($roleObj, $model->id);
+                        Yii::$app->session->setFlash('success', 'Utilizador criado com sucesso.');
+                    } else {
+                        Yii::$app->session->setFlash('warning', 'Utilizador criado, mas papel não foi atribuído.');
                     }
+                } else {
+                    Yii::$app->session->setFlash('warning', 'Utilizador criado sem papel atribuído.');
                 }
 
-                return $this->redirect(['index']);
+                return $this->redirect(['view', 'id' => $model->id]);
             }
         }
 
@@ -103,33 +101,40 @@ class UserController extends Controller
     {
         $model = $this->findModel($id);
         $model->scenario = 'update';
+        
+        // Pré-preencher tempRole com o papel atual do utilizador
+        $model->tempRole = $model->getRole();
 
         $roles = [
-            'admin'    => 'Admin',
-            'gestor'   => 'Gestor',
-            'condutor' => 'Condutor',
+            'admin'    => 'Administrador',
+            'manager'   => 'Gestor',
+            'driver' => 'Condutor',
         ];
 
-        if (Yii::$app->request->isPost) {
-            $post = Yii::$app->request->post();
-            $role = $post['User']['role'] ?? null;
-            unset($post['User']['role']);
-            $model->role = $role;
-
-            if ($model->load($post) && $model->save()) {
-
-                //RBAC: atualizar role 
+        if (Yii::$app->request->isPost && $model->load(Yii::$app->request->post())) {
+            // Apenas hash a password se foi fornecida uma nova
+            if (empty($model->password)) {
+                $model->password = null;
+            }
+            
+            if ($model->validate() && $model->save()) {
+                // RBAC: atualizar role
                 $auth = Yii::$app->authManager;
 
-                // remover roles antigas
+                // Remover roles antigas
                 $auth->revokeAll($model->id);
 
-                // atribuir nova role
-                if ($role) {
-                    $roleObj = $auth->getRole($role);
+                // Atribuir nova role baseada em tempRole
+                if (!empty($model->tempRole)) {
+                    $roleObj = $auth->getRole($model->tempRole);
                     if ($roleObj) {
                         $auth->assign($roleObj, $model->id);
+                        Yii::$app->session->setFlash('success', 'Utilizador atualizado com sucesso.');
+                    } else {
+                        Yii::$app->session->setFlash('warning', 'Utilizador atualizado, mas papel não foi atribuído.');
                     }
+                } else {
+                    Yii::$app->session->setFlash('warning', 'Utilizador atualizado sem papel atribuído.');
                 }
 
                 return $this->redirect(['view', 'id' => $model->id]);

@@ -41,10 +41,14 @@ class Company extends ActiveRecord
     {
         return [
             [['name', 'tax_id'], 'required'],
+            [['code'], 'string', 'max' => 10],
+            [['code'], 'unique', 'message' => 'Este código já está em uso por outra empresa.'],
             [['name'], 'string', 'max' => 200],
             [['tax_id'], 'string', 'max' => 20],
+            [['tax_id'], 'unique', 'message' => 'Este NIF já está registado no sistema.'],
             [['email'], 'email'],
             [['email'], 'string', 'max' => 150],
+            [['email'], 'unique', 'message' => 'Este email já está registado no sistema.'],
             [['phone'], 'string', 'max' => 20],
             [['status'], 'in', 'range' => ['active', 'suspended', 'inactive']],
             [['status'], 'default', 'value' => 'active'],
@@ -53,6 +57,50 @@ class Company extends ActiveRecord
             [['settings'], 'safe'],
             [['created_at', 'updated_at'], 'safe'],
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        // Gera código automaticamente se for uma nova empresa
+        if ($insert && empty($this->code)) {
+            $this->code = $this->generateUniqueCode();
+        }
+
+        return true;
+    }
+
+    /**
+     * Gera um código único para a empresa
+     * Formato: EMP-XXXX (onde XXXX é um número sequencial)
+     */
+    private function generateUniqueCode()
+    {
+        $prefix = 'EMP';
+        $maxAttempts = 100;
+        
+        for ($i = 0; $i < $maxAttempts; $i++) {
+            // Obtém o último ID + 1 ou usa timestamp como fallback
+            $lastCompany = self::find()->orderBy(['id' => SORT_DESC])->one();
+            $nextId = $lastCompany ? $lastCompany->id + 1 : 1;
+            
+            // Gera código no formato EMP-0001
+            $code = sprintf('%s-%04d', $prefix, $nextId + $i);
+            
+            // Verifica se já existe
+            if (!self::find()->where(['code' => $code])->exists()) {
+                return $code;
+            }
+        }
+        
+        // Fallback: usa timestamp se não conseguir gerar código único
+        return sprintf('%s-%s', $prefix, substr(time(), -6));
     }
 
     /**
