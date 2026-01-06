@@ -57,38 +57,42 @@ use yii\bootstrap5\Html;
 
                 <?php else: ?>
 
-                    <!-- DASHBOARD / BACKEND BUTTON -->
-                    <?php if (!Yii::$app->user->isGuest): ?>
+                    <div style="display: flex; gap: 12px; align-items: center;">
 
-                        <?php $role = Yii::$app->user->identity->role; ?>
+                        <!-- DASHBOARD / BACKEND BUTTON -->
+                        <?php if (!Yii::$app->user->isGuest): ?>
 
-                        <?php if ($role === 'admin'): ?>
-                            <!-- Admin: Only Backend access -->
-                            <a href="<?= Yii::getAlias('@backendUrl') ?>"
-                                class="btn btn-dark px-4 py-2 mt-3">
-                                <i class="fas fa-cogs me-2"></i> Backoffice
-                            </a>
+                            <?php $role = Yii::$app->user->identity->role; ?>
 
-                        <?php elseif ($role === 'manager' || $role === 'driver'): ?>
-                            <!-- Manager/Driver: Frontend Dashboard access -->
-                            <a href="<?= \yii\helpers\Url::to(['/dashboard/index']) ?>"
-                                class="btn btn-success px-4 py-2 mt-3">
-                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
-                            </a>
+                            <?php if ($role === 'admin'): ?>
+                                <!-- Admin: Only Backend access -->
+                                <a href="<?= Yii::getAlias('@backendUrl') ?>"
+                                    class="btn btn-dark px-4 py-2">
+                                    <i class="fas fa-cogs me-2"></i> Backoffice
+                                </a>
+
+                            <?php elseif ($role === 'manager' || $role === 'driver'): ?>
+                                <!-- Manager/Driver: Frontend Dashboard access -->
+                                <a href="<?= \yii\helpers\Url::to(['/dashboard/index']) ?>"
+                                    class="btn btn-success px-4 py-2">
+                                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                                </a>
+
+                            <?php endif; ?>
 
                         <?php endif; ?>
 
-                    <?php endif; ?>
 
-
-                    <!-- LOGOUT -->
-                    <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'd-inline-block', 'id' => 'logout-form'])
+                        <!-- LOGOUT -->
+                        <?= Html::beginForm(['/site/logout'], 'post', ['class' => 'd-inline-block', 'id' => 'logout-form'])
                         . Html::submitButton(
                             'Sair (' . Html::encode(Yii::$app->user->identity->username) . ')',
                             ['class' => 'btn btn-danger px-4 py-2 rounded font-medium']
                         )
                         . Html::endForm();
                     ?>
+
+                    </div>
 
                 <?php endif; ?>
 
