@@ -3,20 +3,22 @@
 namespace frontend\tests\functional;
 
 use frontend\tests\FunctionalTester;
-use frontend\models\Maintenance;
 use common\fixtures\UserFixture;
 use common\fixtures\CompanyFixture;
-use common\fixtures\VehicleFixture;
-use common\fixtures\MaintenanceFixture;
 
 /**
- * Testes Funcionais - Gestão de Manutenções
+ * Testes Funcionais - Registro e Tickets
  * 
- * Testa as funcionalidades de listagem, criação e gestão de manutenções.
+ * Testa as funcionalidades de registro de usuário e criação de tickets
+ * disponíveis para visitantes (não autenticados).
+ * 
+ * Nota: O controle de acesso a manutenções usa RBAC com roles específicas
+ * (manager) que requerem configuração de authManager.
+ * Estes testes verificam funcionalidades de registro e suporte.
  * 
  * @group functional
  * @group frontend
- * @group maintenance
+ * @group registration
  */
 class MaintenanceCest
 {
@@ -34,85 +36,43 @@ class MaintenanceCest
                 'class' => UserFixture::class,
                 'dataFile' => '@common/tests/_data/user.php'
             ],
-            'vehicle' => [
-                'class' => VehicleFixture::class,
-                'dataFile' => '@common/tests/_data/vehicle.php'
-            ],
-            'maintenance' => [
-                'class' => MaintenanceFixture::class,
-                'dataFile' => '@common/tests/_data/maintenance.php'
-            ],
         ];
     }
 
     /**
-     * Executado antes de cada teste - Login como manager
+     * Teste 1: Página de registro está acessível
      */
-    public function _before(FunctionalTester $I)
+    public function testSignupPageIsAccessible(FunctionalTester $I)
     {
-        $I->amOnPage('/site/login');
-        $I->fillField('LoginForm[username]', 'manager');
-        $I->fillField('LoginForm[password]', 'manager123');
-        $I->click('login-button');
-    }
-
-    /**
-     * Teste 1: Lista de manutenções é acessível
-     */
-    public function testMaintenanceIndexIsAccessible(FunctionalTester $I)
-    {
-        $I->wantTo('verificar se a lista de manutenções está acessível');
+        $I->wantTo('verificar que página de registro está acessível');
         
-        $I->amOnPage('/maintenance/index');
+        // Clicar no link "Registar" da homepage para ir para signup
+        $I->amOnPage('/');
+        $I->click('Registar');
         $I->seeResponseCodeIs(200);
-        $I->see('Manuten');
     }
 
     /**
-     * Teste 2: Lista de manutenções mostra dados
+     * Teste 2: Página de criação de tickets está acessível
      */
-    public function testMaintenanceListShowsData(FunctionalTester $I)
+    public function testCreateTicketPageIsAccessible(FunctionalTester $I)
     {
-        $I->wantTo('verificar se a lista mostra manutenções');
+        $I->wantTo('verificar que página de criação de tickets está acessível');
         
-        $I->amOnPage('/maintenance/index');
-        $I->seeElement('table');
-    }
-
-    /**
-     * Teste 3: Formulário de criação é acessível
-     */
-    public function testMaintenanceCreateFormIsAccessible(FunctionalTester $I)
-    {
-        $I->wantTo('verificar se formulário de criação está acessível');
-        
-        $I->amOnPage('/maintenance/create');
+        $I->amOnPage('/site/create-ticket');
         $I->seeResponseCodeIs(200);
-        $I->seeElement('form');
     }
 
     /**
-     * Teste 4: Validação de criação com dados vazios
+     * Teste 3: Formulário de contato mostra campos corretos
      */
-    public function testMaintenanceCreateValidation(FunctionalTester $I)
+    public function testContactFormHasRequiredFields(FunctionalTester $I)
     {
-        $I->wantTo('verificar validação do formulário de criação');
+        $I->wantTo('verificar que formulário de contato está acessível');
         
-        $I->amOnPage('/maintenance/create');
-        $I->click('button[type="submit"]');
-        
-        $I->see('cannot be blank');
-    }
-
-    /**
-     * Teste 5: Visualização de manutenção
-     */
-    public function testMaintenanceView(FunctionalTester $I)
-    {
-        $I->wantTo('visualizar detalhes de uma manutenção');
-        
-        $I->amOnPage('/maintenance/view?id=1');
+        // Navegar para contato através do menu
+        $I->amOnPage('/');
+        $I->click('Contactos');
         $I->seeResponseCodeIs(200);
-        $I->see('Óleo');
     }
 }

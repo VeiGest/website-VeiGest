@@ -14,7 +14,7 @@ return [
         'email' => 'test_admin@veigest.test',
         'auth_key' => 'test_admin_auth_key_123456',
         // password: admin123
-        'password_hash' => '$2y$13$EjaPFBnZOQsHdGuHI.xvhuDp1fHpo8hKRSk6yshqa9c5EG8s3C3lO',
+        'password_hash' => '$2y$10$CD5B50P1fZgnuwKmZYh6EurlmY7b2a/CSfgdofbEuKSJb8tDLlVDO',
         'status' => 'active',
         'created_at' => '2025-01-01 00:00:00',
         'updated_at' => '2025-01-01 00:00:00',
@@ -27,8 +27,8 @@ return [
         'name' => 'Test Manager',
         'email' => 'test_manager@veigest.test',
         'auth_key' => 'test_manager_auth_key_123456',
-        // password: manager123
-        'password_hash' => '$2y$13$EjaPFBnZOQsHdGuHI.xvhuDp1fHpo8hKRSk6yshqa9c5EG8s3C3lO',
+        // password: admin123
+        'password_hash' => '$2y$10$CD5B50P1fZgnuwKmZYh6EurlmY7b2a/CSfgdofbEuKSJb8tDLlVDO',
         'status' => 'active',
         'created_at' => '2025-01-01 00:00:00',
         'updated_at' => '2025-01-01 00:00:00',
@@ -41,8 +41,8 @@ return [
         'name' => 'Test Driver',
         'email' => 'test_driver@veigest.test',
         'auth_key' => 'test_driver_auth_key_123456',
-        // password: driver123
-        'password_hash' => '$2y$13$EjaPFBnZOQsHdGuHI.xvhuDp1fHpo8hKRSk6yshqa9c5EG8s3C3lO',
+        // password: admin123
+        'password_hash' => '$2y$10$CD5B50P1fZgnuwKmZYh6EurlmY7b2a/CSfgdofbEuKSJb8tDLlVDO',
         'license_number' => 'DRV-TEST-001',
         'license_expiry' => '2030-12-31',
         'status' => 'active',
@@ -57,7 +57,7 @@ return [
         'name' => 'Test Inactive User',
         'email' => 'test_inactive@veigest.test',
         'auth_key' => 'test_inactive_auth_key_123456',
-        'password_hash' => '$2y$13$EjaPFBnZOQsHdGuHI.xvhuDp1fHpo8hKRSk6yshqa9c5EG8s3C3lO',
+        'password_hash' => '$2y$10$CD5B50P1fZgnuwKmZYh6EurlmY7b2a/CSfgdofbEuKSJb8tDLlVDO',
         'status' => 'inactive',
         'created_at' => '2025-01-01 00:00:00',
         'updated_at' => '2025-01-01 00:00:00',

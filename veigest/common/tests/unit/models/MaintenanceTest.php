@@ -55,11 +55,11 @@ class MaintenanceTest extends \Codeception\Test\Unit
     {
         $maintenance = new Maintenance();
 
-        verify('Maintenance sem dados não deve validar', $maintenance->validate())->false();
-        verify('Company_id deve ser obrigatório', $maintenance->errors)->arrayHasKey('company_id');
-        verify('Vehicle_id deve ser obrigatório', $maintenance->errors)->arrayHasKey('vehicle_id');
-        verify('Type deve ser obrigatório', $maintenance->errors)->arrayHasKey('type');
-        verify('Date deve ser obrigatório', $maintenance->errors)->arrayHasKey('date');
+        $this->assertFalse($maintenance->validate(), 'Maintenance sem dados não deve validar');
+        $this->assertArrayHasKey('company_id', $maintenance->errors, 'Company_id deve ser obrigatório');
+        $this->assertArrayHasKey('vehicle_id', $maintenance->errors, 'Vehicle_id deve ser obrigatório');
+        $this->assertArrayHasKey('type', $maintenance->errors, 'Type deve ser obrigatório');
+        $this->assertArrayHasKey('date', $maintenance->errors, 'Date deve ser obrigatório');
     }
 
     /**
@@ -76,8 +76,8 @@ class MaintenanceTest extends \Codeception\Test\Unit
             'status' => 'status_invalido',
         ]);
 
-        verify('Status inválido não deve validar', $maintenance->validate())->false();
-        verify('Deve ter erro no status', $maintenance->errors)->arrayHasKey('status');
+        $this->assertFalse($maintenance->validate(), 'Status inválido não deve validar');
+        $this->assertArrayHasKey('status', $maintenance->errors, 'Deve ter erro no status');
 
         // Testar status válidos
         $validStatuses = [
@@ -87,7 +87,7 @@ class MaintenanceTest extends \Codeception\Test\Unit
         ];
         foreach ($validStatuses as $status) {
             $maintenance->status = $status;
-            verify("Status '$status' deve ser válido", $maintenance->validate(['status']))->true();
+            $this->assertTrue($maintenance->validate(['status']), "Status '$status' deve ser válido");
         }
     }
 
@@ -97,9 +97,9 @@ class MaintenanceTest extends \Codeception\Test\Unit
      */
     public function testConstants()
     {
-        verify('STATUS_SCHEDULED deve ser "scheduled"', Maintenance::STATUS_SCHEDULED)->equals('scheduled');
-        verify('STATUS_COMPLETED deve ser "completed"', Maintenance::STATUS_COMPLETED)->equals('completed');
-        verify('STATUS_CANCELLED deve ser "cancelled"', Maintenance::STATUS_CANCELLED)->equals('cancelled');
+        $this->assertEquals('scheduled', Maintenance::STATUS_SCHEDULED, 'STATUS_SCHEDULED deve ser "scheduled"');
+        $this->assertEquals('completed', Maintenance::STATUS_COMPLETED, 'STATUS_COMPLETED deve ser "completed"');
+        $this->assertEquals('cancelled', Maintenance::STATUS_CANCELLED, 'STATUS_CANCELLED deve ser "cancelled"');
     }
 
     /**
@@ -110,11 +110,11 @@ class MaintenanceTest extends \Codeception\Test\Unit
     {
         $types = Maintenance::getTypes();
         
-        verify('getTypes deve retornar array', is_array($types))->true();
-        verify('getTypes deve ter múltiplas opções', count($types))->greaterThan(5);
-        verify('getTypes deve conter "Óleo"', $types)->arrayHasKey('Óleo');
-        verify('getTypes deve conter "Pneus"', $types)->arrayHasKey('Pneus');
-        verify('getTypes deve conter "Inspeção"', $types)->arrayHasKey('Inspeção');
+        $this->assertIsArray($types, 'getTypes deve retornar array');
+        $this->assertGreaterThan(5, count($types), 'getTypes deve ter múltiplas opções');
+        $this->assertArrayHasKey('Óleo', $types, 'getTypes deve conter "Óleo"');
+        $this->assertArrayHasKey('Pneus', $types, 'getTypes deve conter "Pneus"');
+        $this->assertArrayHasKey('Inspeção', $types, 'getTypes deve conter "Inspeção"');
     }
 
     /**
@@ -131,16 +131,16 @@ class MaintenanceTest extends \Codeception\Test\Unit
             'status' => 'scheduled',
         ]);
 
-        verify('Data válida deve passar validação', $maintenance->validate(['date']))->true();
+        $this->assertTrue($maintenance->validate(['date']), 'Data válida deve passar validação');
 
         // Data inválida
         $maintenance->date = 'data_invalida';
-        verify('Data inválida não deve validar', $maintenance->validate(['date']))->false();
+        $this->assertFalse($maintenance->validate(['date']), 'Data inválida não deve validar');
     }
 
     /**
      * Teste 6: Validação de custo (número)
-     * Verifica se cost aceita apenas valores numéricos
+     * Verifica se custo aceita apenas valores numéricos
      */
     public function testValidationCost()
     {
@@ -153,21 +153,21 @@ class MaintenanceTest extends \Codeception\Test\Unit
             'cost' => 150.50,
         ]);
 
-        verify('Custo numérico válido deve passar', $maintenance->validate(['cost']))->true();
+        $this->assertTrue($maintenance->validate(['cost']), 'Custo numérico válido deve passar');
         
         $maintenance->cost = 'nao_numerico';
-        verify('Custo não numérico não deve validar', $maintenance->validate(['cost']))->false();
+        $this->assertFalse($maintenance->validate(['cost']), 'Custo não numérico não deve validar');
     }
 
     /**
-     * Teste 7: Aliases PT-EN
-     * Verifica se os aliases em português funcionam
+     * Teste 7: Aliases PT -> EN
+     * Verifica se os aliases em português funcionam corretamente
      */
     public function testPTAliases()
     {
         $maintenance = new Maintenance();
         
-        // Testar setters
+        // Atribuir valores via aliases PT
         $maintenance->tipo = 'Óleo';
         $maintenance->descricao = 'Mudança de óleo';
         $maintenance->data = '2025-02-01';
@@ -175,13 +175,18 @@ class MaintenanceTest extends \Codeception\Test\Unit
         $maintenance->km_registro = 55000;
         $maintenance->oficina = 'Oficina Test';
 
-        // Testar getters
-        verify('Alias tipo deve mapear para type', $maintenance->type)->equals('Óleo');
-        verify('Alias descricao deve mapear para description', $maintenance->description)->equals('Mudança de óleo');
-        verify('Alias data deve mapear para date', $maintenance->date)->equals('2025-02-01');
-        verify('Alias custo deve mapear para cost', $maintenance->cost)->equals(75.00);
-        verify('Alias km_registro deve mapear para mileage_record', $maintenance->mileage_record)->equals(55000);
-        verify('Alias oficina deve mapear para workshop', $maintenance->workshop)->equals('Oficina Test');
+        // Verificar que os valores foram atribuídos aos campos EN
+        $this->assertEquals('Óleo', $maintenance->type, 'Alias tipo deve mapear para type');
+        $this->assertEquals('Mudança de óleo', $maintenance->description, 'Alias descricao deve mapear para description');
+        $this->assertEquals('2025-02-01', $maintenance->date, 'Alias data deve mapear para date');
+        $this->assertEquals(75.00, $maintenance->cost, 'Alias custo deve mapear para cost');
+        $this->assertEquals(55000, $maintenance->mileage_record, 'Alias km_registro deve mapear para mileage_record');
+        $this->assertEquals('Oficina Test', $maintenance->workshop, 'Alias oficina deve mapear para workshop');
+        
+        // Testar getters PT
+        $this->assertEquals('Óleo', $maintenance->tipo, 'Getter tipo deve retornar type');
+        $this->assertEquals('Mudança de óleo', $maintenance->descricao, 'Getter descricao deve retornar description');
+        $this->assertEquals('2025-02-01', $maintenance->data, 'Getter data deve retornar date');
     }
 
     /**
@@ -193,12 +198,12 @@ class MaintenanceTest extends \Codeception\Test\Unit
         // Buscar manutenção existente do fixture
         $maintenance = Maintenance::findOne(1);
         
-        verify('Manutenção deve existir', $maintenance)->notNull();
+        $this->assertNotNull($maintenance, 'Manutenção deve existir');
         
         $vehicle = $maintenance->vehicle;
-        verify('Vehicle deve ser encontrado através da relação', $vehicle)->notNull();
-        verify('Vehicle deve ser instância de Vehicle', $vehicle)->isInstanceOf(Vehicle::class);
-        verify('Vehicle ID deve corresponder', $vehicle->id)->equals($maintenance->vehicle_id);
+        $this->assertNotNull($vehicle, 'Vehicle deve ser encontrado através da relação');
+        $this->assertInstanceOf(Vehicle::class, $vehicle, 'Vehicle deve ser instância de Vehicle');
+        $this->assertEquals($maintenance->vehicle_id, $vehicle->id, 'Vehicle ID deve corresponder');
     }
 
     /**
@@ -215,12 +220,12 @@ class MaintenanceTest extends \Codeception\Test\Unit
             'status' => 'scheduled',
         ]);
 
-        verify('Vehicle inexistente não deve validar', $maintenance->validate())->false();
-        verify('Deve ter erro no vehicle_id', $maintenance->errors)->arrayHasKey('vehicle_id');
+        $this->assertFalse($maintenance->validate(), 'Vehicle inexistente não deve validar');
+        $this->assertArrayHasKey('vehicle_id', $maintenance->errors, 'Deve ter erro no vehicle_id');
 
         // Com vehicle_id válido
         $maintenance->vehicle_id = 1; // ID do fixture
-        verify('Vehicle existente deve validar', $maintenance->validate(['vehicle_id']))->true();
+        $this->assertTrue($maintenance->validate(['vehicle_id']), 'Vehicle existente deve validar');
     }
 
     /**
@@ -242,29 +247,29 @@ class MaintenanceTest extends \Codeception\Test\Unit
             'workshop' => 'CRUD Workshop',
         ]);
 
-        verify('CREATE: Maintenance deve ser salvo', $maintenance->save())->true();
-        verify('CREATE: ID deve ser atribuído', $maintenance->id)->notNull();
+        $this->assertTrue($maintenance->save(), 'CREATE: Maintenance deve ser salvo');
+        $this->assertNotNull($maintenance->id, 'CREATE: ID deve ser atribuído');
         $maintenanceId = $maintenance->id;
 
         // READ
         $foundMaintenance = Maintenance::findOne($maintenanceId);
-        verify('READ: Maintenance deve ser encontrado', $foundMaintenance)->notNull();
-        verify('READ: Type deve corresponder', $foundMaintenance->type)->equals('CRUD Test Type');
-        verify('READ: Vehicle_id deve corresponder', $foundMaintenance->vehicle_id)->equals(1);
+        $this->assertNotNull($foundMaintenance, 'READ: Maintenance deve ser encontrado');
+        $this->assertEquals('CRUD Test Type', $foundMaintenance->type, 'READ: Type deve corresponder');
+        $this->assertEquals(1, $foundMaintenance->vehicle_id, 'READ: Vehicle_id deve corresponder');
 
         // UPDATE
         $foundMaintenance->status = Maintenance::STATUS_COMPLETED;
         $foundMaintenance->cost = 125.50;
-        verify('UPDATE: Maintenance deve ser atualizado', $foundMaintenance->save())->true();
+        $this->assertTrue($foundMaintenance->save(), 'UPDATE: Maintenance deve ser atualizado');
 
         $updatedMaintenance = Maintenance::findOne($maintenanceId);
-        verify('UPDATE: Status atualizado deve corresponder', $updatedMaintenance->status)->equals('completed');
-        verify('UPDATE: Cost atualizado deve corresponder', $updatedMaintenance->cost)->equals(125.50);
+        $this->assertEquals('completed', $updatedMaintenance->status, 'UPDATE: Status atualizado deve corresponder');
+        $this->assertEquals(125.50, $updatedMaintenance->cost, 'UPDATE: Cost atualizado deve corresponder');
 
         // DELETE
-        verify('DELETE: Maintenance deve ser eliminado', $updatedMaintenance->delete())->equals(1);
+        $this->assertEquals(1, $updatedMaintenance->delete(), 'DELETE: Maintenance deve ser eliminado');
         
         $deletedMaintenance = Maintenance::findOne($maintenanceId);
-        verify('DELETE: Maintenance não deve existir após eliminar', $deletedMaintenance)->null();
+        $this->assertNull($deletedMaintenance, 'DELETE: Maintenance não deve existir após eliminar');
     }
 }

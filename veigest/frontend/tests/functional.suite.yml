@@ -4,7 +4,9 @@ bootstrap: false
 modules:
     enabled:
         - Yii2:
-            part: [init, fixtures, orm]
+            configFile: 'config/codeception-local.php'
             entryScript: web/index-test.php
-            entryUrl: http://localhost:20080/index-test.php
+            entryUrl: http://localhost/index-test.php
             cleanup: true
+            cookieDomain: localhost
+        - \Codeception\Module\Asserts

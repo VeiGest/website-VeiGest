@@ -49,11 +49,11 @@ class VehicleTest extends \Codeception\Test\Unit
     {
         $vehicle = new Vehicle();
 
-        verify('Vehicle sem dados não deve validar', $vehicle->validate())->false();
-        verify('License plate deve ser obrigatório', $vehicle->errors)->arrayHasKey('license_plate');
-        verify('Brand deve ser obrigatório', $vehicle->errors)->arrayHasKey('brand');
-        verify('Model deve ser obrigatório', $vehicle->errors)->arrayHasKey('model');
-        verify('Status deve ser obrigatório', $vehicle->errors)->arrayHasKey('status');
+        $this->assertFalse($vehicle->validate(), 'Vehicle sem dados não deve validar');
+        $this->assertArrayHasKey('license_plate', $vehicle->errors, 'License plate deve ser obrigatório');
+        $this->assertArrayHasKey('brand', $vehicle->errors, 'Brand deve ser obrigatório');
+        $this->assertArrayHasKey('model', $vehicle->errors, 'Model deve ser obrigatório');
+        $this->assertArrayHasKey('status', $vehicle->errors, 'Status deve ser obrigatório');
     }
 
     /**
@@ -70,14 +70,14 @@ class VehicleTest extends \Codeception\Test\Unit
             'status' => 'status_invalido',
         ]);
 
-        verify('Status inválido não deve validar', $vehicle->validate())->false();
-        verify('Deve ter erro no status', $vehicle->errors)->arrayHasKey('status');
+        $this->assertFalse($vehicle->validate(), 'Status inválido não deve validar');
+        $this->assertArrayHasKey('status', $vehicle->errors, 'Deve ter erro no status');
 
         // Testar status válidos
         $validStatuses = [Vehicle::STATUS_ATIVO, Vehicle::STATUS_MANUTENCAO, Vehicle::STATUS_INATIVO];
         foreach ($validStatuses as $status) {
             $vehicle->status = $status;
-            verify("Status '$status' deve ser válido", $vehicle->validate(['status']))->true();
+            $this->assertTrue($vehicle->validate(['status']), "Status '$status' deve ser válido");
         }
     }
 
@@ -96,8 +96,8 @@ class VehicleTest extends \Codeception\Test\Unit
             'fuel_type' => 'combustivel_invalido',
         ]);
 
-        verify('Fuel type inválido não deve validar', $vehicle->validate())->false();
-        verify('Deve ter erro no fuel_type', $vehicle->errors)->arrayHasKey('fuel_type');
+        $this->assertFalse($vehicle->validate(), 'Fuel type inválido não deve validar');
+        $this->assertArrayHasKey('fuel_type', $vehicle->errors, 'Deve ter erro no fuel_type');
 
         // Testar fuel types válidos
         $validFuelTypes = [
@@ -109,7 +109,7 @@ class VehicleTest extends \Codeception\Test\Unit
         ];
         foreach ($validFuelTypes as $fuelType) {
             $vehicle->fuel_type = $fuelType;
-            verify("Fuel type '$fuelType' deve ser válido", $vehicle->validate(['fuel_type']))->true();
+            $this->assertTrue($vehicle->validate(['fuel_type']), "Fuel type '$fuelType' deve ser válido");
         }
     }
 
@@ -120,15 +120,15 @@ class VehicleTest extends \Codeception\Test\Unit
     public function testConstants()
     {
         // Status constants
-        verify('STATUS_ATIVO deve ser "active"', Vehicle::STATUS_ATIVO)->equals('active');
-        verify('STATUS_MANUTENCAO deve ser "maintenance"', Vehicle::STATUS_MANUTENCAO)->equals('maintenance');
-        verify('STATUS_INATIVO deve ser "inactive"', Vehicle::STATUS_INATIVO)->equals('inactive');
+        $this->assertEquals('active', Vehicle::STATUS_ATIVO, 'STATUS_ATIVO deve ser "active"');
+        $this->assertEquals('maintenance', Vehicle::STATUS_MANUTENCAO, 'STATUS_MANUTENCAO deve ser "maintenance"');
+        $this->assertEquals('inactive', Vehicle::STATUS_INATIVO, 'STATUS_INATIVO deve ser "inactive"');
 
         // Fuel type constants
-        verify('FUEL_TYPE_GASOLINA deve ser "gasoline"', Vehicle::FUEL_TYPE_GASOLINA)->equals('gasoline');
-        verify('FUEL_TYPE_DIESEL deve ser "diesel"', Vehicle::FUEL_TYPE_DIESEL)->equals('diesel');
-        verify('FUEL_TYPE_ELETRICO deve ser "electric"', Vehicle::FUEL_TYPE_ELETRICO)->equals('electric');
-        verify('FUEL_TYPE_HIBRIDO deve ser "hybrid"', Vehicle::FUEL_TYPE_HIBRIDO)->equals('hybrid');
+        $this->assertEquals('gasoline', Vehicle::FUEL_TYPE_GASOLINA, 'FUEL_TYPE_GASOLINA deve ser "gasoline"');
+        $this->assertEquals('diesel', Vehicle::FUEL_TYPE_DIESEL, 'FUEL_TYPE_DIESEL deve ser "diesel"');
+        $this->assertEquals('electric', Vehicle::FUEL_TYPE_ELETRICO, 'FUEL_TYPE_ELETRICO deve ser "electric"');
+        $this->assertEquals('hybrid', Vehicle::FUEL_TYPE_HIBRIDO, 'FUEL_TYPE_HIBRIDO deve ser "hybrid"');
     }
 
     /**
@@ -138,17 +138,17 @@ class VehicleTest extends \Codeception\Test\Unit
     public function testOptionsHelpers()
     {
         $fuelOptions = Vehicle::optsFuelType();
-        verify('optsFuelType deve retornar array', is_array($fuelOptions))->true();
-        verify('optsFuelType deve ter 5 opções', count($fuelOptions))->equals(5);
-        verify('optsFuelType deve conter gasoline', $fuelOptions)->arrayHasKey('gasoline');
-        verify('optsFuelType deve conter diesel', $fuelOptions)->arrayHasKey('diesel');
+        $this->assertIsArray($fuelOptions, 'optsFuelType deve retornar array');
+        $this->assertEquals(5, count($fuelOptions), 'optsFuelType deve ter 5 opções');
+        $this->assertArrayHasKey('gasoline', $fuelOptions, 'optsFuelType deve conter gasoline');
+        $this->assertArrayHasKey('diesel', $fuelOptions, 'optsFuelType deve conter diesel');
 
         $statusOptions = Vehicle::optsStatus();
-        verify('optsStatus deve retornar array', is_array($statusOptions))->true();
-        verify('optsStatus deve ter 3 opções', count($statusOptions))->equals(3);
-        verify('optsStatus deve conter active', $statusOptions)->arrayHasKey('active');
-        verify('optsStatus deve conter maintenance', $statusOptions)->arrayHasKey('maintenance');
-        verify('optsStatus deve conter inactive', $statusOptions)->arrayHasKey('inactive');
+        $this->assertIsArray($statusOptions, 'optsStatus deve retornar array');
+        $this->assertEquals(3, count($statusOptions), 'optsStatus deve ter 3 opções');
+        $this->assertArrayHasKey('active', $statusOptions, 'optsStatus deve conter active');
+        $this->assertArrayHasKey('maintenance', $statusOptions, 'optsStatus deve conter maintenance');
+        $this->assertArrayHasKey('inactive', $statusOptions, 'optsStatus deve conter inactive');
     }
 
     /**
@@ -162,13 +162,13 @@ class VehicleTest extends \Codeception\Test\Unit
             'status' => 'active',
         ]);
 
-        verify('displayFuelType deve retornar "Gasoline"', $vehicle->displayFuelType())->equals('Gasoline');
-        verify('displayStatus deve retornar "Active"', $vehicle->displayStatus())->equals('Active');
+        $this->assertEquals('Gasoline', $vehicle->displayFuelType(), 'displayFuelType deve retornar "Gasoline"');
+        $this->assertEquals('Active', $vehicle->displayStatus(), 'displayStatus deve retornar "Active"');
 
         $vehicle->fuel_type = 'diesel';
         $vehicle->status = 'maintenance';
-        verify('displayFuelType deve retornar "Diesel"', $vehicle->displayFuelType())->equals('Diesel');
-        verify('displayStatus deve retornar "In Maintenance"', $vehicle->displayStatus())->equals('In Maintenance');
+        $this->assertEquals('Diesel', $vehicle->displayFuelType(), 'displayFuelType deve retornar "Diesel"');
+        $this->assertEquals('In Maintenance', $vehicle->displayStatus(), 'displayStatus deve retornar "In Maintenance"');
     }
 
     /**
@@ -186,16 +186,16 @@ class VehicleTest extends \Codeception\Test\Unit
         $vehicle->ano = 2023;
 
         // Testar getters
-        verify('Alias matricula deve mapear para license_plate', $vehicle->license_plate)->equals('PT-00-PT');
-        verify('Alias marca deve mapear para brand', $vehicle->brand)->equals('Toyota');
-        verify('Alias modelo deve mapear para model', $vehicle->model)->equals('Yaris');
-        verify('Alias ano deve mapear para year', $vehicle->year)->equals(2023);
+        $this->assertEquals('PT-00-PT', $vehicle->license_plate, 'Alias matricula deve mapear para license_plate');
+        $this->assertEquals('Toyota', $vehicle->brand, 'Alias marca deve mapear para brand');
+        $this->assertEquals('Yaris', $vehicle->model, 'Alias modelo deve mapear para model');
+        $this->assertEquals(2023, $vehicle->year, 'Alias ano deve mapear para year');
 
         // Testar getters inversos
-        verify('Getter matricula deve retornar license_plate', $vehicle->matricula)->equals('PT-00-PT');
-        verify('Getter marca deve retornar brand', $vehicle->marca)->equals('Toyota');
-        verify('Getter modelo deve retornar model', $vehicle->modelo)->equals('Yaris');
-        verify('Getter ano deve retornar year', $vehicle->ano)->equals(2023);
+        $this->assertEquals('PT-00-PT', $vehicle->matricula, 'Getter matricula deve retornar license_plate');
+        $this->assertEquals('Toyota', $vehicle->marca, 'Getter marca deve retornar brand');
+        $this->assertEquals('Yaris', $vehicle->modelo, 'Getter modelo deve retornar model');
+        $this->assertEquals(2023, $vehicle->ano, 'Getter ano deve retornar year');
     }
 
     /**
@@ -212,7 +212,7 @@ class VehicleTest extends \Codeception\Test\Unit
             'company_id' => 1,
             'status' => 'active',
         ]);
-        verify('Primeiro veículo deve salvar', $vehicle1->save())->true();
+        $this->assertTrue($vehicle1->save(), 'Primeiro veículo deve salvar');
 
         // Tentar criar veículo com mesma matrícula na mesma empresa
         $vehicle2 = new Vehicle([
@@ -222,7 +222,7 @@ class VehicleTest extends \Codeception\Test\Unit
             'company_id' => 1, // mesma empresa
             'status' => 'active',
         ]);
-        verify('Matrícula duplicada na mesma empresa não deve validar', $vehicle2->validate())->false();
+        $this->assertFalse($vehicle2->validate(), 'Matrícula duplicada na mesma empresa não deve validar');
 
         // Mesma matrícula em empresa diferente deve funcionar
         $vehicle3 = new Vehicle([
@@ -232,7 +232,7 @@ class VehicleTest extends \Codeception\Test\Unit
             'company_id' => 2, // empresa diferente
             'status' => 'active',
         ]);
-        verify('Mesma matrícula em empresa diferente deve validar', $vehicle3->validate())->true();
+        $this->assertTrue($vehicle3->validate(), 'Mesma matrícula em empresa diferente deve validar');
 
         // Cleanup
         $vehicle1->delete();
@@ -256,30 +256,30 @@ class VehicleTest extends \Codeception\Test\Unit
             'status' => 'active',
         ]);
 
-        verify('CREATE: Vehicle deve ser salvo', $vehicle->save())->true();
-        verify('CREATE: ID deve ser atribuído', $vehicle->id)->notNull();
+        $this->assertTrue($vehicle->save(), 'CREATE: Vehicle deve ser salvo');
+        $this->assertNotNull($vehicle->id, 'CREATE: ID deve ser atribuído');
         $vehicleId = $vehicle->id;
 
         // READ
         $foundVehicle = Vehicle::findOne($vehicleId);
-        verify('READ: Vehicle deve ser encontrado', $foundVehicle)->notNull();
-        verify('READ: License plate deve corresponder', $foundVehicle->license_plate)->equals('CRUD-TEST');
-        verify('READ: Brand deve corresponder', $foundVehicle->brand)->equals('CRUD Brand');
+        $this->assertNotNull($foundVehicle, 'READ: Vehicle deve ser encontrado');
+        $this->assertEquals('CRUD-TEST', $foundVehicle->license_plate, 'READ: License plate deve corresponder');
+        $this->assertEquals('CRUD Brand', $foundVehicle->brand, 'READ: Brand deve corresponder');
 
         // UPDATE
         $foundVehicle->mileage = 10000;
         $foundVehicle->status = 'maintenance';
-        verify('UPDATE: Vehicle deve ser atualizado', $foundVehicle->save())->true();
+        $this->assertTrue($foundVehicle->save(), 'UPDATE: Vehicle deve ser atualizado');
 
         $updatedVehicle = Vehicle::findOne($vehicleId);
-        verify('UPDATE: Mileage atualizado deve corresponder', $updatedVehicle->mileage)->equals(10000);
-        verify('UPDATE: Status atualizado deve corresponder', $updatedVehicle->status)->equals('maintenance');
+        $this->assertEquals(10000, $updatedVehicle->mileage, 'UPDATE: Mileage atualizado deve corresponder');
+        $this->assertEquals('maintenance', $updatedVehicle->status, 'UPDATE: Status atualizado deve corresponder');
 
         // DELETE
-        verify('DELETE: Vehicle deve ser eliminado', $updatedVehicle->delete())->equals(1);
+        $this->assertEquals(1, $updatedVehicle->delete(), 'DELETE: Vehicle deve ser eliminado');
         
         $deletedVehicle = Vehicle::findOne($vehicleId);
-        verify('DELETE: Vehicle não deve existir após eliminar', $deletedVehicle)->null();
+        $this->assertNull($deletedVehicle, 'DELETE: Vehicle não deve existir após eliminar');
     }
 
     /**
@@ -298,7 +298,7 @@ class VehicleTest extends \Codeception\Test\Unit
             'mileage' => 50000,
         ]);
 
-        verify('Valores numéricos válidos devem passar', $vehicle->validate(['year', 'mileage']))->true();
+        $this->assertTrue($vehicle->validate(['year', 'mileage']), 'Valores numéricos válidos devem passar');
 
         // Testar valores negativos ou inválidos
         $vehicle->year = -1;
@@ -307,7 +307,7 @@ class VehicleTest extends \Codeception\Test\Unit
         
         // A validação básica de integer aceita negativos
         // Mas podemos verificar se os valores são atribuídos corretamente
-        verify('Year deve ser atribuído', $vehicle->year)->equals(-1);
-        verify('Mileage deve ser atribuído', $vehicle->mileage)->equals(-100);
+        $this->assertEquals(-1, $vehicle->year, 'Year deve ser atribuído');
+        $this->assertEquals(-100, $vehicle->mileage, 'Mileage deve ser atribuído');
     }
 }

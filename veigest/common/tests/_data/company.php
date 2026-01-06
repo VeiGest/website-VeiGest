@@ -2,11 +2,12 @@
 
 /**
  * Dados de fixture para testes de Company
+ * Nota: O campo 'code' é do tipo bigint na base de dados
  */
 return [
     [
         'id' => 1,
-        'code' => 'VEIGEST',
+        'code' => 1001,
         'name' => 'VeiGest Test Company',
         'tax_id' => '123456789',
         'email' => 'test@veigest.test',
@@ -18,7 +19,7 @@ return [
     ],
     [
         'id' => 2,
-        'code' => 'COMPANY2',
+        'code' => 1002,
         'name' => 'Second Test Company',
         'tax_id' => '987654321',
         'email' => 'company2@veigest.test',
