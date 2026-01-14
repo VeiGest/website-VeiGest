@@ -2,7 +2,7 @@
  * Script rápido para testar conectividade com a API
  */
 
-const API_URL = 'http://localhost:8002/api/auth/login';
+const API_URL = 'http://veigestback.dryadlang.org/api/auth/login';
 
 console.log('🔍 Testando conexão com API VeiGest...\n');
 console.log(`URL: ${API_URL}\n`);
@@ -49,5 +49,5 @@ fetch(API_URL, {
 .catch(error => {
     console.error('\n❌ Erro de conexão:');
     console.error(error.message);
-    console.log('\n⚠️  Certifique-se de que o servidor está rodando em http://localhost:8002');
+    console.log('\n⚠️  Certifique-se de que o servidor está rodando em http://veigestback.dryadlang.org');
 });

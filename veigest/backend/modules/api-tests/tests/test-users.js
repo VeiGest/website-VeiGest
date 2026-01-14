@@ -27,7 +27,7 @@ async function runUserTests(token, companyId) {
 
     // Teste 1: Listar todos os usuários
     console.log('\n📝 Teste 1: Listar todos os usuários');
-    const listResult = await apiRequest('GET', '/users', {
+    const listResult = await apiRequest('GET', '/user', {
         token: token
     });
     
@@ -79,7 +79,7 @@ async function runUserTests(token, companyId) {
         status: 'active'
     };
     
-    const createResult = await apiRequest('POST', '/users', {
+    const createResult = await apiRequest('POST', '/user', {
         token: token,
         body: newUser
     });

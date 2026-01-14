@@ -203,8 +203,8 @@ class CompanyController extends BaseApiController
         
         // Filtros opcionais
         $request = Yii::$app->request;
-        if ($tipo = $request->get('tipo')) {
-            $query->andWhere(['tipo' => $tipo]);
+        if ($role = $request->get('role')) {
+            $query->andWhere(['LIKE', 'roles', $role]);
         }
         if ($status = $request->get('status')) {
             $query->andWhere(['status' => $status]);
@@ -235,7 +235,7 @@ class CompanyController extends BaseApiController
         return [
             'company' => [
                 'id' => $company->id,
-                'nome' => $company->nome,
+                'name' => $company->name,
                 'status' => $company->status,
                 'created_at' => $company->created_at,
             ],
@@ -249,7 +249,7 @@ class CompanyController extends BaseApiController
                     ->count(),
                 'pending_maintenances' => $company->getVehicles()
                     ->joinWith(['maintenances' => function($query) {
-                        $query->where(['status' => 'scheduled']);
+                        $query->where(['{{%maintenances}}.status' => 'scheduled']);
                     }])
                     ->count(),
             ],

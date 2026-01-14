@@ -345,10 +345,10 @@ class MaintenanceController extends BaseApiController
             ->where(['{{%vehicles}}.company_id' => $companyId]);
 
         $pendingQuery = clone $totalQuery;
-        $pendingQuery->andWhere(['status' => 'scheduled']);
+        $pendingQuery->andWhere(['{{%maintenances}}.status' => 'scheduled']);
 
         $completedQuery = clone $totalQuery;
-        $completedQuery->andWhere(['status' => 'completed']);
+        $completedQuery->andWhere(['{{%maintenances}}.status' => 'completed']);
 
         return [
             'total_maintenances' => $totalQuery->count(),

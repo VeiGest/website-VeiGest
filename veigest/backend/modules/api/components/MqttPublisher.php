@@ -18,8 +18,6 @@ use yii\base\Component;
  * - veigest/alerts/{company_id}/new      - Novos alertas criados
  * - veigest/alerts/{company_id}/resolved - Alertas resolvidos
  * 
- * @author VeiGest Team
- * @version 1.0
  */
 class MqttPublisher extends Component
 {

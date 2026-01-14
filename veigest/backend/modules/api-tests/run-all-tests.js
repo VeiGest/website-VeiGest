@@ -4,11 +4,17 @@
  */
 
 const { runAuthTests } = require('./tests/test-auth.js');
+const { runRegisterTests } = require('./tests/test-register.js');
 const { runVehicleTests } = require('./tests/test-vehicles.js');
 const { runUserTests } = require('./tests/test-users.js');
 const { runCompanyTests } = require('./tests/test-companies.js');
 const { runMaintenanceTests } = require('./tests/test-maintenance.js');
 const { runFuelLogTests } = require('./tests/test-fuel-logs.js');
+const { runAlertTests } = require('./tests/test-alerts.js');
+const { runDocumentTests } = require('./tests/test-documents.js');
+const { runFileTests } = require('./tests/test-files.js');
+const { runRouteTests } = require('./tests/test-routes.js');
+const { runActivityLogTests } = require('./tests/test-activity-log.js');
 const { apiRequest } = require('./utils/http-client.js');
 
 /**
@@ -50,27 +56,63 @@ async function runAllTests() {
         allResults.success += authResults.success;
         allResults.failed += authResults.failed;
 
-        // Obter token para os próximos testes
+        // Obter token para os próximos testes — preferir token obtido em runAuthTests()
         console.log('\n🔑 Obtendo token para testes subsequentes...');
-        const loginResult = await apiRequest('POST', '/auth/login', {
-            body: {
-                username: 'apiadmin',
-                password: 'password'
-            }
-        });
+        let authToken = null;
+        if (authResults && Array.isArray(authResults.tests)) {
+            const loginTest = authResults.tests.find(t => t.name === 'Login Admin' && t.token);
+            if (loginTest) authToken = loginTest.token;
+        }
 
-        if (loginResult.success && loginResult.response.body?.data?.access_token) {
-            globalToken = loginResult.response.body.data.access_token;
-            globalCompanyId = loginResult.response.body.data.user?.company_id || 1;
-            console.log(`✅ Token obtido com sucesso (Company ID: ${globalCompanyId})`);
-        } else {
-            throw new Error('Falha ao obter token de autenticação para testes subsequentes');
+        if (authToken) {
+            // validar token e obter company_id
+            const me = await apiRequest('GET', '/auth/me', { token: authToken });
+            if (me.success && me.response.body?.data?.user) {
+                globalToken = authToken;
+                globalCompanyId = me.response.body.data.user.company_id || 1;
+                console.log(`✅ Reutilizando token do suite de autenticação (Company ID: ${globalCompanyId})`);
+            } else {
+                console.log('⚠️ Token obtido da suite de autenticação inválido — tentarei login direto');
+            }
+        }
+
+        if (!globalToken) {
+            // fallback: tentar login direto com credenciais conhecidas
+            const loginResult = await apiRequest('POST', '/auth/login', {
+                body: {
+                    username: 'apiadmin',
+                    password: 'password'
+                }
+            });
+
+            if (loginResult.success && loginResult.response.body?.data?.access_token) {
+                globalToken = loginResult.response.body.data.access_token;
+                globalCompanyId = loginResult.response.body.data.user?.company_id || 1;
+                console.log(`✅ Token obtido com sucesso via login direto (Company ID: ${globalCompanyId})`);
+            } else {
+                throw new Error('Falha ao obter token de autenticação para testes subsequentes');
+            }
         }
 
         // ========================================
-        // 2. TESTES DE EMPRESAS
+        // 2. TESTES DE REGISTRO
         // ========================================
-        console.log('\n\n📦 SUITE 2/6: EMPRESAS');
+        console.log('\n\n📦 SUITE 2/12: REGISTRO DE USUÁRIOS');
+        console.log('─'.repeat(80));
+        
+        const registerResults = await runRegisterTests();
+        allResults.suites.push({
+            name: 'Registro',
+            ...registerResults
+        });
+        allResults.total += registerResults.total;
+        allResults.success += registerResults.success;
+        allResults.failed += registerResults.failed;
+
+        // ========================================
+        // 3. TESTES DE EMPRESAS
+        // ========================================
+        console.log('\n\n📦 SUITE 3/12: EMPRESAS');
         console.log('─'.repeat(80));
         
         const companyResults = await runCompanyTests(globalToken, globalCompanyId);
@@ -83,9 +125,9 @@ async function runAllTests() {
         allResults.failed += companyResults.failed;
 
         // ========================================
-        // 3. TESTES DE VEÍCULOS
+        // 4. TESTES DE VEÍCULOS
         // ========================================
-        console.log('\n\n📦 SUITE 3/6: VEÍCULOS');
+        console.log('\n\n📦 SUITE 4/12: VEÍCULOS');
         console.log('─'.repeat(80));
         
         const vehicleResults = await runVehicleTests(globalToken, globalCompanyId);
@@ -98,9 +140,9 @@ async function runAllTests() {
         allResults.failed += vehicleResults.failed;
 
         // ========================================
-        // 4. TESTES DE USUÁRIOS
+        // 5. TESTES DE USUÁRIOS
         // ========================================
-        console.log('\n\n📦 SUITE 4/6: USUÁRIOS');
+        console.log('\n\n📦 SUITE 5/12: USUÁRIOS');
         console.log('─'.repeat(80));
         
         const userResults = await runUserTests(globalToken, globalCompanyId);
@@ -113,9 +155,9 @@ async function runAllTests() {
         allResults.failed += userResults.failed;
 
         // ========================================
-        // 5. TESTES DE MANUTENÇÕES
+        // 6. TESTES DE MANUTENÇÕES
         // ========================================
-        console.log('\n\n📦 SUITE 5/6: MANUTENÇÕES');
+        console.log('\n\n📦 SUITE 6/12: MANUTENÇÕES');
         console.log('─'.repeat(80));
         
         const maintenanceResults = await runMaintenanceTests(globalToken, globalCompanyId);
@@ -128,9 +170,9 @@ async function runAllTests() {
         allResults.failed += maintenanceResults.failed;
 
         // ========================================
-        // 6. TESTES DE ABASTECIMENTOS
+        // 7. TESTES DE ABASTECIMENTOS
         // ========================================
-        console.log('\n\n📦 SUITE 6/6: ABASTECIMENTOS');
+        console.log('\n\n📦 SUITE 7/12: ABASTECIMENTOS');
         console.log('─'.repeat(80));
         
         const fuelLogResults = await runFuelLogTests(globalToken, globalCompanyId);
@@ -141,6 +183,42 @@ async function runAllTests() {
         allResults.total += fuelLogResults.total;
         allResults.success += fuelLogResults.success;
         allResults.failed += fuelLogResults.failed;
+
+        // ========================================
+        // 7. TESTES DE ALERTAS, DOCUMENTOS, FILES, ROTAS, ACTIVITY
+        // ========================================
+        console.log('\n\n📦 SUITE 7/7: ALERTAS / DOCUMENTOS / FILES / ROTAS / ACTIVITY');
+        console.log('─'.repeat(80));
+
+        const alertResults = await runAlertTests(globalToken, globalCompanyId);
+        allResults.suites.push({ name: 'Alertas', ...alertResults });
+        allResults.total += alertResults.total;
+        allResults.success += alertResults.success;
+        allResults.failed += alertResults.failed;
+
+        const documentResults = await runDocumentTests(globalToken, globalCompanyId);
+        allResults.suites.push({ name: 'Documentos', ...documentResults });
+        allResults.total += documentResults.total;
+        allResults.success += documentResults.success;
+        allResults.failed += documentResults.failed;
+
+        const fileResults = await runFileTests(globalToken, globalCompanyId);
+        allResults.suites.push({ name: 'Files', ...fileResults });
+        allResults.total += fileResults.total;
+        allResults.success += fileResults.success;
+        allResults.failed += fileResults.failed;
+
+        const routeResults = await runRouteTests(globalToken, globalCompanyId);
+        allResults.suites.push({ name: 'Rotas', ...routeResults });
+        allResults.total += routeResults.total;
+        allResults.success += routeResults.success;
+        allResults.failed += routeResults.failed;
+
+        const activityResults = await runActivityLogTests(globalToken, globalCompanyId);
+        allResults.suites.push({ name: 'ActivityLog', ...activityResults });
+        allResults.total += activityResults.total;
+        allResults.success += activityResults.success;
+        allResults.failed += activityResults.failed;
 
     } catch (error) {
         console.error('\n❌ ERRO CRÍTICO ao executar testes:', error.message);
@@ -181,11 +259,13 @@ async function runAllTests() {
             console.log('   Testes:');
             suite.tests.forEach((test, testIndex) => {
                 let testIcon = '❓';
-                if (test.status.includes('SUCESSO')) testIcon = '✅';
-                else if (test.status.includes('FALHA')) testIcon = '❌';
-                else if (test.status.includes('INFO')) testIcon = 'ℹ️';
+                const status = test.status || 'DESCONHECIDO';
+                if (status.includes('SUCESSO')) testIcon = '✅';
+                else if (status.includes('FALHA')) testIcon = '❌';
+                else if (status.includes('INFO')) testIcon = 'ℹ️';
+                else if (status.includes('PULADO')) testIcon = '⏭️';
                 
-                console.log(`   ${testIcon} ${testIndex + 1}. ${test.name}: ${test.status}`);
+                console.log(`   ${testIcon} ${testIndex + 1}. ${test.name}: ${status}`);
             });
         }
     });

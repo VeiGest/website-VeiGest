@@ -12,8 +12,8 @@ const TEST_CREDENTIALS = {
         password: 'admin'
     },
     manager: {
-        username: 'gestor',
-        password: 'gestor123'
+        username: 'manager',
+        password: 'manager123'
     },
     driver: {
         username: 'driver1',

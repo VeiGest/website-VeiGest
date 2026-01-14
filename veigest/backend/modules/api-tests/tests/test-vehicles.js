@@ -27,7 +27,7 @@ async function runVehicleTests(token, companyId) {
 
     // Teste 1: Listar todos os veículos (com filtro de empresa)
     console.log('\n📝 Teste 1: Listar todos os veículos');
-    const listResult = await apiRequest('GET', '/vehicles', {
+    const listResult = await apiRequest('GET', '/vehicle', {
         token: token
     });
     
@@ -72,7 +72,7 @@ async function runVehicleTests(token, companyId) {
         status: 'active'
     };
     
-    const createResult = await apiRequest('POST', '/vehicles', {
+    const createResult = await apiRequest('POST', '/vehicle', {
         token: token,
         body: newVehicle
     });

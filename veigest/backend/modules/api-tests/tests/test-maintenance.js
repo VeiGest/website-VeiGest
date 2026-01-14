@@ -28,7 +28,7 @@ async function runMaintenanceTests(token, companyId) {
 
     // Primeiro, obter um veículo da empresa para usar nos testes
     console.log('\n🔍 Obtendo veículo da empresa para testes...');
-    const vehiclesResult = await apiRequest('GET', '/vehicles?per-page=1', {
+    const vehiclesResult = await apiRequest('GET', '/vehicle?per-page=1', {
         token: token
     });
 

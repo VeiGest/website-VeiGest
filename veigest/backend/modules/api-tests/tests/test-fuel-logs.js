@@ -28,7 +28,7 @@ async function runFuelLogTests(token, companyId) {
 
     // Primeiro, obter um veículo da empresa para usar nos testes
     console.log('\n🔍 Obtendo veículo da empresa para testes...');
-    const vehiclesResult = await apiRequest('GET', '/vehicles?per-page=1', {
+    const vehiclesResult = await apiRequest('GET', '/vehicle?per-page=1', {
         token: token
     });
 
@@ -41,7 +41,7 @@ async function runFuelLogTests(token, companyId) {
 
     // Teste 1: Listar todos os registros de abastecimento
     console.log('\n📝 Teste 1: Listar todos os registros de abastecimento');
-    const listResult = await apiRequest('GET', '/fuel-logs', {
+    const listResult = await apiRequest('GET', '/fuel-log', {
         token: token
     });
     
@@ -362,7 +362,7 @@ async function runFuelLogTests(token, companyId) {
 
     // Teste 9: Filtrar por data
     console.log('\n📝 Teste 9: Filtrar abastecimentos por período');
-    const dateFilterResult = await apiRequest('GET', '/fuel-logs?start_date=2024-01-01&end_date=2024-12-31', {
+    const dateFilterResult = await apiRequest('GET', '/fuel-log?start_date=2024-01-01&end_date=2024-12-31', {
         token: token
     });
     
@@ -389,7 +389,7 @@ async function runFuelLogTests(token, companyId) {
 
     // Teste 10: Busca por local
     console.log('\n📝 Teste 10: Buscar por local de abastecimento');
-    const searchResult = await apiRequest('GET', '/fuel-logs?search=posto', {
+    const searchResult = await apiRequest('GET', '/fuel-log?search=posto', {
         token: token
     });
     

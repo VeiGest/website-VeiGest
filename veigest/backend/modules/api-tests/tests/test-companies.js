@@ -172,9 +172,8 @@ async function runCompanyTests(token, companyId) {
     // Teste 5: Atualizar dados da empresa
     console.log('\n📝 Teste 5: Atualizar dados da empresa');
     const updateData = {
-        telefone: '+351987654321',
-        morada: 'Rua Teste API, 123',
-        cidade: 'Lisboa'
+        phone: '+351987654321',
+        email: 'updated-test@veigest.com'
     };
     
     const updateResult = await apiRequest('PUT', `/company/${companyId}`, {
@@ -189,9 +188,8 @@ async function runCompanyTests(token, companyId) {
         const updatedCompany = updateResult.response.body?.data || updateResult.response.body;
         if (updatedCompany) {
             console.log(`\n✅ Empresa atualizada:`);
-            console.log(`   Telefone: ${updatedCompany.telefone || updatedCompany.phone}`);
-            console.log(`   Morada: ${updatedCompany.morada || updatedCompany.address}`);
-            console.log(`   Cidade: ${updatedCompany.cidade || updatedCompany.city}`);
+            console.log(`   Telefone: ${updatedCompany.phone || updatedCompany.telefone}`);
+            console.log(`   Email: ${updatedCompany.email}`);
         }
         results.tests.push({
             name: 'Atualizar Empresa',
@@ -274,7 +272,7 @@ async function runCompanyTests(token, companyId) {
 
     // Teste 8: Filtrar condutores da empresa
     console.log('\n📝 Teste 8: Filtrar condutores da empresa');
-    const driversResult = await apiRequest('GET', `/companies/${companyId}/users?tipo=condutor`, {
+    const driversResult = await apiRequest('GET', `/companies/${companyId}/users?role=driver`, {
         token: token
     });
     

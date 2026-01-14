@@ -141,7 +141,6 @@ Estado: Implementado
 Especificações:
   • RF-BO-001.1: Login com credenciais administrativas ✓
   • RF-BO-001.2: Controlo de acesso por funções (RBAC) ✓
-  • RF-BO-001.4: Registo de tentativas de login ✓
   • RF-BO-001.5: Políticas de palavra-passe robustas ✓
 
 
@@ -157,7 +156,6 @@ Especificações:
   • RF-BO-002.2: KPIs (custos, consumo, manutenções) ✓
   • RF-BO-002.3: Gráficos de consumo e custos ✓
   • RF-BO-002.4: Alertas críticos ✓
-  • RF-BO-002.5: Atualizações em tempo real ✓
 
 
 RF-BO-003: Gestão de Empresas
@@ -192,9 +190,7 @@ Especificações:
   • RF-BO-004.1: Criação de utilizadores ✓
   • RF-BO-004.2: Edição de perfis ✓
   • RF-BO-004.3: Ativação/desativação ✓
-  • RF-BO-004.4: Atribuição de funções (roles) ✓
   • RF-BO-004.5: Reset de palavra-passe ✓
-  • RF-BO-004.6: Auditoria de ações ✓
 
 
 RF-BO-005: Gestão de Veículos
@@ -691,3 +687,288 @@ Para mais informações, consulte a documentação técnica completa em:
 /docs/ e /relatorios/
 
 ================================================================================
+
+
+
+🔑 ADMIN
+Empresas
+
+companies.view
+
+companies.manage
+
+Utilizadores
+
+users.view
+
+users.create
+
+users.update
+
+users.delete
+
+users.manage-roles
+
+Veículos
+
+vehicles.view
+
+vehicles.create
+
+vehicles.update
+
+vehicles.delete
+
+vehicles.assign
+
+Condutores
+
+drivers.view
+
+drivers.create
+
+drivers.update
+
+drivers.delete
+
+Ficheiros
+
+files.view
+
+files.upload
+
+files.delete
+
+Manutenções
+
+maintenances.view
+
+maintenances.create
+
+maintenances.update
+
+maintenances.delete
+
+maintenances.schedule
+
+Documentos
+
+documents.view
+
+documents.create
+
+documents.update
+
+documents.delete
+
+Combustível
+
+fuel.view
+
+fuel.create
+
+fuel.update
+
+fuel.delete
+
+Alertas
+
+alerts.view
+
+alerts.create
+
+alerts.resolve
+
+Relatórios
+
+reports.view
+
+reports.create
+
+reports.export
+
+reports.advanced
+
+Sistema
+
+system.logs
+
+Dashboard
+
+dashboard.view
+
+dashboard.advanced
+
+Rotas
+
+routes.view
+
+routes.create
+
+routes.update
+
+routes.delete
+
+Tickets de Suporte
+
+tickets.view
+
+tickets.create
+
+tickets.update
+
+tickets.delete
+
+tickets.respond
+
+👔 MANAGER
+Empresas
+
+companies.view
+
+Utilizadores
+
+users.view
+
+users.create
+
+users.update
+
+Veículos
+
+vehicles.view
+
+vehicles.create
+
+vehicles.update
+
+vehicles.assign
+
+Condutores
+
+drivers.view
+
+drivers.create
+
+drivers.update
+
+Ficheiros
+
+files.view
+
+files.upload
+
+Manutenções
+
+maintenances.view
+
+maintenances.create
+
+maintenances.update
+
+maintenances.delete
+
+maintenances.schedule
+
+Documentos
+
+documents.view
+
+documents.create
+
+documents.update
+
+documents.delete
+
+Combustível
+
+fuel.view
+
+fuel.create
+
+fuel.update
+
+fuel.delete
+
+Alertas
+
+alerts.view
+
+alerts.create
+
+alerts.resolve
+
+Relatórios
+
+reports.view
+
+reports.create
+
+reports.export
+
+reports.advanced
+
+Dashboard
+
+dashboard.view
+
+dashboard.advanced
+
+Rotas
+
+routes.view
+
+routes.create
+
+routes.update
+
+routes.delete
+
+Tickets de Suporte
+
+tickets.view
+
+tickets.create
+
+tickets.update
+
+tickets.delete
+
+tickets.respond
+
+🚗 DRIVER
+Veículos
+
+vehicles.view
+
+Ficheiros
+
+files.view
+
+Documentos
+
+documents.view
+
+Combustível
+
+fuel.view
+
+fuel.create
+
+Alertas
+
+alerts.view
+
+Dashboard
+
+dashboard.view
+
+Rotas
+
+routes.view
+
+Tickets de Suporte
+
+tickets.view
+
+tickets.create
